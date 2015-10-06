@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/miscellaneous/Nmap笔记.html" />
+
+    <title>  莲的思念's blog &mdash; Nmap笔记
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="Nmap 目标 可以使用CIDR或是针对某个范围，每段都可以指定范围为0-255 -iL ：可以从文件中读取目标 -iR ：选择几个随机的目标，对于特定的私有地址，组播等会掠过。参数0表示无休止的扫描 --exclude ：排除几个目标 主机发现 若没有选项，则发送一个ICMP请求报文，TCP SYN报文到443端口，一个TCP ACK报文到80端口和一个ICMP时间戳请求。 -sL：只是单纯的列出目标网段的主机，都不发送任何包，不过仍然执行反向DNS解析 -sn：不进行端口扫描，只扫描存活主机。建立轻链接，不会引起目标主机太多关注。结合-P*可以绕过防火墙。 -Pn：不进行ping。假定指定的主机都是存活的，对每一台指定主机都按要求进行扫描。 -PS ：对指定端口进行TCP SYN扫描。目标主机收到TCP SYN包后，若端口开放，则会回应SYN/ACK包，若是关闭则回应RST包，因为无需建立链接，所以扫描主机会回应RST包进行关闭 -PA ：对指定端口进行TCP ACK扫描。发送ACK包 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">莲的思念's blog</a>
+      </h1>
+      <h3 class="header-text"></h3>
+      <ul class="header-menu list-inline">
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/article/miscellaneous/Nmap笔记.html" title="Permalink to Nmap笔记">Nmap笔记</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-06-13T15:00:00+08:00">2015年06月13日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/miscellaneous.html">miscellaneous</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <h1>Nmap</h1>
+<h2>目标</h2>
+<p>可以使用CIDR或是针对某个范围，每段都可以指定范围为0-255
+-iL <inputfilename>：可以从文件中读取目标
+-iR <hostnum>：选择几个随机的目标，对于特定的私有地址，组播等会掠过。参数0表示无休止的扫描
+--exclude <host1,host2...>：排除几个目标</p>
+<h2>主机发现</h2>
+<p>若没有选项，则发送一个ICMP请求报文，TCP SYN报文到443端口，一个TCP ACK报文到80端口和一个ICMP时间戳请求。
+-sL：只是单纯的列出目标网段的主机，都不发送任何包，不过仍然执行反向DNS解析
+-sn：不进行端口扫描，只扫描存活主机。建立轻链接，不会引起目标主机太多关注。结合-P*可以绕过防火墙。
+-Pn：不进行ping。假定指定的主机都是存活的，对每一台指定主机都按要求进行扫描。
+-PS <port list>：对指定端口进行TCP SYN扫描。目标主机收到TCP SYN包后，若端口开放，则会回应SYN/ACK包，若是关闭则回应RST包，因为无需建立链接，所以扫描主机会回应RST包进行关闭
+-PA <port list>：对指定端口进行TCP ACK扫描。发送ACK包，但是目标主机则回应RST包（因为没有建立链接）。有些时候，防火墙使用无状态的规则封锁外端的SYN报文，除了一些公开服务器。这时-PS可能被封锁，而-PA则可以进行。而有些时候防火墙使用有状态的规则来封锁非预期的报文，这时SYN报文更有效。所以要结合-PS和-PA来进行探测。
+-PU <portlist>：UDP ping。
+-PE;-PP;-PM：ICMP ping。不过因为防火墙的限制，单纯的ICMP ping已经没有多大用了，如果是在内网扫描的话还是可以的。
+-PO <protocol list>：IP 协议ping
+-PR：ARP ping。在局域网中，比基于IP的ping更加快速和可靠。如果是在同一个局域网中，即使指定了不同的ping类型，ARP ping也会进行，要关闭可以指定--disable-arp-ping
+-n：不用DNS域名解析</p>
+<h2>端口扫描</h2>
+<h3>状态</h3>
+<p>open：端口处于监听状态。
+closed：端口关闭，不过可以判断出主机是存活的。
+filtered：被过滤，无法判断是open还是closed
+unfiltered：端口没有被过滤，但是无法判断是open还是closed，只有在使用ACK扫描时才会出现
+open|filtered：无法判断是open还是filterd，可能防火墙把回应阻了，发生在UDP,FIN,Xmas扫描
+closed|filtered：无法判断是closed还是filtered。只发生在使用IP Idle扫描</p>
+<p>-sS:TCP SYN扫描。并不建立完整的链接，相对不会引起注意。当收到syn/ack回应时认为是open的，收到rst回应时认为是closed，如果在一定时间内未收到包则认为是filtered
+-sT：TCP connection扫描。建立一个完整的链接，会被目标主机记录下来。对端如果在日志中看到来自同一个IP的多个链接，则可以认为是被扫描了。
+-sU:UDP扫描。因为UDP扫描比TCP扫描要慢而且困难，所以很多人会忽略这些端口。可以结合TCP扫描一起进行。为了区分open和filtered，加上-sV参数
+-sN;-sF;-sX：TCP NULL,TCP FIN,Xmas扫描。通过一个微妙的方法来区分open和closed端口。如果目标端口是关闭的，发送一个不包含SYN,ACK,RST报文会导致收到一个RST返回报文，如果目标端口是开放的，则没有响应。NULL不设置任何TCP标志位，FIN设置FIN位，Xmas设置FIN,URG,PSH位。这些扫描方式的特点是可以绕过一些非状态的防火墙和包过滤路由器，另一个优势是比SYN扫描更加低调，不过不能太过依赖，多数IDS还是可以发现的。同时并非所有系统都遵循这一标准，像Windows不管端口是open还是closed都会返回RST包，这样就会把所有端口都标记为closed。但是这对于大多数的基于UNIX的系统还是有效的。不过这种扫描方式无法区分open和filtered
+-sA：ACK扫描。无法决定是open还是closed，它用来发现防火墙的规则来确实是有状态的还是无状态的，以及哪些端口是被过滤的。当端口未被过滤是返回RST包，当端口被过滤时收不到包，只能区分是否被过滤。
+--scanflags：定制扫描。通过指定标记位来设置扫描。同时可以设置该如何解释收到的包。
+--sO：IP协议扫描。确定目标主机上支持哪些IP协议。可以用-p来选择协议号。协议扫描注意的是ICMP协议不可到达消息。收到任何协议的响应就标记为open，收到类型3,代码2的ICMP报文时认为从closed，其他情况认为是filtered。
+-b： FTP bounce扫描。代理ftp链接允许用户连接到一台ftp服务器上，然后要求服务器发送文件给第三方主机，这导致ftp服务器对目标主机的端口进行扫描。大部分已经被修复了。</p>
+<h2>端口指定和扫描顺序</h2>
+<p>-p：可以指定端口号，协议号（-sO情况下），甚至是服务名
+--exclude-ports <port range>：排除端口
+--top-ports <number>：扫描开放概率最高的number个端口，默认为1000个</p>
+<h2>服务和版本发现</h2>
+<p>-sV：可以区分open和filtered
+-O：操作系统探测</p>
+<h2>Nmap脚本引擎</h2>
+<p>允许用户写脚本（LUA语言）来自动化一些网络任务。脚本并不是在沙盒中运行，因此可能会损坏系统，所以除非信任，否则不要使用第三方的脚本。脚本位于：/usr/share/nmap/scripts/
+-sC：使用默认的脚本
+--script <filename|category|directory>:可以嵌入逻辑运算符and，or，not
+--script-args <name>=<value>：脚本参数，逗号分隔</p>
+<h2>时间和性能</h2>
+<p>-T [0-5]：使用相应的扫描模板。模式0和1为了躲避IDS，同时会减慢扫描速度。模式2使用少量带块和目标主机资源，减慢扫描速度。模式3为默认的，不做任何事情。模式4加快扫描速度。模式5更快，可能会有失精准。一般可以使用-T4</p>
+<h2>防火墙/IDS躲避和欺骗</h2>
+<p>1、使用分片
+-f：使用分片
+--mtu <MTU>：设置mtu。自定义偏移大小，必须是8的整数倍
+2、进行IP诱骗
+-D <decoy1,...>：使用诱饵进行扫描，作为诱饵的主机必须处于up状态，可以有多个，加入ME表示本机
+3、IP伪装：将发送包的IP地址改为其他的地址。如果既希望伪装IP，又希望获取回复包，可以使用idle scan
+-S <ip>：源地址欺骗。配合-e 和 -Pn使用。-e：指定发包出口
+4、伪装源端口：有些防火墙只允许特定端口的数据包通过，因此可以将发送的源端口都设定成特定的。
+-g <port number>：源端口号欺骗。发送指定源端口的数据包</p>
+<p>--data-string <string>：给发送包附加自定义的数据
+--data-length：附加指定数量的随机字节。
+--spoof-mac：指定欺骗mac地址。0表示使用随机mac</p>
+<h2>输出</h2>
+<p>有5中输出格式。默认的是交互式输出，还有一种主要的是XML格式
+-oX：输出成XML格式文件，文件名中可以带%H,%M,%S等与时间有关的参数。
+-oN：类似交互式输出
+-V：详细信息
+-d：调试信息
+--packet-trace：包发送和接收的信息
+--resume：如果-oN日志被保留则可以恢复终止的扫描。</p>
+<h2>杂项</h2>
+<p>--send-eth：在数据链路层发送；--send-ip：在网络层发送
+在运行时，可以进行交互，输入？查看选项</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

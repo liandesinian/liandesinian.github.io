@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/miscellaneous/Pelican学习笔记.html" />
+
+    <title>  莲的思念's blog &mdash; Pelican学习笔记
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="Pelican是Python的一个包，用于生成静态站点，可以用reStructedText或Markdown语法格式来写内容。搭配上github pages，很适合用来写博客。 快速入门 首先安装Pelican包 pip install pelican pip install markdown 然后创建一个骨架 mkdir ~/yoursite cd ~/yoursite pelican-quickstart 接着创建一个Markdown文件，具体语法可见此处Markdwon笔记，最后生成加本地预览 make devserver #此选项可以在修改的同时即时生成 通过浏览器输入 http://localhost:8000 即可。修改好后需要退出，可输入 ./develop_server.sh stop 安装pelican 可以使用上述所说的pip，也可以使用easy_install，或是直接下载pelican的源码进行安装 cd path-to-pelican-source python setup.py install 当然，如果安装有Python的virtualenv ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">莲的思念's blog</a>
+      </h1>
+      <h3 class="header-text"></h3>
+      <ul class="header-menu list-inline">
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/article/miscellaneous/Pelican学习笔记.html" title="Permalink to Pelican学习笔记">Pelican学习笔记</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-05-10T00:00:00+08:00">2015年05月10日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/miscellaneous.html">miscellaneous</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>Pelican是Python的一个包，用于生成静态站点，可以用reStructedText或Markdown语法格式来写内容。搭配上<a href="https://pages.github.com/">github pages</a>，很适合用来写博客。</p>
+<h2>快速入门</h2>
+<p>首先安装Pelican包</p>
+<div class="highlight"><pre>pip install pelican
+pip install markdown
+</pre></div>
+
+
+<p>然后创建一个骨架</p>
+<div class="highlight"><pre>mkdir  ~/yoursite
+cd ~/yoursite
+pelican-quickstart
+</pre></div>
+
+
+<p>接着创建一个Markdown文件，具体语法可见此处<a href="./Markdown笔记.html">Markdwon笔记</a>，最后生成加本地预览</p>
+<div class="highlight"><pre>make devserver     #此选项可以在修改的同时即时生成
+</pre></div>
+
+
+<p>通过浏览器输入 <code>http://localhost:8000</code> 即可。修改好后需要退出，可输入 <code>./develop_server.sh stop</code> </p>
+<h2>安装pelican</h2>
+<p>可以使用上述所说的pip，也可以使用easy_install，或是直接下载pelican的源码进行安装</p>
+<div class="highlight"><pre>cd path-to-pelican-source
+python setup.py install
+</pre></div>
+
+
+<p>当然，如果安装有Python的virtualenv，可以在安装pelican之前创建一个虚拟环境</p>
+<div class="highlight"><pre>virtualenv ~/pelican
+source ~/pelican/bin/activate
+</pre></div>
+
+
+<p>当pelican安装完之后，有许多依赖被一起安装了进来：</p>
+<div class="highlight"><pre>* feedgenerator 产生Atom反馈
+* jinja2        用来支持模板
+* pygments      语法高亮
+* docutils      支持reStructuredText作为输出格式
+* pytz          时区定义
+* blinker       
+* unidecode     ASCII到Unicode转换
+* six           Python 2和Python 3兼容工具
+* MarkupSafe    标记安全字符
+* python-dateutil  读日期信息
+</pre></div>
+
+
+<p>东西挺多的，有时间再慢慢看看。。。</p>
+<p>当用 <code>pelican-quickstart</code> 搭建完骨架后，可以看到生成了一堆文件</p>
+<div class="highlight"><pre>yourproject/
+-- content
+|   -- (pages)  #增加注入About、Contact等页面
+-- output
+-- develop_server.sh
+-- fabfile.py
+-- Makefile
+-- pelicanconf.py   # Main settings file
+-- publishconf.py   # Settings to use when ready to publish
+</pre></div>
+
+
+<h2>写文章</h2>
+<p>Pelican可以从文章中读取元信息，比如说Title、Date、Author等</p>
+<div class="highlight"><pre>Title：My First article
+Date: 2015-09-29 13:00
+Authors: liandesinian
+Summary: Test
+
+This is first article
+</pre></div>
+
+
+<p>Pelican会将之转换为html文件：</p>
+<div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+    <span class="nt">&lt;head&gt;</span>
+        <span class="nt">&lt;title&gt;</span>My First article<span class="nt">&lt;/title&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;date&quot;</span> <span class="na">content=</span><span class="s">&quot;2015-09-29 13:00&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;authors&quot;</span> <span class="na">content=</span><span class="s">&quot;liandesinian&quot;</span> <span class="nt">/&gt;</span>
+        <span class="nt">&lt;meta</span> <span class="na">name=</span><span class="s">&quot;summary&quot;</span> <span class="na">content=</span><span class="s">&quot;test&quot;</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;/head&gt;</span>
+    <span class="nt">&lt;body&gt;</span>
+    This is first article
+    <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+
+<p><strong>Note: </strong> 除了Title是必须有的，其他的元信息都可以省略。如果Date被省略并且配置文件中的DEFAULT_DATE被设置成 <code>fs</code> ，则Pelican会采用文件的 <code>ctime</code>（是change，非create，与文件的属性和内容有关）「<strong>最好还是在创建文章是添加Date元信息，否则可能会出现问题</strong>」，如果省略Category，会采用子目录的名称。若修改了一些设置但是没有能即时显现出来，可能是缓存的问题，在配置文件中加上 <code>LOAD_CONTENT_CACHE=False</code></p>
+<p><strong>pages：</strong> 在contents目录下的pages目录中可以放置一些注入About和Contact的页面。</p>
+<h3>链接到内部文章</h3>
+<p>要链接到内部其他文章，可以使用<code>{filename}path/to/file</code>语句，当然在Markdown中也有链接到内部其他文章的语句。当然除了可以链接到文章，这个语句还可以用来链接其他文件，诸如照片等，不过必须把这些文件所在的目录包含进pelicanconf.py的STATIC_PATHS中，pelican默认包含images目录。</p>
+<p><strong>Note: </strong> status元信息可以为published（发布），hidden（不发布），draft（草稿，不发布）</p>
+<h2>发布站点</h2>
+<div class="highlight"><pre>pelican /path/to/your/content [-o /path/to/output] [-s /path/to/your/settings.py]
+pelican -r  #监测修改
+</pre></div>
+
+
+<p>当然一开始的pelican-quicstart询问是否要快捷发布时，选择yes，那么会有Makefile，所以可以直接</p>
+<div class="highlight"><pre>make publish  #发布
+make regenerator  #监测修改
+</pre></div>
+
+
+<h2>配置文件</h2>
+<p>关于配置文件的选项有很多，在此不一一列举。需要注意几点：
+    * 所有设置的标识符都是大写的，其值有数字，布尔，字典，元组和字符串
+    * 支持的URL可以是绝对路径也可以是相对路径。相对路径在进行本地测试的时候很有用，绝对路径在发布的时候很有用。可是设置两个配置文件，分别用于本地测试和发布。
+    * <em>_URL和</em>_SAVE_AS用于定位和保存生成在output目录中的文件结构。 如果不想在output目录中生成，可以将其值设置为''
+    * 关于主题可以自己创建，也可以下载别人的模板，然后在添加 <code>THEME</code> 的值。</p>
+<h2>创建主题</h2>
+<p>后续补充。。。。</p>
+<h2>添加插件</h2>
+<p>后续补充。。。。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>
