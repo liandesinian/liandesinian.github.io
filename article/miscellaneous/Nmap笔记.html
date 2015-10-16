@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="Nmap 目标 可以使用CIDR或是针对某个范围，每段都可以指定范围为0-255 -iL ：可以从文件中读取目标 -iR ：选择几个随机的目标，对于特定的私有地址，组播等会掠过。参数0表示无休止的扫描 --exclude ：排除几个目标 主机发现 若没有选项，则发送一个ICMP请求报文，TCP SYN报文到443端口，一个TCP ACK报文到80端口和一个ICMP时间戳请求。 -sL：只是单纯的列出目标网段的主机，都不发送任何包，不过仍然执行反向DNS解析 -sn：不进行端口扫描，只扫描存活主机。建立轻链接，不会引起目标主机太多关注。结合-P*可以绕过防火墙。 -Pn：不进行ping。假定指定的主机都是存活的，对每一台指定主机都按要求进行扫描。 -PS ：对指定端口进行TCP SYN扫描。目标主机收到TCP SYN包后，若端口开放，则会回应SYN/ACK包，若是关闭则回应RST包，因为无需建立链接，所以扫描主机会回应RST包进行关闭 -PA ：对指定端口进行TCP ACK扫描。发送ACK包 ...">
+    <meta name="description" content="Nmap是一款开源的网络探测和安全审计工具。它不管是对大型的网络还是单个的主机都能进行快速扫描。Nmap使用原生的IP数据包来进行各种探测 目标 主机发现 端口扫描 系统和版本探测 脚本扫描 时间和性能 防火墙/IDS躲避和欺骗 输出 #杂项 目标 可以使用CIDR或是针对某个范围，每段都可以指定范围为0-255，或是用,隔开 -iL ：可以从文件中读取目标。若用-，则表示从标准输入中读取。 -iR ：选择几个随机的目标，对于特定的私有地址，组播等会跳过。参数0表示无休止的扫描 --exclude ：排除几个目标 主机发现 若没有选项，则发送一个ICMP请求报文，TCP SYN报文到443端口，一个TCP ACK报文到80端口和一个ICMP时间戳请求。有一个例外是APR（对ipv4）和Neighbor discovery（对ipv6）扫描每一个目标。 -sL：只是单纯的列出目标网段的主机，都不发送任何包到目标主机，不过仍然执行反向DNS解析。此选项只能打印目标主机的列表，更高级的操作入OS探测、端口扫描等无法进行。 -sn ...">
   <meta name="tags" contents="">
 </head>
 
@@ -53,78 +53,154 @@
       </li>
     </ul>
     <div class="post-content">
-      <h1>Nmap</h1>
-<h2>目标</h2>
-<p>可以使用CIDR或是针对某个范围，每段都可以指定范围为0-255
--iL <inputfilename>：可以从文件中读取目标
--iR <hostnum>：选择几个随机的目标，对于特定的私有地址，组播等会掠过。参数0表示无休止的扫描
---exclude <host1,host2...>：排除几个目标</p>
-<h2>主机发现</h2>
-<p>若没有选项，则发送一个ICMP请求报文，TCP SYN报文到443端口，一个TCP ACK报文到80端口和一个ICMP时间戳请求。
--sL：只是单纯的列出目标网段的主机，都不发送任何包，不过仍然执行反向DNS解析
--sn：不进行端口扫描，只扫描存活主机。建立轻链接，不会引起目标主机太多关注。结合-P*可以绕过防火墙。
--Pn：不进行ping。假定指定的主机都是存活的，对每一台指定主机都按要求进行扫描。
--PS <port list>：对指定端口进行TCP SYN扫描。目标主机收到TCP SYN包后，若端口开放，则会回应SYN/ACK包，若是关闭则回应RST包，因为无需建立链接，所以扫描主机会回应RST包进行关闭
--PA <port list>：对指定端口进行TCP ACK扫描。发送ACK包，但是目标主机则回应RST包（因为没有建立链接）。有些时候，防火墙使用无状态的规则封锁外端的SYN报文，除了一些公开服务器。这时-PS可能被封锁，而-PA则可以进行。而有些时候防火墙使用有状态的规则来封锁非预期的报文，这时SYN报文更有效。所以要结合-PS和-PA来进行探测。
--PU <portlist>：UDP ping。
--PE;-PP;-PM：ICMP ping。不过因为防火墙的限制，单纯的ICMP ping已经没有多大用了，如果是在内网扫描的话还是可以的。
--PO <protocol list>：IP 协议ping
--PR：ARP ping。在局域网中，比基于IP的ping更加快速和可靠。如果是在同一个局域网中，即使指定了不同的ping类型，ARP ping也会进行，要关闭可以指定--disable-arp-ping
--n：不用DNS域名解析</p>
-<h2>端口扫描</h2>
+      <p>Nmap是一款开源的网络探测和安全审计工具。它不管是对大型的网络还是单个的主机都能进行快速扫描。Nmap使用原生的IP数据包来进行各种探测</p>
+<ul>
+<li><a href="#target">目标</a></li>
+<li><a href="#host">主机发现</a></li>
+<li><a href="#port">端口扫描</a></li>
+<li><a href="#service">系统和版本探测</a></li>
+<li><a href="#script">脚本扫描</a></li>
+<li><a href="#performance">时间和性能</a></li>
+<li><a href="#firewall">防火墙/IDS躲避和欺骗</a></li>
+<li><a href="#output">输出</a></li>
+<li><a href="#misc">#杂项</a></li>
+</ul>
+<h2 id="target">目标</h2>
+
+<p>可以使用CIDR或是针对某个范围，每段都可以指定范围为0-255，或是用<code>,</code>隔开</p>
+<blockquote>
+<p>-iL <inputfilename>：可以从文件中读取目标。若用<code>-</code>，则表示从标准输入中读取。</p>
+<p>-iR <hostnum>：选择几个随机的目标，对于特定的私有地址，组播等会跳过。参数0表示无休止的扫描</p>
+<p>--exclude <host1,host2...>：排除几个目标</p>
+</blockquote>
+<h2 id="host">主机发现</h2>
+
+<p>若没有选项，则发送一个ICMP请求报文，TCP SYN报文到443端口，一个TCP ACK报文到80端口和一个ICMP时间戳请求。有一个例外是APR（对ipv4）和Neighbor discovery（对ipv6）扫描每一个目标。</p>
+<blockquote>
+<p>-sL：只是单纯的列出目标网段的主机，都不发送任何包到目标主机，不过仍然执行反向DNS解析。此选项只能打印目标主机的列表，更高级的操作入OS探测、端口扫描等无法进行。</p>
+<p>-sn：不进行端口扫描，只扫描存活主机。默认-sn选项的主机发现发送一个ICMP请求报文，TCP SYN报文至443端口，TCP ACK报文至80端口和一个ICMP时间戳请求。如果是普通用户，则只发送到80和443端口的SYN报文。当一个特权用户扫描时，ARP请求也会使用，除非指定<code>--send-ip</code>选项。结合-P*（非-Pn）可以发送指定的数据包，更加灵活，从而可以绕过防火墙。</p>
+<p>-Pn：不进行ping。假定指定的主机都是存活的，对每一台指定主机都按要求进行扫描。</p>
+<p>--send-ip：不进行ARP扫描，否则ARP扫描一直都进行。</p>
+<p>-PS [port list]：对指定端口发送带有SYN flag的空TCP包。<strong>注：在-PS和端口列表之间没有空格。</strong>目标主机收到TCP SYN包后，若端口开放，则会回应SYN/ACK包，若是关闭则回应RST包，因为无需建立链接，所以扫描主机会回应RST包进行关闭。默认是80端口。</p>
+<p>-PA [port list]：对指定端口进行TCP ACK扫描。发送ACK包，目标主机则一直回应RST包（因为没有建立链接）。有些时候，防火墙使用无状态的规则封锁外端的SYN报文，这时-PS可能被封锁，而-PA则可以进行。而有些时候防火墙使用有状态的规则来封锁非预期的报文，根据链接状态分类报文，这时SYN报文更有效，而ACK报文则会被丢弃。所以要结合-PS和-PA来进行探测，绕过防火墙的机会更大。</p>
+<p>-PU [portlist]：UDP ping。如果目标主机的端口是关闭的，则会收到一个ICMP的端口不可到报文，这意味着目标主机是存活的，而主机或网络不可打，TTL超时则意味这主机不存活。如果目标主机的端口是打开的，因为发送的是空报文，目标主机会直接忽略，也不会收到回包，因此默认是发送到40125端口，因为这个端口通常不会用。    </p>
+<p>-PE;-PP;-PM：ICMP ping。-PE表示ICMP echo request报文，不过可能由于防火墙的限制，这个选项不太管用了，可以试试-PP：ICMP timestamp请求和-PM：ICMP address mask请求，如果有回应，则证明存活。</p>
+<p>-PO [protocol list]：发送指定协议的IP报文，默认发送ICMP、IGMP、IP-in-IP报文。回包如果是某协议的回应，则证明存活，如果是ICMP的协议不可达则证明目标主机不支持指定的协议。    </p>
+<p>-PR：ARP ping。在局域网中，比基于IP的ping更加快速和可靠。如果是在同一个局域网中，即使指定了不同的ping类型，ARP ping也会进行，要关闭可以指定--disable-arp-ping或--send-ip。该选项对于代理ARP的情况比较有用。</p>
+<p>--traceroute：跟踪路径</p>
+<p>-n：不用DNS域名解析</p>
+</blockquote>
+<h2 id="port">端口扫描</h2>
+
 <h3>状态</h3>
-<p>open：端口处于监听状态。
-closed：端口关闭，不过可以判断出主机是存活的。
-filtered：被过滤，无法判断是open还是closed
-unfiltered：端口没有被过滤，但是无法判断是open还是closed，只有在使用ACK扫描时才会出现
-open|filtered：无法判断是open还是filterd，可能防火墙把回应阻了，发生在UDP,FIN,Xmas扫描
-closed|filtered：无法判断是closed还是filtered。只发生在使用IP Idle扫描</p>
-<p>-sS:TCP SYN扫描。并不建立完整的链接，相对不会引起注意。当收到syn/ack回应时认为是open的，收到rst回应时认为是closed，如果在一定时间内未收到包则认为是filtered
--sT：TCP connection扫描。建立一个完整的链接，会被目标主机记录下来。对端如果在日志中看到来自同一个IP的多个链接，则可以认为是被扫描了。
--sU:UDP扫描。因为UDP扫描比TCP扫描要慢而且困难，所以很多人会忽略这些端口。可以结合TCP扫描一起进行。为了区分open和filtered，加上-sV参数
--sN;-sF;-sX：TCP NULL,TCP FIN,Xmas扫描。通过一个微妙的方法来区分open和closed端口。如果目标端口是关闭的，发送一个不包含SYN,ACK,RST报文会导致收到一个RST返回报文，如果目标端口是开放的，则没有响应。NULL不设置任何TCP标志位，FIN设置FIN位，Xmas设置FIN,URG,PSH位。这些扫描方式的特点是可以绕过一些非状态的防火墙和包过滤路由器，另一个优势是比SYN扫描更加低调，不过不能太过依赖，多数IDS还是可以发现的。同时并非所有系统都遵循这一标准，像Windows不管端口是open还是closed都会返回RST包，这样就会把所有端口都标记为closed。但是这对于大多数的基于UNIX的系统还是有效的。不过这种扫描方式无法区分open和filtered
--sA：ACK扫描。无法决定是open还是closed，它用来发现防火墙的规则来确实是有状态的还是无状态的，以及哪些端口是被过滤的。当端口未被过滤是返回RST包，当端口被过滤时收不到包，只能区分是否被过滤。
---scanflags：定制扫描。通过指定标记位来设置扫描。同时可以设置该如何解释收到的包。
---sO：IP协议扫描。确定目标主机上支持哪些IP协议。可以用-p来选择协议号。协议扫描注意的是ICMP协议不可到达消息。收到任何协议的响应就标记为open，收到类型3,代码2的ICMP报文时认为从closed，其他情况认为是filtered。
--b： FTP bounce扫描。代理ftp链接允许用户连接到一台ftp服务器上，然后要求服务器发送文件给第三方主机，这导致ftp服务器对目标主机的端口进行扫描。大部分已经被修复了。</p>
-<h2>端口指定和扫描顺序</h2>
-<p>-p：可以指定端口号，协议号（-sO情况下），甚至是服务名
---exclude-ports <port range>：排除端口
---top-ports <number>：扫描开放概率最高的number个端口，默认为1000个</p>
-<h2>服务和版本发现</h2>
-<p>-sV：可以区分open和filtered
--O：操作系统探测</p>
-<h2>Nmap脚本引擎</h2>
-<p>允许用户写脚本（LUA语言）来自动化一些网络任务。脚本并不是在沙盒中运行，因此可能会损坏系统，所以除非信任，否则不要使用第三方的脚本。脚本位于：/usr/share/nmap/scripts/
--sC：使用默认的脚本
---script <filename|category|directory>:可以嵌入逻辑运算符and，or，not
---script-args <name>=<value>：脚本参数，逗号分隔</p>
-<h2>时间和性能</h2>
-<p>-T [0-5]：使用相应的扫描模板。模式0和1为了躲避IDS，同时会减慢扫描速度。模式2使用少量带块和目标主机资源，减慢扫描速度。模式3为默认的，不做任何事情。模式4加快扫描速度。模式5更快，可能会有失精准。一般可以使用-T4</p>
-<h2>防火墙/IDS躲避和欺骗</h2>
-<p>1、使用分片
--f：使用分片
---mtu <MTU>：设置mtu。自定义偏移大小，必须是8的整数倍
-2、进行IP诱骗
--D <decoy1,...>：使用诱饵进行扫描，作为诱饵的主机必须处于up状态，可以有多个，加入ME表示本机
-3、IP伪装：将发送包的IP地址改为其他的地址。如果既希望伪装IP，又希望获取回复包，可以使用idle scan
--S <ip>：源地址欺骗。配合-e 和 -Pn使用。-e：指定发包出口
-4、伪装源端口：有些防火墙只允许特定端口的数据包通过，因此可以将发送的源端口都设定成特定的。
--g <port number>：源端口号欺骗。发送指定源端口的数据包</p>
-<p>--data-string <string>：给发送包附加自定义的数据
---data-length：附加指定数量的随机字节。
---spoof-mac：指定欺骗mac地址。0表示使用随机mac</p>
-<h2>输出</h2>
-<p>有5中输出格式。默认的是交互式输出，还有一种主要的是XML格式
--oX：输出成XML格式文件，文件名中可以带%H,%M,%S等与时间有关的参数。
--oN：类似交互式输出
--V：详细信息
--d：调试信息
---packet-trace：包发送和接收的信息
---resume：如果-oN日志被保留则可以恢复终止的扫描。</p>
-<h2>杂项</h2>
-<p>--send-eth：在数据链路层发送；--send-ip：在网络层发送
-在运行时，可以进行交互，输入？查看选项</p>
+
+<ul>
+<li>open：端口处于监听状态。有应用程序可以在这个端口上接收TCP链接，UDP数据包。</li>
+<li>closed：端口关闭，没有应用程序在监听。不过可以判断出主机是存活的。</li>
+<li>filtered：被过滤，无法判断是open还是closed</li>
+<li>unfiltered：端口没有被过滤，但是无法判断是open还是closed，只有在使用ACK扫描时才会出现</li>
+<li>open|filtered：无法判断是open还是filterd，可能防火墙把回应阻了，发生在UDP,,IP protocol，FIN,Xmas扫描</li>
+<li>closed|filtered：无法判断是closed还是filtered。只发生在使用IP Idle扫描。</li>
+</ul>
+<p>大部分扫描类型只对特权用户有效，因为特权用户可以发送接收原始报文。虽然Nmap努力产生正确的结果，但是因为这些结果都是基于目标主机的返回的报文，也许它们是不信任的，可能会迷惑或误导Nmap的报文。Nmap支持大约十几种扫描技术，一般一次只用一种，除了UDP扫描(-sU)可能和任何一种TCP扫描结合。默认情况下，Nmap执行一个SYN扫描，需要特权用户。</p>
+<h3>扫描类型</h3>
+
+<blockquote>
+<p>-sS</p>
+<p>TCP SYN扫描。并不建立完整的链接，相对不会引起注意。当收到SYN/ACK回应时认为是open的，收到RST回应时认为是closed，如果在一定时间内未收到包或是收到不可达ICMP报文时，则认为端口是是filtered。如果收到一个SYN而没有ACK的报文，则也认为是open。</p>
+<p>-sT</p>
+<p>TCP connection扫描。通过connect()系统调用建立一个完整的链接，非特权用户进行Nmap扫描时使用的就是TCP connection扫描。这不是一个好方法，不仅会多发包，而且会被目标主机记录下来。对端如果在日志中看到来自同一个IP的多个链接，则可以认为是被扫描了。</p>
+<p>-sU</p>
+<p>UDP扫描。可以结合TCP扫描(-sS)一起进行。对于一些端口如53、161，一个特定协议的负载会被发送用来提高回应的速率，但是对大多数的端口而言都是发送空的数据包，除非指定了--data、--data-string、--data-length选项。如果返回的报文是ICMP端口不可达，则端口被认为是closed，如果是其他的ICMP不可达错误，则认为是filtered，有回应的报文则认为是open，如果在重传之后还没有回应，则认为是open|filtered，为了区分open和filtered，加上-sV参数。</p>
+<p>-sY</p>
+<p>SCTP INIT扫描。类似于TCP SYN扫描，也是不建立完整的SCTP链接的。SCTP用于SS7/SIGTRAN相关的服务。</p>
+<p>-sN;-sF;-sX</p>
+<p>TCP NULL,TCP FIN,Xmas扫描。NULL不设置任何TCP标志位，FIN设置FIN位，Xmas设置FIN,URG,PSH位。如果收到RST报文，则端口是关闭的，如果没有回应，则端口是open|filtered的，如果是收到ICMP不可达报文则是filtered。这些扫描方式的特点是可以绕过一些非状态的防火墙和包过滤路由器，另一个优势是比SYN扫描更加低调，不过不能太过依赖，多数IDS还是可以发现的。同时并非所有系统都遵循这一标准，像Windows不管端口是open还是closed、filtered都会返回RST包，这样就会把所有端口都标记为closed。但是这对于大多数的基于UNIX的系统还是有效的。不过这种扫描方式无法区分open和filtered</p>
+<p>-sA</p>
+<p>ACK扫描。无法决定是否是open的，它用来发现防火墙的规则是有状态的还是无状态的，以及哪些端口是被过滤的。当端口未被过滤时，无论是open还是closed都返回RST包，当端口被过滤时收不到包或是收到ICMP错误报文。只能用来区分端口是否被过滤。</p>
+<p>-sW</p>
+<p>TCP Window扫描。此扫描类似于ACK扫描，不过可以用来区分端口是打开的还是关闭的。这通过检查返回的RST报文中TCP window字段来区分，在某些系统上，如果端口是打开的，则返回的报文中window字段是正值，若端口是closed的，返回的报文中window字段是0。当然因为只有一小部分系统支持，所以不能过于信任这个方法。</p>
+<p>--scanflags</p>
+<p>定制扫描。通过指定标记位来设置扫描，指定的标记连在一起写，如：URGSYNFIN，顺序无所谓。同时可以设置TCP响应类型，此类型告诉Nmap该如何解释收到的包。默认使用SYN扫描类型。</p>
+<p>-sI</p>
+<p>TCP Idle扫描。对TCP端口进行盲扫描，意味着没有报文从真正的IP地址发出。目标主机将显示扫描来自肉鸡。</p>
+<p>-sO</p>
+<p>IP协议扫描。并非端口扫描，因为轮询的不是端口号而是协议号，确定目标主机上支持哪些IP协议。可以用-p来选择协议号。收到任何协议的响应就标记为open，收到协议不可达的ICMP报文时认为是closed，收到端口不可达的ICMP认为是open，其他ICMP不可达错误认为是filtered，无响应则认为是open|filtered。</p>
+<p>-b</p>
+<p>FTP bounce扫描。代理ftp链接允许用户连接到一台ftp服务器上，然后要求服务器发送文件给第三方主机，这导致ftp服务器对目标主机的端口进行扫描。大部分已经被修复了。参数格式是<code>&lt;username&gt;:&lt;password&gt;@&lt;server&gt;:&lt;port&gt;</code>。可以省略<code>&lt;username&gt;:&lt;password&gt;</code>（默认使用匿名登录）、<code>&lt;port&gt;</code>（默认使用21端口）。</p>
+</blockquote>
+<h3>端口指定和扫描顺序</h3>
+
+<blockquote>
+<p>-p：可以指定端口号，协议号（-sO情况下），eg：-p U:53,T:21-25,80 。甚至是服务名，可以视同通配符eg：-p http*,ftp
+--exclude-ports ：排除端口，如果是IP协议扫描，则表示排除的协议号，如果端口被排除，会在所有扫描阶段都排除，包括主机发现阶段。</p>
+</blockquote>
+<h2 id="service">系统和版本探测</h2>
+
+<p>对于探测到的端口，Nmap试着解析协议的名称，应用程序的名称，版本号，主机名，系统信息等</p>
+<blockquote>
+<p>-sV：版本探测，也可以使用-A选项，开启系统探测、版本探测
+--version-intensity：版本探测强度，数字从1至9,数字越大，越精准，但是速度越慢，默认是7.
+-O：操作系统探测
+--osscan-limit：对于至少有一个open或closed端口的主机进行OS探测。可以节省时间。</p>
+</blockquote>
+<h2 id="script">Nmap脚本引擎</h2>
+
+<p>允许用户写脚本（LUA语言）来自动化一些网络任务。脚本并不是在沙盒中运行，因此可能会损坏系统，所以除非信任，否则不要使用第三方的脚本。脚本位于：/usr/share/nmap/scripts/</p>
+<blockquote>
+<p>-sC 使用默认的脚本集</p>
+<p>--script <filename|category|directory|expression>
+后接的元素的解释顺序：expression、category、filename、directory。可以在脚本名字前加<code>+</code>前缀，表示即使服务没有被监测到，也可以强制运行。
+如果给定的是目录，则Nmap会运行目录下所有以.nse结尾的文件，其他的文件和目录被忽略。
+参数可以使用通配符<code>*</code>，需用引号包含防止被Shell解析。可以嵌入逻辑运算符not、and、or </p>
+<p>--script-help：脚本帮助，以文件名做参数可以查看使用的脚本，以类别做参数可以查看属于此类别的脚本。</p>
+</blockquote>
+<h2 id="performace">时间和性能</h2>
+
+<p>提高扫描时间的方法包括省略不必要的测试，升级Nmap到最新版本，优化时间参数。这些优化时间的选项都接收一个时间参数，默认单位是秒，可以接<code>ms,s,m,h</code>。</p>
+<blockquote>
+<p>--scan-delay <millisecond>：用于Nmap控制针对一个主机发送探测报文的等待时间 
+-T [0-5]：使用相应的扫描模板。模式0和1为了躲避IDS，同时会减慢扫描速度。模式2使用少量带宽和目标主机资源，减慢扫描速度。模式3为默认的，不做任何事情。模式4假设处于一个快速可靠的网络，加快扫描速度。模式5假设处于更快的网络或者愿意为了速度牺牲准确性。一般可以使用-T4。T0,T1,T2速度太慢。</p>
+</blockquote>
+<h2 id="firewall">防火墙/IDS躲避和欺骗</h2>
+
+<blockquote>
+<p>-f：使用分片，在IP报头后将包分成8个字节或更小，因此一个20个字节的TCP头会被分成3个包（8+8+4）。使用两个<code>-f</code>就用16个字节对包进行分片。</p>
+<p>--mtu <MTU>：设置mtu。自定义偏移大小，必须是8的整数倍。</p>
+<p>-D <decoy1,...>：使用诱饵进行扫描，隐藏自身真实IP地址。也可以用ME来表示自身真实的IP，一般将ME放在第六或以后的位置，一些端口扫描检测器就不会发现。如果不使用ME，Nmap就会把自己真实的地址放在随机的位置，可以使用RND来产生一个随机的非保留的IP地址，或者使用RND:<number>来产生<number>个地址。作为诱饵的主机必须处于UP状态，否则会对目标主机造成SYN洪水攻击。</p>
+<p>诱饵可以用于最初的ping扫描，端口扫描，系统探测等，但是不能用于版本探测和TCP连接扫描。</p>
+<p>-S：源地址欺骗。将发送包的IP地址改为其他的地址，但是这样就收不到任何的回包，Nmap不会产生有用的报告。可以结合-e 和 -Pn使用。-e：指定用来接收和发送包的接口。</p>
+<p>--source-port <port>;-g <port>：源端口号欺骗。在指定源端口发送数据包。可以用来欺骗防火墙。无法作用于一些使用操作系统socket的操作，比如DNS请求、TCP connect扫描、版本扫描、脚本扫描，也不作用于OS探测。</p>
+<p>--data <hex-string>：给发送包附加自定义的二进制数据</p>
+<p>--data-string <string>：给发送包附加自定义的数据。用引号包含同时转义特殊字符。</p>
+<p>--data-length：附加指定数量的随机字节。</p>
+<p>--ip-options：指定一些ip选项，有源端路由，记录路由，记录时间戳等。</p>
+<p>--ttl：设置IP TTL区域</p>
+<p>--spoof-mac：指定欺骗mac地址。0表示使用随机mac</p>
+<p>--proxies：通过代理建立链接，以<code>，</code>分隔代理URL，不支持认证，有效的协议是HTTP和SOCK4</p>
+</blockquote>
+<h2 id="output">输出</h2>
+
+<p>有5中输出格式。默认的是交互式输出，Normal类似于交互式不过输出的信息比交互式的要少一点。还有一种主要的是XML格式。另外两种一般用不到。所有的参数都支持类strftime转换，也就是%H,%M,%S……</p>
+<blockquote>
+<p>-oX：输出成XML格式文件，文件名中可以带%H,%M,%S等与时间有关的参数。</p>
+<p>-oN：Normal输出。 </p>
+<p>-v：显示更加详细的信息，可以输出两个<code>v</code>或是在<code>v</code>后加数字。</p>
+<p>-d：调试信息，可以输出两个<code>d</code>，或是在<code>的</code>d`后加数字。</p>
+<p>--reason：显示决定端口和主机状态的包的类型。如果有-d选项，会自动加上</p>
+<p>--packet-trace：包发送和接收的信息</p>
+<p>--iflist：显示接口列表和路由信息。</p>
+<p>--resume：恢复中止的Nmap扫描，后面跟以Normal输出的文件名。</p>
+</blockquote>
+<h2 id='misc'>杂项</h2>
+
+<blockquote>
+<p>-6：使用ipv6进行扫描。</p>
+<p>-A：相当于是一个大杂烩，包含之前的很多扫描选项。但是因为默认集的脚本扫描本认为是有侵入性的，因此不应对没有允许的网络目标使用-A。</p>
+<p>--send-eth：在数据链路层发送；--send-ip：在网络层发送</p>
+<p>--privileged：对于非特权用户来说加上这个选项可以使用一些特权用户才能用的选项，相当于是以特权用户进行操作。这个选项必须放在任何需要特权用户才能使用的选项的前面。当然相对的也有--unprivileged</p>
+</blockquote>
+<p>在运行时，可以进行交互，输入？查看选项</p>
     </div>
   </div>
   <hr class="separator">

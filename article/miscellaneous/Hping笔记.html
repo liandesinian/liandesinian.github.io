@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/miscellaneous/Hping笔记.html" />
+
+    <title>  莲的思念's blog &mdash; Hping笔记
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="Hping是一个对数据包进行操作和传输的命令行工具，它的灵感来源于ping，但是支持很多协议，不仅能发发送ICMP请求，还支持TCP，UDP，RAW-IP等，有traceroute模式等等特点。Hping可以用于很多用途，像是防火墙测试，网络测试，端口扫描，路由跟踪，远程操作系统检测等等。 Hping3不仅兼容Hping2的的命令行，同时还有两个新特性：其一是一个被称为APD的引擎，它能够将简单的字符串形式的包描述翻译成要发送的包的格式，并且反过来也可以。其二就是可以使用Tcl语言的脚本。此举可以使得TCP/IP Hacking变得不那么重要，使用者可以集中精力在感兴趣的协议问题和网络安全上，而不是浪费时间重写底层的代码和调试。 API Man手册 APD API Hping使用Tcl语言作为脚本语言。以root身份登录，输入hping会进入交互模式，可以输入Tcl命令或是嵌入的hping命令进行发送和接收包等的操作。要执行一个hping脚本可以输入hping exec <script> [argument]。进入hping的交互模式后，可以输入如下一些子命令： hping resolve 将主机名解析为对应的IP地址. hping send 发送和hping recv收到的包具有相同格式的包。hping ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">莲的思念's blog</a>
+      </h1>
+      <h3 class="header-text"></h3>
+      <ul class="header-menu list-inline">
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+      <a href="/article/miscellaneous/Hping笔记.html" title="Permalink to Hping笔记">Hping笔记</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-07-13T12:00:00+08:00">2015年07月13日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/miscellaneous.html">miscellaneous</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>Hping是一个对数据包进行操作和传输的命令行工具，它的灵感来源于ping，但是支持很多协议，不仅能发发送ICMP请求，还支持TCP，UDP，RAW-IP等，有traceroute模式等等特点。Hping可以用于很多用途，像是防火墙测试，网络测试，端口扫描，路由跟踪，远程操作系统检测等等。</p>
+<p>Hping3不仅兼容Hping2的的命令行，同时还有两个新特性：其一是一个被称为APD的引擎，它能够将简单的字符串形式的包描述翻译成要发送的包的格式，并且反过来也可以。其二就是可以使用Tcl语言的脚本。此举可以使得TCP/IP Hacking变得不那么重要，使用者可以集中精力在感兴趣的协议问题和网络安全上，而不是浪费时间重写底层的代码和调试。</p>
+<ul>
+<li><a href="#api">API</a></li>
+<li><a href="#man">Man手册</a></li>
+<li><a href="#apd">APD</a></li>
+</ul>
+<h2 id="api">API</h2>
+
+<p>Hping使用Tcl语言作为脚本语言。以root身份登录，输入<code>hping</code>会进入交互模式，可以输入Tcl命令或是嵌入的hping命令进行发送和接收包等的操作。要执行一个hping脚本可以输入<code>hping exec &lt;script&gt; [argument]</code>。进入hping的交互模式后，可以输入如下一些子命令：</p>
+<h3>hping resolve</h3>
+
+<p>将主机名解析为对应的IP地址.</p>
+<h3>hping send</h3>
+
+<p>发送和hping recv收到的包具有相同格式的包。<code>hping send [-nocompile] &lt;package&gt;</code></p>
+<div class="highlight"><pre><span class="x">eg：</span>
+<span class="x">hping3&gt; set target www.hping.org</span>
+<span class="x">hping3&gt; set myaddr [hping outifa </span><span class="p">$</span><span class="nv">target</span><span class="x">]</span>
+<span class="x">192.168.1.101</span>
+<span class="x">hping3&gt; hping send &quot;ip(saddr=</span><span class="p">$</span><span class="nv">myaddr</span><span class="x">,daddr=</span><span class="p">$</span><span class="nv">target</span><span class="x">,ttl=255)+tcp(sport=123,dport=80,flags=s)&quot;</span>
+</pre></div>
+
+
+<p>从例子中看出，在hping中，包是代表这不同层的字符串，如果用户没有明确给出，则hping会自动设置一个合理的值。也可以将其写成脚本：</p>
+<div class="highlight"><pre><span class="x">set target www.hping.org</span>
+<span class="x">set myaddr [hping outifa </span><span class="p">$</span><span class="nv">target</span><span class="x">]</span>
+<span class="x">set syn </span><span class="err">{</span><span class="x">}</span>
+<span class="x">append syn &quot;ip(saddr=</span><span class="p">$</span><span class="nv">myaddr</span><span class="x">,daddr=</span><span class="p">$</span><span class="nv">target</span><span class="x">,ttl=255)&quot;</span>
+<span class="x">append syn &quot;+tcp(sport=123,dport=80,flags=s)&quot;</span>
+<span class="x">hping send </span><span class="p">$</span><span class="nv">syn</span><span class="x"></span>
+
+<span class="x">将其保存成&quot;example.htcl&quot;文件，然后`hping3 exec example.htcl`。</span>
+</pre></div>
+
+
+<p>注：-nocompile 选项可以告诉hping不要编译包，这在发送损坏的包的时候有用。</p>
+<h3>hping sendraw</h3>
+
+<p><code>hping sendraw &lt;data&gt;</code> 发送raw包，用来处理一些APD无法处理的包，比如层2上的包.</p>
+<h3>hping recv</h3>
+
+<p><code>hping recv [-hexdata] &lt;interface&gt; [timeout] [count]</code>.以APD的格式接收数据包。interface表示接收的接口，timeout表示延迟到多少毫秒，也就是等到什么时候才返回，若设成-1则表示一直等待。如果设置了timeout，则count表示接收多少包后就返回，若设为0表示一直等待。默认timeout为-1,count为1。-hexdata表示将收到的数据以十六进制方法表示。</p>
+<h3>hping recvraw</h3>
+
+<p><code>hping recvraw &lt;interface&gt; [timeout] [count]</code>，与hping recv相同，只不过返回的是二进制。</p>
+<h3>hping iflist</h3>
+
+<p>返回接口列表。</p>
+<h3>hping outifa</h3>
+
+<p>返回出口地址，即网关。</p>
+<h3>hping getfield</h3>
+
+<p><code>hping getfield &lt;layer&gt; &lt;field&gt; [skip] &lt;packet&gt;</code>。返回指定层的指定区域的值。若有多个相同的区域，skip跳过指定区域。<strong>注：</strong>hping recv返回的是Tcl列表，默认是由一个元素组成的，因此需要从列表中提取元素。</p>
+<div class="highlight"><pre>hping3.0.0-alpha&gt; set p [hping recv eth0]
+</pre></div>
+
+
+<p>{ip(ihl=5,ver=4,tos=c0,totlen=58,id=62912,fragoff=0,mf=0,df=0,rf=0,ttl=64,proto=1,cksum=e500,saddr=192.168.1.7,daddr=192.168.1.6)+icmp(type=3,code=3,unused=0)+ip(ihl=5,ver=4,tos=00,totlen=30,id=60976,fragoff=0,mf=0,df=1,rf=0,ttl=64,proto=17,cksum=40c9,saddr=192.168.1.6,daddr=192.168.1.7)+udp(sport=33169,dport=10,len=10,cksum=94d6)+data(str=f\0a)}
+    hping3.0.0-alpha&gt; set packet [lindex $p 0]
+ip(ihl=5,ver=4,tos=c0,totlen=58,id=62912,fragoff=0,mf=0,df=0,rf=0,ttl=64,proto=1,cksum=e500,saddr=192.168.1.7,daddr=192.168.1.6)+icmp(type=3,code=3,unused=0)+ip(ihl=5,ver=4,tos=00,totlen=30,id=60976,fragoff=0,mf=0,df=1,rf=0,ttl=64,proto=17,cksum=40c9,saddr=192.168.1.6,daddr=192.168.1.7)+udp(sport=33169,dport=10,len=10,cksum=94d6)+data(str=f\0a)
+    hping3.0.0-alpha&gt; hping getfield ip cksum 1 $packet
+    0x40c9</p>
+<h3>hping delfield</h3>
+
+<p><code>hping delfield &lt;layer&gt; &lt;field&gt; [skip] &lt;packet&gt;</code> 移除指定的区域，对于修改后的包来说，移除检验和区域让hping重新计算。</p>
+<h3>hping checksum</h3>
+
+<p><code>hping checksum &lt;data&gt;</code>对于data计算检验和。</p>
+<p><em>注</em>：{}在Tcl中相当于其他语言中的""，不过其内无任何转义（相当于是强引用）</p>
+<h3>hping hasfield</h3>
+
+<p><code>hping hasfield &lt;layer&gt; &lt;field&gt; [skip] &lt;packet&gt;</code> 如果指定的区域存在则返回1,否则返回0</p>
+<h3>hping setfield</h3>
+
+<p><code>hping setfield &lt;layer&gt; &lt;field&gt; &lt;value&gt; [skip] &lt;packet&gt;</code>。修改指定的区域，返回新的包。对于不存在的区域无法进行修改。</p>
+<h2 id="man">man手册</h2>
+
+<p><code>hping3 [options] &lt;hostname&gt;</code></p>
+<h3>基本选项：</h3>
+
+<div class="highlight"><pre>-c：在发送和接收count个回应包后停止。
+-i：发送每个数据包的间隔，-i X：表示间隔X秒，-i uX：表示间隔X 微妙。默认为1s。
+--flood：尽可能快的发送数据包，而不关心回应
+-I：使用指定的接口
+-V：详细信息
+</pre></div>
+
+
+<h3>协议选择</h3>
+
+<p>默认情况下hping3的协议是TCP，会发送tcp头到目标主机的0号端口，此包的窗口大小是64,没有任何tcp flag。这可以绕过那些会丢弃ICMP的防火墙，同时不含flag到0号端口的tcp包有可能无需登录。</p>
+<div class="highlight"><pre>--rawip：raw ip 模式，在这个模式中，hping3会发送带有跟在--signature或--file数据的IP头
+--icmp：ICMP模式，设置后默认情况下会发送ICMP请求，可以通过--icmptype和--icmpcode改变。
+--udp：UDP模式，默认发送udp到目标主机的0号端口。UDP的选项有--baseport,--destport,--keep。
+--scan：扫描模式，后接要扫描的端口范围。**注：hping扫描后显示的信息会多很多有趣的东西**
+--listen signature：监听模式，等到包含signature的包同时显示从signature结束到包结束的数据。
+</pre></div>
+
+
+<h3>IP相关</h3>
+
+<div class="highlight"><pre>--spoof hostname：使用伪造的IP源地址
+--rand-source：随机IP源地址
+--rand-dest：随机目的地址。此时需设置-I指定出口
+-t：设置ttl
+-r：显示id增量而不是id
+--morefrag，--dontfrag：设置更多分片或不分片flag
+</pre></div>
+
+
+<h3>ICMP相关</h3>
+
+<div class="highlight"><pre>--icmptype，--icmpcode：icmp类型和代码
+--icmp-iphlen，--icmp-iplen，--icmp-ipproto，--icmp-ipid：被包含进ICMP包的IP包的头长度，包长度，协议和id
+</pre></div>
+
+
+<h3>TCP相关</h3>
+
+<div class="highlight"><pre>--baseport port：从一个基础的端口号码开始，每发送一个包就增加号码。如果不想让端口号增加，可以使用--keep
+--destport [+][+]port：默认目的端口是0，如果设置一个`+`，则每收到一个包目的端口号增加，若设置两个`+`，则每发送一个包端口号增加
+--win：设置窗口大小
+--tcpseq,--tcpack：设置tcp seq和ack number
+-F，-S，-R，-P，-A，-U，-X，-Y：设置FIN、SYN、RST、PUSH、ACK、URG、Xmas、Ymas flag
+</pre></div>
+
+
+<h3>通用选项</h3>
+
+<div class="highlight"><pre>--data size：设置数据大小
+--file filename：用文件内容填充数据
+--dump：以十六进制的形式输出收到的包
+--print：以可打印的形式输出收到的包
+--sign signature：在包的开头填充signature。
+--safe：如果在文件传输的过程中丢包会重新发送
+--traceroute：traceroute模式
+</pre></div>
+
+
+<h2 id="apd">APD</h2>
+
+<p>APD是描述TCP/IP包的一种格式：</p>
+<div class="highlight"><pre>layer_type{field1=value1,field2=value2...}
+更多的层用`+`连接。
+</pre></div>
+
+
+<p>具体有哪些field可见：/usr/doc/hping3/APD.txt</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

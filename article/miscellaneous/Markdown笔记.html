@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="原文地址 概述 Markdown是一种书写的格式，它的目标是称为一种适合网络的书写语言。Markdown兼容HTML，不在markdown范围内的标签都可以直接在html里面撰写，直接加标签即可，除了<div>,<p>,<table>,<pre>需要在前后加上空行与其他段落进行区分，同时它们的开始和结尾标签不能用制表符或空格来缩进： 这是一个普通段落 <table> <tr> <td>foo</td> </tr> </table> 这是一个普通段落 在html区块内的markdown语法不会被处理。但是HTML的区段（行内）标签如 <span> , <cite>, <del>可以在Markdown的段落、列表或标题里随意使用，也可以直接用HTML标签。Markdown语法在区段（行内）标签间是有效的。 在 HTML 文件中，有两个字符需要特殊处理： < 和 & 。 < 符号用于起始标签，& 符号则用于标记 HTML 实体，如果你只是想要显示这些字符的原型，你必须要使用实体的形式，像是 ...">
+    <meta name="description" content="原文地址 Markdown是一种书写的格式，它的目标是成为一种适合网络的书写语言。 Markdown兼容HTML，不在markdown范围内的标签都可以直接在html里面撰写，直接加标签即可。 除了<div>,<p>,<table>,<pre>需要在前后加上空行与其他段落进行区分，同时它们的开始和结尾标签不能用制表符或空格来缩进： 这是一个普通段落 foo 这是一个普通段落 在html区块内的markdown语法不会被处理。但是HTML的区段（行内）标签如 <span> , <cite>, <del>可以在Markdown的段落、列表或标题里随意使用，也可以直接用HTML标签。Markdown语法在区段（行内）标签间是有效的。 在 HTML 文件中，有两个字符需要特殊处理： < 和 & 。 < 符号用于起始标签，& 符号则用于标记 HTML 实体，如果你只是想要显示这些字符的原型，你必须要使用实体的形式，像是 &lt; 和 &amp;。Markdown会自动转换html的实体。Markdown让你可以自然地书写字符，需要转换的由它来处理好了。如果你使用的 ...">
   <meta name="tags" contents="">
 </head>
 
@@ -54,27 +54,40 @@
     </ul>
     <div class="post-content">
       <p><strong><a href="http://wowubuntu.com/markdown/">原文地址</a></strong></p>
-<h2>概述</h2>
-<p>Markdown是一种书写的格式，它的目标是称为一种适合网络的<strong>书写</strong>语言。Markdown兼容HTML，不在markdown范围内的标签都可以直接在html里面撰写，直接加标签即可，除了<code>&lt;div&gt;</code>,<code>&lt;p&gt;</code>,<code>&lt;table&gt;</code>,<code>&lt;pre&gt;</code>需要在前后加上空行与其他段落进行区分，同时它们的开始和结尾标签不能用制表符或空格来缩进：</p>
-<div class="highlight"><pre>这是一个普通段落
-
-<span class="nt">&lt;table&gt;</span>
-  <span class="nt">&lt;tr&gt;</span>
-    <span class="nt">&lt;td&gt;</span>foo<span class="nt">&lt;/td&gt;</span>
-  <span class="nt">&lt;/tr&gt;</span>
-<span class="nt">&lt;/table&gt;</span>
-
-这是一个普通段落
-</pre></div>
-
-
-<p>在html区块内的markdown语法不会被处理。但是HTML的区段（行内）标签如 <code>&lt;span&gt;</code> , <code>&lt;cite&gt;</code>, <code>&lt;del&gt;</code>可以在Markdown的段落、列表或标题里随意使用，也可以直接用HTML标签。Markdown语法在区段（行内）标签间是有效的。</p>
+<p>Markdown是一种书写的格式，它的目标是成为一种适合网络的<strong>书写</strong>语言。</p>
+<p>Markdown兼容HTML，不在markdown范围内的标签都可以直接在html里面撰写，直接加标签即可。</p>
+<p>除了<code>&lt;div&gt;,&lt;p&gt;,&lt;table&gt;,&lt;pre&gt;</code>需要在前后加上空行与其他段落进行区分，同时它们的开始和结尾标签不能用制表符或空格来缩进：</p>
+<blockquote>
+<p>这是一个普通段落</p>
+<p><table>
+  <tr>
+    <td>foo</td>
+  </tr>
+</table></p>
+<p>这是一个普通段落</p>
+</blockquote>
+<p>在html区块内的markdown语法不会被处理。但是HTML的区段（行内）标签如 <code>&lt;span&gt; , &lt;cite&gt;, &lt;del&gt;</code>可以在Markdown的段落、列表或标题里随意使用，也可以直接用HTML标签。Markdown语法在区段（行内）标签间是有效的。</p>
 <p>在 HTML 文件中，有两个字符需要特殊处理： <code>&lt;</code> 和 <code>&amp;</code> 。 <code>&lt;</code> 符号用于起始标签，<code>&amp;</code> 符号则用于标记 HTML 实体，如果你只是想要显示这些字符的原型，你必须要使用实体的形式，像是 <code>&amp;lt;</code> 和 <code>&amp;amp;</code>。Markdown会自动转换html的实体。Markdown让你可以自然地书写字符，需要转换的由它来处理好了。如果你使用的 <code>&amp;</code> 字符是 HTML 字符实体的一部分，它会保留原状，否则它会被转换成 <code>&amp;amp</code>;。同样，如果 <code>&lt;</code> 作为标签的一部分不会转换，否则会转换成 <code>&amp;lt;</code>。不论是行内还是区块， <code>&lt;</code> 和 <code>&amp;</code> 两个符号都<em>一定</em>会被转换成 HTML 实体。</p>
-<h2>段落和换行</h2>
+<ul>
+<li><a href="#para">段落和换行</a></li>
+<li><a href="#title">标题</a></li>
+<li><a href="#ref">区块引用</a></li>
+<li><a href="#list">列表</a></li>
+<li><a href="#code">代码</a></li>
+<li><a href="#split">分割线</a></li>
+<li><a href="#link">链接</a></li>
+<li><a href="#em">强调</a></li>
+<li><a href="#pic">图片</a></li>
+<li><a href="#other">其他</a></li>
+</ul>
+<h2 id="para">段落和换行</h2>
+
 <p>一个markdown段落的前后要有一个以上的空行，普通段落不允许用缩进。同时一个markdown段落是由一个或多个连续的文本行组成的，因此一个Markdown段落允许有多行，但是其并不会将每一个换行符都转换为 <code>&lt;br /&gt;</code>，因此即使在一个段落中有多行，显示的时候仍是在一行上。如果要<em>确实</em>要强制 Markdown 插入 <code>&lt;br /&gt;</code>，就在插入处输入两个以上的空格。</p>
-<h2>标题</h2>
+<h2 id="title">标题</h2>
+
 <p>在行首插入1到6个#，对应标题1到标题6，行尾无所谓，可以闭合，也可以不闭合</p>
-<h2>区块引用</h2>
+<h2 id="ref">区块引用</h2>
+
 <p>在行首添加 <code>&gt;</code></p>
 <div class="highlight"><pre>&gt; This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
 &gt; consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
@@ -86,7 +99,8 @@
 
 
 <p>当然也可以偷懒只在每一个段落的开头添加<code>&gt;</code>。可以嵌套，只要加上不同数量的<code>&gt;</code>即可。</p>
-<h2>列表</h2>
+<h2 id="list">列表</h2>
+
 <p>Markdown支持有序列表和无序力表。无序列表使用<code>*</code>,<code>+</code>,<code>-</code>作为列表标记。有序列表使用数字作为标记。列表标记放在最左边，标记后面一定要跟上一个以上的空格或制表符：</p>
 <div class="highlight"><pre>* This is first
 * This is second
@@ -94,12 +108,16 @@
 
 
 <p>当然，列表项目也支持多段落，但是每个项目下的每个段落都必须用4个空格或一个制表符缩进。如果项目内放进区块引用，<code>&gt;</code>就需要缩进。如果项目内含有代码区块，该代码区块就需要缩进两次，即8个空格或2个制表符。</p>
-<h2>代码区块</h2>
-<p>代码区块需要缩进4个空格或1个制表符，显示时这个缩进会被移除并转换为<code>&lt;pre&gt;&lt;code&gt;</code></p>
-<h2>分割线</h2>
+<h2 id="code">代码</h2>
+
+<p>代码区块需要缩进4个空格或1个制表符，显示时这个缩进会被移除并转换为<code>&lt;pre&gt;&lt;code&gt;</code>。
+如果要标记一小段代码，可以用反引号（`）包起来</p>
+<h2 id="split">分割线</h2>
+
 <p>可以在一行内输入三个以上的<code>*</code>或<code>-</code>，可以在之间加入空格，不能有其他东西。</p>
 <hr />
-<h2>链接</h2>
+<h2 id="link">链接</h2>
+
 <p>Markdown支持两种格式的链接：行内式和参考式。</p>
 <div class="highlight"><pre>行内式：
 This is [example](http://example.com)
@@ -111,11 +129,11 @@ This is [example][id]
 </pre></div>
 
 
-<h2>强调</h2>
+<h2 id="em">强调</h2>
+
 <p>Markdown使用<code>*</code>,<code>_</code>作为标记，被其包围的字词被转换为<code>&lt;em&gt;</code>，被两个<code>*</code>或<code>_</code>包围的会被转换为<code>&lt;strong&gt;</code>。</p>
-<h2>代码</h2>
-<p>如果要标记一小段代码，可以用反引号（`）包起来</p>
-<h2>图片</h2>
+<h2 id="pic">图片</h2>
+
 <p>Markdown使用和链接很相似的语法来标记图片，也分为行内式和参考式。</p>
 <div class="highlight"><pre>行内式：
 ![example](/path/to/pic)
@@ -125,7 +143,8 @@ This is [example][id]
 </pre></div>
 
 
-<h2>其他</h2>
+<h2 id="other">其他</h2>
+
 <p>反斜杠<code>\</code>被用来转义</p>
 <div class="highlight"><pre>\   反斜线
 `   反引号
