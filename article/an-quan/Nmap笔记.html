@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="canonical" href="/article/an-quan/Nmap笔记.html" />
 
-    <title>  莲的思念's blog &mdash; Nmap笔记
+    <title>  Avalon &mdash; Nmap笔记
 </title>
 
 
@@ -31,17 +31,22 @@
   <div class="container">
     <div class="header-inner">
       <h1 class="header-name">
-        <a class="nodec" href="/">莲的思念's blog</a>
+        <a class="nodec" href="/">Avalon</a>
       </h1>
-      <h3 class="header-text"></h3>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
       <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
       </ul>
     </div>
   </div>
 </header> <!-- /.header -->  <div class="container">
   <div class="post full-post">
     <h1 class="post-title">
-      <a href="/article/an-quan/Nmap笔记.html" title="Permalink to Nmap笔记">Nmap笔记</a>
+		<a href="/article/an-quan/Nmap笔记.html" title="Nmap笔记">Nmap笔记</a>
     </h1>
     <ul class="list-inline">
       <li class="post-date">
@@ -154,6 +159,23 @@
 如果给定的是目录，则Nmap会运行目录下所有以.nse结尾的文件，其他的文件和目录被忽略。
 参数可以使用通配符<code>*</code>，需用引号包含防止被Shell解析。可以嵌入逻辑运算符not、and、or </p>
 <p>--script-help：脚本帮助，以文件名做参数可以查看使用的脚本，以类别做参数可以查看属于此类别的脚本。</p>
+</blockquote>
+<p>nmap脚本主要分为以下几类：</p>
+<blockquote>
+<p>auth：负责处理（或绕开）证书的脚本
+broadcast：在局域网内探查更多服务开启状况。
+brute：提供暴力破解方式，如http，oracle，snmp等。
+default：提供基本扫描能力。
+discovery：对网络提供更多的信息，如SMB枚举，SNMP查询等。
+dos：进行拒绝服务攻击。
+exploit：利用已知的漏洞入侵系统。
+external：利用第三方的资源或数据库，例如进行whois查询。
+fuzzer：模糊测试的脚本，发送异常的包到目标机，探测出潜在漏洞。
+intrusive：入侵性脚本，此类脚本可能引发对方的IDS/IPS的记录和屏蔽。
+malware：探测目标机是否感染了病毒、开启了后门等信息。
+safe：与instrusive相反，安全性脚本
+version：增强服务和版本扫描的脚本
+vuln：检查目标机是否有常见的漏洞。</p>
 </blockquote>
 <h2 id="performace">时间和性能</h2>
 

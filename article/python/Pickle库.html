@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/python/Pickle库.html" />
+
+    <title>  Avalon &mdash; Pickle库
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="注：根据官网上所说的，pickle模块因为存在安全问题，可以构造恶意的数据结构，因此不要对不信任的和没有认证的数据进行反序列化。 概述 Pickle模块能够序列化和反序列化Python对象结构。pickle模块还有一个和C结合的cPickle模块，cPickle模块速度更快，但是它的Pickler和Unpickler只是函数而不是类，这是两者的区别。 Pickle序列化后的数据格式是Python独有的，这意味着其他非Python的程序可能无法反序列化这一数据。Pickle的序列化有三种方式，方式0是传统的ASCII协议并且兼容早前的版本，方式1是兼容早前的版本的老的二进制格式，方式2是二进制格式，对于新式类提供有效地序列化，默认是方式0, 最好用方式2。 pickle模块函数 pickle.dump(obj, file, [protocol]) 序列化obj对象并将其写入文件file中，如果没有指定protocol，则使用方式0。file必须含有接收一个字符串参数的write()方法, 可以是文件对象，StringIO对象和其他自定义的对象。 pickle.load(file) 从file中读取数据流格式并将其反序列化, 同样和上面一样，file含有read()方法。 picle.dumps(obj, [protocol]) 序列化obj对象。 pickle.loads(string) 反序列化 pickle模块的类 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/python/Pickle库.html" title="Pickle库">Pickle库</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-28T00:00:00+08:00">2015年10月28日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/python.html">Python</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p><strong>注：根据官网上所说的，pickle模块因为存在安全问题，可以构造恶意的数据结构，因此不要对不信任的和没有认证的数据进行反序列化。</strong></p>
+<h1> 概述 </h1>
+
+<p>Pickle模块能够序列化和反序列化Python对象结构。pickle模块还有一个和C结合的cPickle模块，cPickle模块速度更快，但是它的Pickler和Unpickler只是函数而不是类，这是两者的区别。</p>
+<p>Pickle序列化后的数据格式是Python独有的，这意味着其他非Python的程序可能无法反序列化这一数据。Pickle的序列化有三种方式，方式0是传统的ASCII协议并且兼容早前的版本，方式1是兼容早前的版本的老的二进制格式，方式2是二进制格式，对于新式类提供有效地序列化，默认是方式0, 最好用方式2。</p>
+<h1> pickle模块函数 </h1>
+
+<p>pickle.dump(obj, file, [protocol])</p>
+<div class="highlight"><pre>序列化obj对象并将其写入文件file中，如果没有指定protocol，则使用方式0。file必须含有接收一个字符串参数的write()方法, 可以是文件对象，StringIO对象和其他自定义的对象。
+</pre></div>
+
+
+<p>pickle.load(file)</p>
+<div class="highlight"><pre>从file中读取数据流格式并将其反序列化, 同样和上面一样，file含有read()方法。
+</pre></div>
+
+
+<p>picle.dumps(obj, [protocol])</p>
+<div class="highlight"><pre>序列化obj对象。
+</pre></div>
+
+
+<p>pickle.loads(string)</p>
+<div class="highlight"><pre>反序列化
+</pre></div>
+
+
+<h1> pickle模块的类 </h1>
+
+<p>在cPickle中是两个函数。。</p>
+<p>class pickle.Pickler(file, [protocol])</p>
+<div class="highlight"><pre>生成一个Pickler对象，用于将序列化后的数据流写入文件中。
+</pre></div>
+
+
+<h3> dump(obj) </h3>
+
+<p>class pickle.Unpickler(file)</p>
+<h3> load() </h3>
+
+<h1> 可以序列化的对象 </h1>
+
+<ul>
+<li>None, True, False</li>
+<li>数字</li>
+<li>字符串（str和unicode）</li>
+<li>元组、列表、集合和只含有可序列化对象的字典</li>
+<li>函数</li>
+<li>类和对象(不将代码和数据一起放进去）</li>
+<li>实例（序列化实例的时候把代码一起放进去了）</li>
+</ul>
+<h1>Python反序列化带来的问题</h1>
+
+<p><a href="http://drops.wooyun.org/papers/66">原文地址</a> </p>
+<p>文章中说到pickle序列化时把实例的code代码一起序列化进去了,如果接收端没有做有效的检查的话，就可以通过定义一个带__reduce__方法的类，在反序列化的时候就会自动执行代码，就可以做到命令注入。</p>
+<p>查阅官方文档的话还可以发现很多类似的情况。例如__getstate__方法可以通过返回的字典的值覆盖实例的__dict__，这样就可以将原本__dict__中的key赋予不同的value，达到注入。在反序列化的时候，像__getattribute__、<strong>getattr</strong>、__setattr__也会被实例调用。而__reduce__是在反序列化的时候被调用的，返回的要么是字符串要么是2到5个元素的元组（多余的会被省略），如果是元组的话就会将它们重构，如果有callable对象就会调用.</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

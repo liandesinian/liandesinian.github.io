@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/miscellaneous/我是如何翻墙的.html" />
+
+    <title>  Avalon &mdash; 我是如何翻墙的
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="因为有天朝的GFW的阻拦，要想访问国外的优秀网站必须得翻墙。之前我尝试过GoAgent，一开始的时候，GoAgent还是很好用的，而且又是开源的软件，对我等来说是一大福利，还记得当初成功翻墙出去的时候的兴奋，豁然开朗，那是自由的感觉。在此向开源致敬，向自由致敬！ 后来因为国内的封锁进一步加强，GoAgent频繁更新，慢慢地也不如当初那么好用了。于是我又尝试别的方法。我听说过"自由门"，但是"自由门"好像没有Linux的版本，我也没有用。之后我试着用Tor网络。Tor让我了解到了不一样的网络，更加深层次的东西。当然Tor也可以用来翻墙。具体的内容可以自己百度。。。 在这之后我又了解到了shadowsocks，通过shadowsocks翻墙好像是前两年的热潮。通过shadowsock翻墙需要shadowsock客户端、一台海外VPS、Chrome（SwitchProxy）或Firefox（FoxyProxy）。 VPS VPS就是虚拟专用服务器，相当于是在物理服务器上虚拟出多个虚拟服务器，每个服务器都有各自的CPU、内存、硬盘等。海外的VPS一般都是需要付费的。在网上搜索后发现"搬瓦工"的性价比很高，同时支持支付宝，购买的流程很简单，网上都有。购买之后进入其配置界面对其进行配置，可以发现在其自带ShadowSocks的安装 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/miscellaneous/我是如何翻墙的.html" title="我是如何翻墙的">我是如何翻墙的</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-24T00:00:00+08:00">2015年10月24日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/miscellaneous.html">miscellaneous</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>因为有天朝的GFW的阻拦，要想访问国外的优秀网站必须得翻墙。之前我尝试过GoAgent，一开始的时候，GoAgent还是很好用的，而且又是开源的软件，对我等来说是一大福利，还记得当初成功翻墙出去的时候的兴奋，豁然开朗，那是自由的感觉。在此向开源致敬，向自由致敬！</p>
+<p>后来因为国内的封锁进一步加强，GoAgent频繁更新，慢慢地也不如当初那么好用了。于是我又尝试别的方法。我听说过"自由门"，但是"自由门"好像没有Linux的版本，我也没有用。之后我试着用Tor网络。Tor让我了解到了不一样的网络，更加深层次的东西。当然Tor也可以用来翻墙。具体的内容可以自己百度。。。</p>
+<p>在这之后我又了解到了shadowsocks，通过shadowsocks翻墙好像是前两年的热潮。通过shadowsock翻墙需要shadowsock客户端、一台海外VPS、Chrome（SwitchProxy）或Firefox（FoxyProxy）。</p>
+<h2> VPS </h2>
+
+<p>VPS就是虚拟专用服务器，相当于是在物理服务器上虚拟出多个虚拟服务器，每个服务器都有各自的CPU、内存、硬盘等。海外的VPS一般都是需要付费的。在网上搜索后发现"搬瓦工"的性价比很高，同时支持支付宝，购买的流程很简单，网上都有。购买之后进入其配置界面对其进行配置，可以发现在其自带ShadowSocks的安装，可以一键进行安装。安装好之后就在VPS上有了ShadowSocks服务。也可以在github上直接搜索Shadowsocks</p>
+<h2> ShadowSocks客户端 </h2>
+
+<p>Github上有Window版本、安卓版本的，Linux的话可以通过<code>pip install shadowsocks</code>安装。之后对其进行简单的配置就行了。打开本地的ShadowSocks客户端可以输入<code>sslocal</code>查看帮助。</p>
+<h2> 浏览器配置 </h2>
+
+<p>之后只要配置一下浏览器，使用手动代理设置，设置为127.0.0.1本地地址，ss客户端的本地端口号就行。Chrome浏览器可用SwitchProxy，Firefox可用FoxyProxy进行智能上网。</p>
+<h2> 翻墙本质 </h2>
+
+<p>我认为GFW就是在出口处设置的一道过滤防火墙，对于直接访问被过滤网站的流量会进行阻拦。举个例子来说，假设DNS解析出来的Google的IP是X.X.X.X, 那么如果直接去连接这个IP，那么在经过GFW时这个流量就会被拦截下来，无法穿过去，也就无法访问Google。而这时为了能翻过GFW，就需要先连接到一个不被阻拦的IP，然后通过这个IP转发连接Google的请求，之后再将响应传回来, 这就是代理。</p>
+<p>这种翻墙的方式就是浏览器将请求发送给位于本地的ShadowSocks客户端，然后本地的SS客户端将请求发送给位于海外VPS的ShadowSocks服务端，然后服务端再将请求转发给目标网站。</p>
+<p>最本质的原理是ssh的端口转发机制：<a href="http://www.ibm.com/developerworks/cn/linux/l-cn-sshforward/index.html">地址</a></p>
+<p>我的理解就是走隧道，将其他协议的流量（比如说HTTP）在本地的SSH端口处封装一个SSH头，将其伪装成SSH流量，通过只允许SSH流量通过的隧道，等到了对端时再将SSH解除，这样就实现了穿过防火墙的功能。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/XMLHttpRequest的跨域资源访问共享.html" />
+
+    <title>  Avalon &mdash; XMLHttpRequest的跨域资源访问共享
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="原文地址 XMLHttpRequest严格遵守同源策略，非同源不可请求，但是实践中经常需要进行跨域请求，于是出现了JSONP的解决方法，但是这种方法存在一定的缺陷：1、只能进行GET请求；2、缺乏有效的错误捕获机制。因此提出了CORS模型，试图保证跨域请求的安全性。 浏览器在进行请求时会判断请求的合法性，验证是通过服务器的返回头来进行的，这时就涉及到了具体的请求类型，所以在标准中定义了简单跨域请求。简单跨域请求就是满足以下条件的请求： 请求方法为GET或POST 请求方法中没有设置请求头（Accept, Accept-Language, Content-Language, Content-Type除外） 如果设置了Content-Type头，其值为application/x-www-form-urlencoded，multipart/form-data或text/plain 验证简单跨域请求与非简单跨域请求合法性的区别在于，验证非简单跨域请求时，浏览器向服务器发送一个OPTIONS方法的预检请求来加以判断，如果预检失败，实际请求将被丢弃。而简单跨域请求浏览器会正常发送请求，再对返回头加以判断合法性，若检查失败，浏览器将会阻止脚本对返回内容的访问。 简单跨域请求并不会发送以下头部，而预检请求会发送以下HTTP头： Origin：普通的HTTP请求也会有，在CORS中专门作为Origin信息供后端比对 Access-Control-Request-Method：接下来请求的方法，入PUT、Delete等 Access-Control-Request-Headers：自定义的头部，所有用setRequestHeader方法设置的头部都会以逗号分割的形式包含在其中 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/XMLHttpRequest的跨域资源访问共享.html" title="XMLHttpRequest的跨域资源访问共享">XMLHttpRequest的跨域资源访问共享</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-31T00:00:00+08:00">2015年10月31日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p><a href="http://drops.wooyun.org/tips/188">原文地址</a></p>
+<p>XMLHttpRequest严格遵守同源策略，非同源不可请求，但是实践中经常需要进行跨域请求，于是出现了JSONP的解决方法，但是这种方法存在一定的缺陷：1、只能进行GET请求；2、缺乏有效的错误捕获机制。因此提出了CORS模型，试图保证跨域请求的安全性。</p>
+<p>浏览器在进行请求时会判断请求的合法性，验证是通过服务器的返回头来进行的，这时就涉及到了具体的请求类型，所以在标准中定义了简单跨域请求。简单跨域请求就是满足以下条件的请求：</p>
+<ul>
+<li>请求方法为GET或POST</li>
+<li>请求方法中没有设置请求头（Accept,  Accept-Language,  Content-Language,  Content-Type除外）</li>
+<li>如果设置了Content-Type头，其值为application/x-www-form-urlencoded，multipart/form-data或text/plain</li>
+</ul>
+<p>验证简单跨域请求与非简单跨域请求合法性的区别在于，验证非简单跨域请求时，浏览器向服务器发送一个OPTIONS方法的预检请求来加以判断，如果预检失败，实际请求将被丢弃。而简单跨域请求浏览器会正常发送请求，再对返回头加以判断合法性，若检查失败，浏览器将会阻止脚本对返回内容的访问。</p>
+<p>简单跨域请求并不会发送以下头部，而预检请求会发送以下HTTP头：</p>
+<div class="highlight"><pre>Origin：普通的HTTP请求也会有，在CORS中专门作为Origin信息供后端比对
+Access-Control-Request-Method：接下来请求的方法，入PUT、Delete等
+Access-Control-Request-Headers：自定义的头部，所有用setRequestHeader方法设置的头部都会以逗号分割的形式包含在其中。
+</pre></div>
+
+
+<p>其他头，例如实际请求的头部，Cookie头等都不会被包含入预检请求中。</p>
+<h2> 返回的HTTP头 </h2>
+
+<p>浏览器通过返回的这些HTTP头来判断请求是否合法。预检请求通过不代表请求一定会成功，如果预检请求时服务器返回的HTTP头使浏览器判断请求合法，从而发出了实际请求，但是实际请求的返回头中含有的访问控制头显示请求不合法时，浏览器仍会判定请求不合法，从而使脚本隐藏返回的细节。</p>
+<div class="highlight"><pre>Access-Control-Allow-Origin：允许跨域访问的域，可以是一个域的列表，也可以是通配符&#39;*&#39;。Origin规则只对域名有些，不会对子目录有效，不同域名要分开设置。
+Access-Control-Allow-Credentials：是否允许请求带有验证信息
+Access-Control-Expose-Headers：允许脚本访问的返回头，请求成功后，脚本可以在XMLHttpReuqest中访问这些头的信息。
+Access-Control-Max-Age：缓存此次请求的秒数，在这个时间范围内，所有同类型的请求都将不再发送预检请求而是直接使用此次返回的头作为判断依据，大幅优化请求次数。
+Access-Control-Allow-Methods：允许使用的请求方法
+Access-Control-Allow-Headers：允许自定义的头部
+</pre></div>
+
+
+<p>无论是预检请求还是实际请求，如果在Access-Control-Allow-Origin、Access-Control-Allow-Credentials、Access-Control-Allow-Methods、Access-Control-Allow-Headers的检查失败，就会视为请求失败。</p>
+<h2> Credentials </h2>
+
+<p>在跨域请求中，默认情况下，HTTP Authentication信息，Cookie头以及用户的SSL证书无论在预检请求中还是实际请求中都不会被发送。但是通过设置XHR的credentials为true，就会启用认证信息机制。虽然简单请求还是不需要发送预检请求，但是此时判断请求是否成功还要额外判断Access-Control-Allow-Credentials，若为false，则失败。此时Access-Control-Allow-Origin不能为通配符，若是通配符仍将认为请求失败。即使是失败的请求，若有Set-Cookie，浏览器还是照常设置Cookie</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

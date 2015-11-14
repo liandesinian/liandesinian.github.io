@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/JSON和JSON Hijacking.html" />
+
+    <title>  Avalon &mdash; JSON和JSON Hijacking
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="什么是JSON JSON是JavaScript的对象表示法，它是一种轻量级的文本数据交换格式，它独立于语言和平台。虽然使用JS的语法的描述数据对象，但是JSON解析器和JSON库支持很多语言。JSON是纯文本，JSON有层级结构，它可以通过JavaScript进行解析，JSON数据可以通过AJAX进行传输。对于AJAX程序来说，JSON比XML更快更易使用。 JSON语法是JavaScipt的子集，因此语法规则很简单： 数据在名/值对中 名/值对由逗号隔开 花括号表示对象 方括号表示数组 可以通过eval函数将JSON数据转换成JavaScript对象。JSON.stringify(json对象)：将JSON对象转换成字符串的形式。JSON.parse(str)：从字符串中解析出JSON对象。 JSON HiJacking 原文地址 JSON Hijacking也成为JSON劫持，就是将原本应该传给用户的JSON数据劫持了，传给攻击者。 要完成JSON劫持需要有几个条件： 受攻击的网站的URL返回一个JSON对象或者数组，并且返回的数据是敏感数据。 受攻击的网站支持GET请求。 受害人的浏览器没有禁用JavaScript。 受害人浏览了钓鱼/恶意网站，并且受害人在受攻击的网站中，保存在cookies中的身份验证信息尚未清除。 受攻击的站点没有做相关的防御措施。 攻击流程 进行JSON劫持的第一步是攻击者要确定攻击的网站。攻击者常常浏览网站的脚本来寻找漏洞进行攻击，一旦确定网站存在JSON劫持漏洞 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/JSON和JSON Hijacking.html" title="JSON和JSON Hijacking">JSON和JSON Hijacking</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-28T00:00:00+08:00">2015年10月28日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <h1> 什么是JSON </h1>
+
+<p>JSON是JavaScript的对象表示法，它是一种轻量级的文本数据交换格式，它独立于语言和平台。虽然使用JS的语法的描述数据对象，但是JSON解析器和JSON库支持很多语言。JSON是纯文本，JSON有层级结构，它可以通过JavaScript进行解析，JSON数据可以通过AJAX进行传输。对于AJAX程序来说，JSON比XML更快更易使用。</p>
+<p>JSON语法是JavaScipt的子集，因此语法规则很简单：</p>
+<ul>
+<li>数据在名/值对中</li>
+<li>名/值对由逗号隔开</li>
+<li>花括号表示对象</li>
+<li>方括号表示数组</li>
+</ul>
+<p>可以通过eval函数将JSON数据转换成JavaScript对象。JSON.stringify(json对象)：将JSON对象转换成字符串的形式。JSON.parse(str)：从字符串中解析出JSON对象。</p>
+<h1> JSON HiJacking </h1>
+
+<p><a href="http://shiyousan.com/post/635445288414621221">原文地址</a></p>
+<p>JSON Hijacking也成为JSON劫持，就是将原本应该传给用户的JSON数据劫持了，传给攻击者。</p>
+<p>要完成JSON劫持需要有几个条件：</p>
+<ol>
+<li>受攻击的网站的URL返回一个JSON对象或者数组，并且返回的数据是敏感数据。</li>
+<li>受攻击的网站支持GET请求。</li>
+<li>受害人的浏览器没有禁用JavaScript。</li>
+<li>受害人浏览了钓鱼/恶意网站，并且受害人在受攻击的网站中，保存在cookies中的身份验证信息尚未清除。</li>
+<li>受攻击的站点没有做相关的防御措施。</li>
+</ol>
+<h2> 攻击流程 </h2>
+
+<p>进行JSON劫持的第一步是攻击者要确定攻击的网站。攻击者常常浏览网站的脚本来寻找漏洞进行攻击，一旦确定网站存在JSON劫持漏洞，即某个JSON服务或者接口返回有价值的敏感的JSON数组数据，那么攻击者就会针对这个网站进行JSON劫持攻击。</p>
+<p>之后在确定了攻击网站后，攻击者引诱受害人点击恶意网站。一旦受害人点击恶意链接进入了恶意网站，恶意网站就会向受攻击网站发送一个GET请求：<code>&lt;script src="url"&gt;&lt;/script&gt;</code> 就像上面所说的条件一样，如果受害人之前进入此受攻击的网站的cookies未清除，则GET请求会自动带上此cookies，伪装成合法的用户，受攻击网站就会将敏感的JSON数据发送给恶意网站。这其实也是一种CSRF攻击。受攻击网站返回的数据是JSON数组或者JSON对象，一般是JSON数组，如果是JSON对象，需加括号。因为如果script标签指向的是一个含有JSON数组的文档，这个标签就会认为是有效的JavaScript标签，并且数组会生效。</p>
+<p>然后攻击者就将响应到的数据发送到自身的服务器的数据库中，这里就需要使用到JavaScript的方法覆盖，将响应给恶意网站的JSON数组或对象进行构造函数的替换。当JSON数据返回给恶意网站时会调用构造函数，正是利用这一点将JSON数据劫持发送给攻击者。</p>
+<h2> 防御方法 </h2>
+
+<p>从受攻击的网站方面来说，可以增加referer的来源限制；加入token，在发送请求的时候必须把token一起发送过去。敏感数据的请求入口最好限制成只能POST请求。</p>
+<p>从用户方面来说要增强防范意识，不要轻易点击陌生链接。</p>
+<h1> 另一种JSON hijacking </h1>
+
+<p><a href="http://drops.wooyun.org/papers/42">原文地址</a></p>
+<p>在网上查找资料的时候发现有两种JSON劫持（可能是我没有理解），一种是上面所说的通过覆盖JavaScript构造函数的方法，还有一种是通过JSONP的方法。</p>
+<h1> 什么是JSONP </h1>
+
+<p>AJAX依靠JSON来交换数据，依靠JSONP来跨域。JSON和JSONP不是同一样东西，JSON是一种数据交换格式，而JSONP是一种非官方的跨域数据交互协议。一个是描述信息的方法，一个是传递信息的方法。</p>
+<p>众所周知，AJAX直接请求普通文件存在同源策略的限制（Access-Control-Allow-Origin除外），不管是什么页面只要是跨域请求都是不允许的。但是我们又发现凡是拥有"src"属性的标签都有跨域的能力（<code>&lt;script&gt;, &lt;iframe&gt;, &lt;img&gt;</code>）。为了便于客户端使用数据，逐渐形成了JSONP协议，该协议的一个要点就是允许用户传递一个callback参数给服务器，然后服务器返回数据时将这个callback参数作为函数名包裹住JSON数据，这样客户端就可以随意定制自己的函数来自动处理返回的数据了。</p>
+<p>AJAX和JSONP看起来很像但是本质上两种不同的东西。AJAX的核心是通过XHR来获取内容，而JSONP则是动态添加<code>&lt;script&gt;</code>标签来调用服务器的脚本, callback只是一个参数名，可以换成别的。。。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

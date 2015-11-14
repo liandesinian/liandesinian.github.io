@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/drafts/burp-suiteshou-ce.html" />
+
+    <title>  Avalon &mdash; Burp Suite手册
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="Burp Suite是用于攻击web应用程序的集成平台。它包含了很多工具，并为这些工具设计了许多接口。所有工具都共享一个能处理并显示HTTP消息、持久性、认证、代理、日志、警报的一个强大的可扩展的框架。它有以下特点： target：显示目标目录结构的功能。 proxy：拦截HTTP(S)的代理服务器，作为一个在浏览器和目标程序之间的中间人，允许拦截、查看、修改在两个方向的原始数据流。 spider：应用智能感应的网络爬虫，它能完整地枚举应用程序的内容和功能。 scanner：高级工具，执行后它能自动地发现web应用程序的安全漏洞。 intruder：一个定制的高度可配置工具，对web应用程序进行自动化攻击，如：枚举标识符，收集有用的数据以及使用fuzzing技术探测常规漏洞。 repeater：一个靠手动操作来触发单独的HTTP请求，并分析应用程序响应的工具。 sequencer：用来分析那些不可预知的应用程序会话令牌和重要数据项的随机性的工具。 decoder：手动执行或对应用程序的数据进行智能解码编码的工具。 comparer：通过一些相关的请求和响应得到两项数据的一个可视化的差异。 extender：可以加载Burp Suite的扩展，使用第三方代码来扩展功能。 options：设置 基础使用 开启Burp ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/drafts/burp-suiteshou-ce.html" title="Burp Suite手册">Burp Suite手册</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-11-05T00:00:00+08:00">2015年11月05日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>Burp Suite是用于攻击web应用程序的集成平台。它包含了很多工具，并为这些工具设计了许多接口。所有工具都共享一个能处理并显示HTTP消息、持久性、认证、代理、日志、警报的一个强大的可扩展的框架。它有以下特点：</p>
+<ul>
+<li>target：显示目标目录结构的功能。</li>
+<li>proxy：拦截HTTP(S)的代理服务器，作为一个在浏览器和目标程序之间的中间人，允许拦截、查看、修改在两个方向的原始数据流。</li>
+<li>spider：应用智能感应的网络爬虫，它能完整地枚举应用程序的内容和功能。</li>
+<li>scanner：高级工具，执行后它能自动地发现web应用程序的安全漏洞。</li>
+<li>intruder：一个定制的高度可配置工具，对web应用程序进行自动化攻击，如：枚举标识符，收集有用的数据以及使用fuzzing技术探测常规漏洞。</li>
+<li>repeater：一个靠手动操作来触发单独的HTTP请求，并分析应用程序响应的工具。</li>
+<li>sequencer：用来分析那些不可预知的应用程序会话令牌和重要数据项的随机性的工具。</li>
+<li>decoder：手动执行或对应用程序的数据进行智能解码编码的工具。</li>
+<li>comparer：通过一些相关的请求和响应得到两项数据的一个可视化的差异。</li>
+<li>extender：可以加载Burp Suite的扩展，使用第三方代码来扩展功能。</li>
+<li>options：设置</li>
+</ul>
+<h2> 基础使用 </h2>
+
+<p>开启Burp Suite，配置好浏览器的代理设置，在Burp Suite的Proxy标签中的Intercpt打开，在浏览网页时请求就会被拦截。在History标签中可以看到请求的历史，不管intercept是否开启，历史都会记录请求。同时在浏览的时候会自动在Target标签中生成站点映射，包括浏览过的URL和Burp从请求的响应中推断出的内容（通过解析响应中的链接），请求的项以黑色标记出来，没有请求的标记为灰色。</p>
+<p>Burp Suite的流程过程如下：<img alt="" src="http://7xn66o.com1.z0.glb.clouddn.com/burp_suite1.png" /></p>
+<p>在一个典型的测试中，侦查和分析阶段包括以下任务：</p>
+<p>手动映射应用程序-通过跟踪链接，提交表单以及其他过程来手动映射应用程序。这个过程会在Proxy的history标签和Target的站点映射标签中记录HTTP请求，通过被动爬取到的未经请求的站点会被记录在填充站点映射标签，可以查看这些未进行请求的项，然后使用浏览器进行请求。</p>
+<p>在需要时可以进行自动映射-可以配置Spider来请求那些在站点映射中未进行请求的表项（也就是灰色的表项）；可以使用content discovery功能来发现那些并非可以从浏览或爬取到的内容上可见的连接的内容；通过Intruder来周期性地扫描通用文件和目录，以此来发现hits。</p>
+<p>需要注意的是在进行自动化侦查时要配置好相关的配置，像是target的scope和session handling</p>
+<p>分析应用程序的攻击面 - Proxy的history和Target的site map都可以帮助分析信息，评估应用程序暴露的攻击面。此外可以使用Analzyer模块来报告额外的攻击面和应用程序使用的不同类型的URL。</p>
+<h2> 漏洞探查和开发 </h2>
+
+<p>在完成侦查和分析以及配置之后，可以开始探测应用程序通用的漏洞。在Burp的默认设置中自动执行被动扫描，所以在进行扫描前可以在Scanner标签中发现一些漏洞问题。</p>
+<p>Burp工具可以在很多地方用来测试漏洞，比如说：</p>
+<ul>
+<li>基于输入的漏洞：对于像SQl注入，XSS，文件上传等问题<ul>
+<li>可以使用Scanner来进行扫描</li>
+<li>可以使用Intruder来进行fuzzing</li>
+<li>可以发送请求给Repeater模块，手动进行修改和重放</li>
+<li>发现了漏洞可以在Intruder模块中利用</li>
+</ul>
+</li>
+<li>逻辑和设计漏洞-对于客户端不安全的操作、强制账户登出错误等问题<ul>
+<li>查看Proxy的history标签会发现相关的请求需要被调查。</li>
+<li>通过重放或拦截修改请求来探测对那些不期望的请求是如何解决的</li>
+<li>使用Intruder发现逻辑和设计漏洞</li>
+</ul>
+</li>
+<li>权限控制问题<ul>
+<li>使用Compare site maps功能</li>
+<li>使用不同的浏览器来并且对每个浏览器使用不同的监听端口</li>
+</ul>
+</li>
+</ul>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

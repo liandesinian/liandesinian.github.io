@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/Sqlmap手册.html" />
+
+    <title>  Avalon &mdash; Sqlmap手册
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="原文地址：1, 2 以sqlmap0.9为主要，前面有*的为1.0dev版新增的。 当给于一个url时，它会： 1、判断可注入的参数 2、判断可以用哪种SQL注入技术 3、识别出哪种数据库 4、根据用户选择，读取哪些数据 注：0.8版本及以上的sqlmap有一个-d选项，可以从本机通过TCP连接到目标的数据库服务端口, 然后通过SQL注入漏洞执行任何操作来攻击数据库。 sqlmap支持五种注入模式： 1、基于布尔的盲注, 即根据返回页面判断条件真假的注入。应用了二分算法。 2、基于时间的盲注，无法根据页面返回的内容判断，而是根据页面返回的时间是否增加来判断。应用了二分算法。 3、基于错误的注入：即页面会返回错误信息，或者把注入的语句结果直接返回到结果中。 4、联合查询注入：可以使用union情况下的注入 5、栈查询注入：可以同时执行多条语句的注入。对于执行数据定义和数据操作的SQL语句有很用。 测试GET、POST、HTTP Cookies参数，HTTP ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/Sqlmap手册.html" title="Sqlmap手册">Sqlmap手册</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-10-29T00:00:00+08:00">2015年10月29日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>原文地址：<a href="http://drops.wooyun.org/tips/143">1</a>, <a href="http://drops.wooyun.org/tips/401">2</a></p>
+<p>以sqlmap0.9为主要，前面有*的为1.0dev版新增的。</p>
+<p>当给于一个url时，它会：</p>
+<div class="highlight"><pre>1、判断可注入的参数
+2、判断可以用哪种SQL注入技术
+3、识别出哪种数据库
+4、根据用户选择，读取哪些数据
+</pre></div>
+
+
+<p><strong>注：0.8版本及以上的sqlmap有一个-d选项，可以从本机通过TCP连接到目标的数据库服务端口, 然后通过SQL注入漏洞执行任何操作来攻击数据库。</strong></p>
+<p>sqlmap支持五种注入模式：</p>
+<div class="highlight"><pre>1、基于布尔的盲注, 即根据返回页面判断条件真假的注入。应用了二分算法。
+2、基于时间的盲注，无法根据页面返回的内容判断，而是根据页面返回的时间是否增加来判断。应用了二分算法。
+3、基于错误的注入：即页面会返回错误信息，或者把注入的语句结果直接返回到结果中。
+4、联合查询注入：可以使用union情况下的注入
+5、栈查询注入：可以同时执行多条语句的注入。对于执行数据定义和数据操作的SQL语句有很用。
+</pre></div>
+
+
+<p>测试GET、POST、HTTP Cookies参数，HTTP User-Agent和HTTP Referer头来确认是否有SQL注入。可以设定HTTP(S)请求的并发数来提高盲注的效率。</p>
+<p>-v: 可以查看sqlmap检测的过程，一共有7个等级，默认是1，如果要查看payload可以用等级3.</p>
+<ul>
+<li>0：只显示Python错误信息。</li>
+<li>1：显示information和warning</li>
+<li>2：显示debug.</li>
+<li>3：显示payload。</li>
+<li>4：显示HTTP请求</li>
+<li>5：显示HTTP响应头部</li>
+<li>6：显示HTTP响应实体</li>
+</ul>
+<h2> 获取目标方式 </h2>
+
+<p>-d：将sqlmap直接连接到一个数据库，后面参数的格式为：</p>
+<div class="highlight"><pre>DBMS://USER:PASSWORD@DBMS_IP:DBMS_PORT/DATABASENAME
+</pre></div>
+
+
+<p>-u：后接URL。</p>
+<p>-l：可以直接把Burp Proxy或WebScarab proxy中的日志直接导出来交给sqlmap一个个去检测是否有注入。</p>
+<p>-m：文件中保存url格式如下，sqlmap会一个个去检测：</p>
+<div class="highlight"><pre>www.target1.com/vuln1.php?id=1
+www.target2.com/vuln2.php?q=foobar
+www.target3.com/vuln3/id/1*（伪请求）
+</pre></div>
+
+
+<p>-r：可以从一个文本文件中接收HTTP请求来进行检测。</p>
+<div class="highlight"><pre><span class="nf">POST</span> <span class="nn">/vuln.php</span> <span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span>
+<span class="na">Host</span><span class="o">:</span> <span class="l">www.target.com</span>
+<span class="na">User-Agent</span><span class="o">:</span> <span class="l">Mozilia/4.0</span>
+
+id=1
+</pre></div>
+
+
+<p>当请求是HTTPS时需加上--force-ssl参数或者在Host后面加上:443</p>
+<p>-g: 测试注入到Google的搜索结果中的GET参数。</p>
+<div class="highlight"><pre>python sqlmap.py -g &quot;inurl:\&quot;.php?id=1\&quot;&quot;
+</pre></div>
+
+
+<p>-c：加载sqlmap.conf文件配置。</p>
+<h2> 请求 </h2>
+
+<p>--data：把参数以POST方式提交，sqlmap会像检测GET一样检测POST</p>
+<div class="highlight"><pre>python sqlmap.py -u &quot;http://www.target.com/vuln.php&quot; --data=&quot;id=1&quot; -f --banner --dbs --users
+</pre></div>
+
+
+<p>--param-del：参数分割符号。</p>
+<p>--cookie, --drop-set-cookie：这两个参数在以下方面有用：</p>
+<p>1、web应用需要登录的时候。</p>
+<p>2、想要在这些头参数中测试SQL注入时。</p>
+<p>在HTTP请求中，遇到Set-Cookie时，sqlmap会自动获取其值并且在以后的请求中加入，尝试SQL注入。若不想接收Set-Cookie可以使用--drop-set-cookie参数拒绝。如果设置了--cookie并且目标URL也发送了Set-cookie就会询问用户使用哪种cookie。若--level的参数设成2及以上，sqlmap会尝试注入cookie参数。</p>
+<p>--user-agent, --random-agent：默认情况下sqlmap的HTTP请求中User-Agent为：</p>
+<div class="highlight"><pre>sqlmap/1.0-dev-xxxxxx
+</pre></div>
+
+
+<p>可以通过--user-agent修改或者使用--random-agent随机从./txt/user-agent.txt中获取。当--level参数为3及以上时, 尝试对User-Agent进行注入。</p>
+<p>--referer：在请求中伪造referer，当--level的等级为3及以上时尝试进行referer注入。</p>
+<p>* --host：伪造HTTP请求的HOST头，当--level的等级为5及以上时尝试测试HOST头</p>
+<p>--headers：增加额外的HTTP头。可以在sqlmap.conf文件中进行统一设置。</p>
+<p>--auth-type, --auth-cred：用来登录HTTP认证保护支持的三种方式：</p>
+<p>1   Basic
+2   Digest
+3   NTLM</p>
+<p>eg：python sqlmap.py -u "http://www.target.com/vuln.php?id=1" --auth-type Basic --auth-cred "testuser:testpass"</p>
+<p>--auth-cert：当Web服务器需要客户端证书进行身份验证时，需要提供key_file（格式为PEM的文件，包含私钥），cert_file（格式为PEM的链接文件）</p>
+<p>--proxy, --proxy-cred, --ignore-proxy：使用--proxy的格式为：http://url:port。当HTTP(S)代理需要认证时可以使用--proxy-cred，参数：username:password。--ignore-proxy拒绝使用代理。</p>
+<p>--tor：如果想要匿名传输，可以配置一个带有Privoxy的Tor客户端，这时可以使用--tor参数替代--proxy。</p>
+<p>--delay：设定两个HTTP(S)请求间的延迟，单位为秒，默认没有延迟。</p>
+<p>--timeout：链接超时时间，默认是30秒。</p>
+<p>--retries：连接超时的重试次数，默认为3次。</p>
+<p>--randomize：设定某一参数值在每一次请求中进行随机变化，长度和类型与初始值一样。</p>
+<p>--scope：利用正则过滤目标地址</p>
+<div class="highlight"><pre>python sqlmap.py -l log.txt --scope=&quot;(www)?\.target\.(com|net|org)&quot;
+</pre></div>
+
+
+<p>--safe-url, --safe-freq：有的Web应用程序会在多次访问错误的请求时屏蔽以后的请求，这样会导致无法继续进行下去。可以使用这两个参数绕过。--safe-url：提供一个安全不错误的链接，每隔一段时间就会去访问一下。--safe-freq：提供一个安全不错误的链接，每次测试请求之后都会再访问一遍安全链接。</p>
+<p>--skip-urlencode：跳过url编码。</p>
+<p>--eval：有时候需要根据某个参数的变化而修改另一个参数才能形成正常的请求，这时可以使用--eval在每次请求时根据编写的Python代码做完修改后请求。</p>
+<h2> 优化 </h2>
+
+<p>--keep-alive：保持永久的HTTP(s)链接，和--proxy参数不兼容。</p>
+<p>--null-connection：尝试测试和注入Range、HEAD请求，如果成功就可以节省带宽。</p>
+<p>--threads：多线程。从性能和站点的可靠性来看，最大不要超过10个线程。</p>
+<p>-o：将前面的三个参数都包括进去。</p>
+<h2> 注入 </h2>
+
+<p>-p：sqlmap默认测试所有的GET、POST参数，在--level的等级大于等于2的时候测试Cookie，当--level的等级在3及以上时测试User-Agent和Referer，可以手动使用-p设置想要测试的参数。eg：-p "id, user-agent"。有些时候测试点在URL路径内，默认情况下sqlmap不对路径进行测试，可以在想要测试的参数后面加*, eg:</p>
+<div class="highlight"><pre> python sqlmap.py -u &quot;http://www.target.com/param1/value1*/param2/value2&quot;   #sqlmap将测试value1
+</pre></div>
+
+
+<p>* --skip：跳过有些参数不进行测试。</p>
+<p>--dbms：指定数据库类型</p>
+<p>--os：指定数据库服务器类型。</p>
+<p>* --invalid-bignum：如果要无效化参数，一般是将其设为负值，如id=-13，可是使用此参数设置成大数字。</p>
+<p>* --no-escape：使用被单引号包括的字符串作为payload进行注入时会自动使用char()进行转义，可以使用此参数避免转义，为了减小payload的大小。</p>
+<p>--prefix，--suffix：有时需要在payload的前面或后面加上一些字符来保证payload的正常执行。eg：</p>
+<div class="highlight"><pre><span class="x">  </span><span class="p">$</span><span class="nv">query</span><span class="x"> = &quot;select * from users where id=(&#39;&quot;.</span><span class="p">$</span><span class="nv">_GET</span><span class="x">[&#39;id&#39;].&quot;&#39;)limit 0, 1&quot;;</span>
+</pre></div>
+
+
+<p>这时就需要此参数：</p>
+<div class="highlight"><pre>  python sqlmap.py -u &quot;http://www.target.com/vuln.php?id=1&quot; -p &quot;id&quot; --prefix &quot;&#39;)&quot; --suffix &quot;and (&#39;ab&#39;=&#39;ab&quot;
+</pre></div>
+
+
+<p>这样执行的SQL语句就是：</p>
+<div class="highlight"><pre><span class="x"> </span><span class="p">$</span><span class="nv">query</span><span class="x"> = &quot;select * from users where id=(&#39;1&#39;) &lt;payload&gt; and (&#39;ab&#39;=&#39;ab&#39;)&quot;;</span>
+</pre></div>
+
+
+<p>--tamper：sqlmap除了使用char()函数防止出现单引号之外没有对注入的数据进行修改，可以使用--tamper参数对数据进行修改来绕过waf。tamper使用的脚本在tamper/目录下，也可以自己写。</p>
+<h2> 探测 </h2>
+
+<p>--level：共有五个等级，默认为1。sqlmap使用的payload可以在xml/payload中看到，可以添加自己的payload。level为2及以上可以测试Cookie，level为3及以上可以测试User-Agent/Referer</p>
+<p>--risk：共有四个等级，默认1测试大部分的语句，2增加基于更长时间的测试，3增加or语句的测试。有些时候例如在update语句中注入一个or的测试语句，可能导致更新的整个表，可能造成很大的风险。</p>
+<p>--string, --regexp, --text-only：默认情况下sqlmap通过判断返回页面的不同来判断真假，但是有时候有的页面在每次刷新的时候都会返回不同的代码，比如页面中包含动态广告或者其他内容，这会导致sqlmap误判，此时用户可以提供字符串或正则，在原始页面和条件为真的页面中都存在，而在条件为假的页面中不存在。HTTP返回的内容中可能包含动态的内容，如脚本、嵌入等，可以通过--text-only过滤，只比较文本内容。</p>
+<p>* --code：如果True和False的代码不同则可以使用此参数。</p>
+<h2> 测试技术 </h2>
+
+<p>--technique：指定sqlmap使用的探测技术, 默认为BETUS。</p>
+<ul>
+<li>B：布尔型注入</li>
+<li>E：基于错误的注入</li>
+<li>T：基于时间的注入</li>
+<li>U：Union查询注入</li>
+<li>S：多条件查询</li>
+</ul>
+<p>--time-sec：设置基于时间的盲注的延迟时间。</p>
+<p>--union-cols：默认情况下sqlmap union查询注入测试从1到10个字段，可以使用此参数指定查询字段数范围。</p>
+<p>--union-char：默认情况下sqlmap针对union查询使用的是NULL字符，但是有些情况下会造成失败，而使用随机整数就会成功。通过提供更高的--level会使用随机整数，也可以通过指定此参数后接字符串来指定。</p>
+<h2> 枚举 </h2>
+
+<p>--banner：列出目标DBMS的信息。可以和-f一起用。</p>
+<p>--current-user：可以获取到当前管理数据的用户。</p>
+<p>--current-db：当前链接的数据库名</p>
+<p>--is-dba：判断当前用户是否是管理员。</p>
+<p>--users：若当前用户有权限读取所有用户的表的时，可以列出所有用户</p>
+<p>--passwords：有权限时，列出并尝试破解所有用户的密码。-U 参数可以指定要破解的用户密码</p>
+<p>--privileges：当前用户有权限读取用户表时，可以列举出每个用户的权限，可以用-U查看指定用户权限。</p>
+<p>--dbs：有权限时，列出所有数据库。</p>
+<p>--tables, --exclue-sysdbs, -D：当前用户有权限读取表信息时，可列出一个特定数据库的表。如果不指定-D，会列出所有库的所有表，--exclude-sysdbs参数可以排除所有系统数据库。</p>
+<p>--columns, -C, -T, -D：若有权限，可列出指定数据表中的字段和其类型，若没有指定-D，则为当前数据库, -T参数要有。</p>
+<p>* --schema, --exclue-sysdbs：显示数据库架构</p>
+<p>* --count：显示计数</p>
+<p>--dump, -C, -D, -T, --start, --stop, --first, --last：若有权限读取数据库中其中一个表的时候，就能获取该表的内容，通过-T来指定表，省略-D参数默认使用当前数据库。也可以只使用-D选项，这样就可以导出指定数据库的所有表的条目。也可以添加-C来指定列。sqlmap导出的数据格式为CSV。--start，--stop：获取一段范围的内容。</p>
+<p>--dump-all，--exclude-sysdb：获取所有数据库表的内容, 只要有权限。</p>
+<p>--search, -D, -T, -C：寻找特定的数据库名，所有数据库中的特定表名，所有数据库表中的特定字段。</p>
+<p>--sql-query，--sql-shell：sqlmap自动检测使用哪种注入技术，如何插入检索语句。如果请求是Select语句，sqlmap会提取输出，否则的话，如果web应用支持多条语句就将进行栈注入测试。有些web应用程序在特定的DBMS下不支持栈注入。例如PHP在后台是MySql的情况下就不支持</p>
+<h2> 爆破 </h2>
+
+<p>--common-tables：当使用--tables无法获取到数据库的表时使用。通常用来解决三种情况：</p>
+<ul>
+<li>DBMS为MySQL&lt;5.0，没有information_schema</li>
+<li>DBMS是Access同时MSysObject无法读取。</li>
+<li>会话用户并没有读取权限。</li>
+</ul>
+<p>暴力破解的表在txt/common-tables.txt中，可以自己添加。</p>
+<p>--common-columns：与爆破表一样，列名在txt/common-columns.txt中, 可以自己添加。</p>
+<p>--udf-inject, --shared-lib：通过编译MySQL或Postgresql的库来注入用于定义函数，sqlmap会将函数上传到数据库服务器，创建用户定义函数并且根据选项来决定是否执行, 当结束后sqlmap会删除它们。</p>
+<h2> 文件系统操作 </h2>
+
+<p>--file-read：当数据库是MySQL、SQL Server、PostgreSQL并且会话用户有权限时可以提取文件内容。文件可以是文本文件也可以是二进制文件。 </p>
+<p>--file-write：上传文件，条件同上。</p>
+<h2> 操作系统接管 </h2>
+
+<p>--os-cmd，--os-shell：条件同上，可以在数据库服务器的底层操作系统上执行任意命令。在MySql和PostgreSQL上，sqlmap上传一个包含sys_exec和sys_eval函数的库，然后调用它们来执行特定的命令。在SQL Server上，使用xp_cmdshell过程。如果用户请求标准输出，sqlmap会使用盲注、布尔型和错误中的一种来获取，如果没有请求标准输出，则会使用栈请求SQL注入。sqlmap允许用户提供以逗号分隔的文档根目录列表。</p>
+<p>--os-pwn，--os-smbrelay, --os-bof, --priv-esc, --msf-path, --tmp-path：条件同上，可以在攻击者和数据库服务器之间建立一条TCP连接，这个通道可以是交互式的命令提示，一个Metapreter进程或是一个VNC进程。sqlmap根据Metasploit生成的shellcode，并有四种方式来执行：</p>
+<ul>
+<li>通过用户自定义的sys_bineval()函数在内存中执行Metasploit的shellcode，支持MySQL、PostgreSQL，参数为--os-pwn</li>
+<li>通过用户自定义的sys_exec()或xp_cmdshell()函数上传一个独立的payload执行, 参数为--os-pwn</li>
+<li>通过SMB攻击来执行shellcode，当sqlmap获取到的权限足够高的时候。参数--os-smbrelay</li>
+<li>通过溢出SQL Server 2000和2005的sp_replwritetovarbin存储过程(MS09-004)，在内存中执行Metasploit的payload，参数：--os-bof </li>
+</ul>
+<p>默认情况下MySQL在Windows上以SYSTEM权限运行，PostgreSQL在Windows和Linux上是低权限运行，SQL Server2000默认是以SYSTEM权限运行，2005与2008以NETWORK SERVICE或LOCALSERVICE权限运行</p>
+<h2> Windows注册表操作 </h2>
+
+<p>当后台数据库是MySQL、PostgreSQL、SQL SERVER，web应用程序支持栈请求，并且用户有权限时进行。</p>
+<p>--reg-read, --reg-add, --reg-del：注册表键值读取、新增和删除。</p>
+<h2> 通用及杂项 </h2>
+
+<p>-t：将sqlmap生成的HTTP(S)流量写入文本文件中</p>
+<p>-s：sqlmap将请求和输出都记录在session文件中，方便在中途停止后重新恢复</p>
+<p>--batch：不进入交互模式。</p>
+<p>--forms：对于一些有<code>&lt;form&gt;</code>提交的页面，像是登录页面，可以使用此参数来尝试绕过</p>
+<p>--parse-errors：解析错误。</p>
+<p>--replicate：将导出的信息存储到sqlite3数据库文件中</p>
+<p>* --crawl：收集潜在的可能存在漏洞的链接，后面跟的参数是爬行的深度。</p>
+<p>* --csv-del：保存为csv格式时的分隔符。</p>
+<p>--dbms-cred：当用户的权限不够时，如果知道admin的凭证可以使用此参数，可以切换用户。</p>
+<p>--eta：计算注入数据的剩余时间。</p>
+<p>--flush-session：清空缓存。</p>
+<p>* --hex：有关非ASCII字符编码问题可以使用此参数避免出现数据丢失</p>
+<p>* --check-waf：启发式地waf/ids检查，sqlmap使用一个可疑的注入进行测试。</p>
+<p>* --hpp：HTTP参数污染可能会绕过WAF/IDS保护机制，这个对ASP/IIS和ASP.NET/IIS很有效</p>
+<p>* --identity-waf：尝试找出WAF/IDS保护，方便用户作出绕过方式</p>
+<p>* --mobile：模仿手机User-Agent进行登录</p>
+<p>* --purge-output：安全移除ouput中的内容</p>
+<h1> Sqlmap Cookbook </h1>
+
+<p><a href="http://drops.wooyun.org/tips/1343">原文地址</a></p>
+<p>sqlmap重定向可能是因为referer有限制，或者cookie要登录或者是agent要更换。可以带上--referer选项，使用--random-agent（--user-agent)</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="canonical" href="/article/an-quan/Hping笔记.html" />
 
-    <title>  莲的思念's blog &mdash; Hping笔记
+    <title>  Avalon &mdash; Hping笔记
 </title>
 
 
@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="Hping是一个对数据包进行操作和传输的命令行工具，它的灵感来源于ping，但是支持很多协议，不仅能发发送ICMP请求，还支持TCP，UDP，RAW-IP等，有traceroute模式等等特点。Hping可以用于很多用途，像是防火墙测试，网络测试，端口扫描，路由跟踪，远程操作系统检测等等。 Hping3不仅兼容Hping2的的命令行，同时还有两个新特性：其一是一个被称为APD的引擎，它能够将简单的字符串形式的包描述翻译成要发送的包的格式，并且反过来也可以。其二就是可以使用Tcl语言的脚本。此举可以使得TCP/IP Hacking变得不那么重要，使用者可以集中精力在感兴趣的协议问题和网络安全上，而不是浪费时间重写底层的代码和调试。 API Man手册 APD API Hping使用Tcl语言作为脚本语言。以root身份登录，输入hping会进入交互模式，可以输入Tcl命令或是嵌入的hping命令进行发送和接收包等的操作。要执行一个hping脚本可以输入hping exec <script> [argument]。进入hping的交互模式后，可以输入如下一些子命令： hping resolve 将主机名解析为对应的IP地址. hping send 发送和hping recv收到的包具有相同格式的包。hping ...">
+    <meta name="description" content="Hping是一个对数据包进行操作和传输的命令行工具，它的灵感来源于ping，但是支持很多协议，不仅能发送ICMP请求，还支持TCP，UDP，RAW-IP等，有traceroute模式等等特点。Hping可以用于很多用途，像是防火墙测试，网络测试，端口扫描，路由跟踪，远程操作系统检测等等。 Hping3不仅兼容Hping2的的命令行，同时还有两个新特性：其一是一个被称为APD的引擎，它能够将简单的字符串形式的包描述翻译成要发送的包的格式，并且反过来也可以。其二就是可以使用Tcl语言的脚本。此举可以使得TCP/IP Hacking变得不那么重要，使用者可以集中精力在感兴趣的协议问题和网络安全上，而不是浪费时间重写底层的代码和调试。 API Man手册 APD API Hping使用Tcl语言作为脚本语言。以root身份登录，输入hping会进入交互模式，可以输入Tcl命令或是嵌入的hping命令进行发送和接收包等的操作。要执行一个hping脚本可以输入hping exec <script> [argument]。进入hping的交互模式后，可以输入如下一些子命令： hping resolve 将主机名解析为对应的IP地址. hping send 发送和hping recv收到的包具有相同格式的包。hping ...">
   <meta name="tags" contents="">
 </head>
 
@@ -31,17 +31,22 @@
   <div class="container">
     <div class="header-inner">
       <h1 class="header-name">
-        <a class="nodec" href="/">莲的思念's blog</a>
+        <a class="nodec" href="/">Avalon</a>
       </h1>
-      <h3 class="header-text"></h3>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
       <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		
       </ul>
     </div>
   </div>
 </header> <!-- /.header -->  <div class="container">
   <div class="post full-post">
     <h1 class="post-title">
-      <a href="/article/an-quan/Hping笔记.html" title="Permalink to Hping笔记">Hping笔记</a>
+		<a href="/article/an-quan/Hping笔记.html" title="Hping笔记">Hping笔记</a>
     </h1>
     <ul class="list-inline">
       <li class="post-date">
@@ -53,7 +58,7 @@
       </li>
     </ul>
     <div class="post-content">
-      <p>Hping是一个对数据包进行操作和传输的命令行工具，它的灵感来源于ping，但是支持很多协议，不仅能发发送ICMP请求，还支持TCP，UDP，RAW-IP等，有traceroute模式等等特点。Hping可以用于很多用途，像是防火墙测试，网络测试，端口扫描，路由跟踪，远程操作系统检测等等。</p>
+      <p>Hping是一个对数据包进行操作和传输的命令行工具，它的灵感来源于ping，但是支持很多协议，不仅能发送ICMP请求，还支持TCP，UDP，RAW-IP等，有traceroute模式等等特点。Hping可以用于很多用途，像是防火墙测试，网络测试，端口扫描，路由跟踪，远程操作系统检测等等。</p>
 <p>Hping3不仅兼容Hping2的的命令行，同时还有两个新特性：其一是一个被称为APD的引擎，它能够将简单的字符串形式的包描述翻译成要发送的包的格式，并且反过来也可以。其二就是可以使用Tcl语言的脚本。此举可以使得TCP/IP Hacking变得不那么重要，使用者可以集中精力在感兴趣的协议问题和网络安全上，而不是浪费时间重写底层的代码和调试。</p>
 <ul>
 <li><a href="#api">API</a></li>
@@ -108,15 +113,17 @@
 <h3>hping getfield</h3>
 
 <p><code>hping getfield &lt;layer&gt; &lt;field&gt; [skip] &lt;packet&gt;</code>。返回指定层的指定区域的值。若有多个相同的区域，skip跳过指定区域。<strong>注：</strong>hping recv返回的是Tcl列表，默认是由一个元素组成的，因此需要从列表中提取元素。</p>
-<div class="highlight"><pre>hping3.0.0-alpha&gt; set p [hping recv eth0]
+<div class="highlight"><pre><span class="x">hping3.0.0-alpha&gt; set p [hping recv eth0]</span>
+<span class="err">{</span><span class="x">ip(ihl=5,ver=4,tos=c0,totlen=58,id=62912,fragoff=0,mf=0,df=0,rf=0,ttl=64,proto=1,cksum=e500,saddr=192.168.1.7,daddr=192.168.1.6)+icmp(type=3,code=3,unused=0)+ip(ihl=5,ver=4,tos=00,totlen=30,id=60976,fragoff=0,mf=0,df=1,rf=0,ttl=64,proto=17,cksum=40c9,saddr=192.168.1.6,daddr=192.168.1.7)+udp(sport=33169,dport=10,len=10,cksum=94d6)+data(str=f\0a)}</span>
+
+<span class="x">hping3.0.0-alpha&gt; set packet [lindex </span><span class="p">$</span><span class="nv">p</span><span class="x"> 0]</span>
+<span class="x">ip(ihl=5,ver=4,tos=c0,totlen=58,id=62912,fragoff=0,mf=0,df=0,rf=0,ttl=64,proto=1,cksum=e500,saddr=192.168.1.7,daddr=192.168.1.6)+icmp(type=3,code=3,unused=0)+ip(ihl=5,ver=4,tos=00,totlen=30,id=60976,fragoff=0,mf=0,df=1,rf=0,ttl=64,proto=17,cksum=40c9,saddr=192.168.1.6,daddr=192.168.1.7)+udp(sport=33169,dport=10,len=10,cksum=94d6)+data(str=f\0a)</span>
+
+<span class="x">hping3.0.0-alpha&gt; hping getfield ip cksum 1 </span><span class="p">$</span><span class="nv">packet</span><span class="x"></span>
+<span class="x">0x40c9</span>
 </pre></div>
 
 
-<p>{ip(ihl=5,ver=4,tos=c0,totlen=58,id=62912,fragoff=0,mf=0,df=0,rf=0,ttl=64,proto=1,cksum=e500,saddr=192.168.1.7,daddr=192.168.1.6)+icmp(type=3,code=3,unused=0)+ip(ihl=5,ver=4,tos=00,totlen=30,id=60976,fragoff=0,mf=0,df=1,rf=0,ttl=64,proto=17,cksum=40c9,saddr=192.168.1.6,daddr=192.168.1.7)+udp(sport=33169,dport=10,len=10,cksum=94d6)+data(str=f\0a)}
-    hping3.0.0-alpha&gt; set packet [lindex $p 0]
-ip(ihl=5,ver=4,tos=c0,totlen=58,id=62912,fragoff=0,mf=0,df=0,rf=0,ttl=64,proto=1,cksum=e500,saddr=192.168.1.7,daddr=192.168.1.6)+icmp(type=3,code=3,unused=0)+ip(ihl=5,ver=4,tos=00,totlen=30,id=60976,fragoff=0,mf=0,df=1,rf=0,ttl=64,proto=17,cksum=40c9,saddr=192.168.1.6,daddr=192.168.1.7)+udp(sport=33169,dport=10,len=10,cksum=94d6)+data(str=f\0a)
-    hping3.0.0-alpha&gt; hping getfield ip cksum 1 $packet
-    0x40c9</p>
 <h3>hping delfield</h3>
 
 <p><code>hping delfield &lt;layer&gt; &lt;field&gt; [skip] &lt;packet&gt;</code> 移除指定的区域，对于修改后的包来说，移除检验和区域让hping重新计算。</p>
