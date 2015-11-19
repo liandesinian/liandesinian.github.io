@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="原文地址 默认存在的数据库 mysql：需要root权限 information_schema：5以上版本有 测试是否存在注入方法 真：表示查询是正常，页面返回与原来相同； 假：表示查询是错误的 字符串查询： ' 假 '' 真 " 假 "" 真 \ 假 \ 真 数字类型查询： and 1 真 and 0 假 1-false 有问题时返回1的结果 1-true 有问题时返回0的结果 登录时： 'or'1 'or 1 --+ "or ""=" "or 1=1 --+ '=' 'LIKE' 注释 ：Hash语法, URL上可能被转码，用%23 /.../：语句块注释 -- :Sql语法，双划线后要有空格, URL上后面跟+或 ...">
+    <meta name="description" content="原文地址 默认存在的数据库 mysql：需要root权限 information_schema：5以上版本有 测试是否存在注入方法 真：表示查询是正常，页面返回与原来相同； 假：表示查询是错误的 字符串查询： ' 假 '' 真 " 假 "" 真 \ 假 \\ 真 数字类型查询： and 1 真 and 0 假 1-false 有问题时返回1的结果 1-true 有问题时返回0的结果 登录时： 'or'1 'or 1 --+ "or ""=" "or 1=1 --+ '=' 'LIKE' 注释 #：Hash语法, URL上可能被转码，用%23 /.../：语句块注释 -- :Sql语法，双划线后要有空格, URL上后面跟+或 ...">
   <meta name="tags" contents="">
 </head>
 
@@ -77,7 +77,7 @@ information_schema：5以上版本有
 <li>"   假</li>
 <li>""  真</li>
 <li>\   假</li>
-<li>\  真</li>
+<li>\\  真</li>
 </ul>
 <p>数字类型查询：</p>
 <ul>
@@ -98,9 +98,7 @@ information_schema：5以上版本有
 <h3> 注释 </h3>
 
 <ul>
-<li>
-<h1>：Hash语法, URL上可能被转码，用%23</h1>
-</li>
+<li>#：Hash语法, URL上可能被转码，用%23</li>
 <li>/<em>...</em>/：语句块注释</li>
 <li>-- :Sql语法，双划线后要有空格, URL上后面跟+或%20</li>
 </ul>
@@ -155,6 +153,7 @@ information_schema：5以上版本有
 
 
 <p><strong>注：可以先猜字段数，然后如果有显示则根据database()知道数据库名，再猜表名，猜列名。</strong></p>
+<p>有字符型注入，数字型注入。。。</p>
 <h2> Sqli-lab感悟 </h2>
 
 <ol>

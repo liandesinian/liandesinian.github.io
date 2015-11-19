@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="i -> insert模式，按ESC退出到Normal模式 x -> 删除当前字符 :wq -> 存盘并退出 dd -> 删除当前行并将其保存到剪贴板中 :help 帮助 各种插入模式 * a -> 在光标后插入 * o -> 在当前行后插入一新行 * O -> 在当前行前插入一个新行 * cw -> 替换从光标当前位置后到一个word结尾的字符, 并进入插入模式 * ce -> 同cw * cb -> 替换从光标当前位置前到一个word开头的字符，并进入插入模式 * cW、cE、cb -> 同前，只不过是一个WORD 光标移动 * hjkl -> 移动光标 * 0 -> 数字0, 到行头 * ^ -> 到本行第一个不是空白字符的位置 * $ -> 到本行行尾 * g_ -> 到本行最后一个不是空白字符的位置 * /pattern -> 搜索字符串 * :N -> 到第N行 * gg -> 到第一行 * G -> 到最后一行 word ...">
+    <meta name="description" content="i -> insert模式，按ESC退出到Normal模式 x -> 删除当前字符 :wq -> 存盘并退出 dd -> 删除当前行并将其保存到剪贴板中 :help <command> 帮助 各种插入模式 a -> 在光标后插入 o -> 在当前行后插入一新行 O -> 在当前行前插入一个新行 cw -> 替换从光标当前位置后到一个word结尾的字符, 并进入插入模式 ce -> 同cw cb -> 替换从光标当前位置前到一个word开头的字符，并进入插入模式 cW、cE、cb -> 同前，只不过是一个WORD 光标移动 hjkl -> 移动光标 0 -> 数字0, 到行头 ^ -> 到本行第一个不是空白字符的位置 $ -> 到本行行尾 g_ -> 到本行最后一个不是空白字符的位置 /pattern -> 搜索字符串 :N -> 到第N行 gg -> 到第一行 G -> 到最后一行 ...">
   <meta name="tags" contents="">
 </head>
 
@@ -58,52 +58,55 @@
       </li>
     </ul>
     <div class="post-content">
-      <blockquote>
-<p>i -&gt; insert模式，按ESC退出到Normal模式
+      <div class="highlight"><pre>i -&gt; insert模式，按ESC退出到Normal模式
 x -&gt; 删除当前字符
 :wq -&gt; 存盘并退出
 dd -&gt; 删除当前行并将其保存到剪贴板中
-:help <command> 帮助</p>
-</blockquote>
+:help &lt;command&gt; 帮助
+</pre></div>
+
+
 <h1>各种插入模式</h1>
-<div class="highlight"><pre>* a -&gt; 在光标后插入
-* o -&gt; 在当前行后插入一新行
-* O -&gt; 在当前行前插入一个新行
-* cw -&gt; 替换从光标当前位置后到一个word结尾的字符, 并进入插入模式
-* ce -&gt; 同cw
-* cb -&gt; 替换从光标当前位置前到一个word开头的字符，并进入插入模式
-* cW、cE、cb -&gt; 同前，只不过是一个WORD
+<div class="highlight"><pre>a -&gt; 在光标后插入
+o -&gt; 在当前行后插入一新行
+O -&gt; 在当前行前插入一个新行
+cw -&gt; 替换从光标当前位置后到一个word结尾的字符, 并进入插入模式
+ce -&gt; 同cw
+cb -&gt; 替换从光标当前位置前到一个word开头的字符，并进入插入模式
+cW、cE、cb -&gt; 同前，只不过是一个WORD
 </pre></div>
 
 
 <h1>光标移动</h1>
-<div class="highlight"><pre>* hjkl -&gt; 移动光标
-* 0 -&gt; 数字0, 到行头
-* ^ -&gt; 到本行第一个不是空白字符的位置
-* $ -&gt; 到本行行尾
-* g_ -&gt; 到本行最后一个不是空白字符的位置
-* /pattern -&gt; 搜索字符串
-* :N -&gt; 到第N行
-* gg -&gt; 到第一行
-* G -&gt; 到最后一行
+<div class="highlight"><pre>hjkl -&gt; 移动光标
+0 -&gt; 数字0, 到行头
+^ -&gt; 到本行第一个不是空白字符的位置
+$ -&gt; 到本行行尾
+g_ -&gt; 到本行最后一个不是空白字符的位置
+/pattern -&gt; 搜索字符串
+:N -&gt; 到第N行
+gg -&gt; 到第一行
+G -&gt; 到最后一行
 </pre></div>
 
 
 <p>word: 包含连续的字母、数字和下划线或者连续的其他非空的符号，彼此之间以空白符隔开。</p>
-<blockquote>
-<p>w: 移动到下一个word的开头
+<div class="highlight"><pre>w: 移动到下一个word的开头
 e：移动到下一个word的结尾
-b：移动到前一个word的开头</p>
-</blockquote>
+b：移动到前一个word的开头
+</pre></div>
+
+
 <p>WORD：包含连续的非空的字符，彼此之间以空白符隔开，比word的范围大。</p>
-<blockquote>
-<p>W：移动到下一个WORD的开头
+<div class="highlight"><pre>W：移动到下一个WORD的开头
 E：移动到下一个WORD的结尾
-B：移动到前一个WORD的开头。</p>
-</blockquote>
-<p><strong>NOTE: </strong>中文的话连续的字算是word，标点符号算是下一个word。而连在一起中间无空白符的算是WORD，包含中文、字符、标点。</p>
-<div class="highlight"><pre>* %: 匹配括号移动，需先移动到括号上
-* *和#：匹配光标当前所在的单词，移动光标到下一个（或上一个）单词
+B：移动到前一个WORD的开头。
+</pre></div>
+
+
+<p><strong>NOTE: 中文的话连续的字算是word，标点符号算是下一个word。而连在一起中间无空白符的算是WORD，包含中文、字符、标点。</strong></p>
+<div class="highlight"><pre><span class="c">%: 匹配括号移动，需先移动到括号上</span>
+<span class="o">\&gt;</span>和#：匹配光标当前所在的单词，移动光标到下一个（或上一个）单词
 </pre></div>
 
 
@@ -113,78 +116,81 @@ B：移动到前一个WORD的开头。</p>
 
 
 <h2>在当前行上移动光标：0 ^ $ f F t T</h2>
-<div class="highlight"><pre>* f&lt;character&gt; -&gt; 到下一个&lt;character&gt;字符处
-* t&lt;character&gt; -&gt; 到下一个&lt;character&gt;前的第一个字符
-* F、T -&gt; 和f, t相同，只不过方向相反
+<div class="highlight"><pre>f&lt;character&gt; -&gt; 到下一个&lt;character&gt;字符处
+t&lt;character&gt; -&gt; 到下一个&lt;character&gt;前的第一个字符
+F、T -&gt; 和f, t相同，只不过方向相反
 </pre></div>
 
 
-<p><strong>Note: </strong> 可以和d, y, v等结合，eg：dta -&gt; 表示从当前位置删除内容，直到遇到字符a。</p>
+<p><strong>Note: 可以和d, y, v等结合，eg：dta -* 表示从当前位置删除内容，直到遇到字符a。</strong></p>
 <h2>区域选择</h2>
 <div class="highlight"><pre>&lt;action&gt;a&lt;object&gt; 和 &lt;action&gt;i&lt;object&gt;。选择&lt;object&gt;之间的内容
+
+ &lt;action&gt;可以是任何的命令，若d, y, v等
+ &lt;object&gt;可能是w一个单词，W一个以空格符分隔的单词，s一个句子，p一个段落，也可以是一个特别的字符：&quot;, &#39;, (), {}, []
+ a表示会包含&lt;object&gt;，i不包含&lt;object&gt;
 </pre></div>
 
 
-<blockquote>
-<p><action>可以是任何的命令，若d, y, v等
-<object>可能是w一个单词，W一个以空格符分隔的单词，s一个句子，p一个段落，也可以是一个特别的字符：", ', (), {}, []
-a表示会包含<object>，i不包含<object></p>
-</blockquote>
-<h2>块操作 ##</h2>
-<p><ctrl-v> 典型操作：</p>
-<div class="highlight"><pre>* ^ -&gt; 移动到行头
-* &lt;ctrl-v&gt; -&gt; 选择块
-* hjkl选择区域
-* I-- &lt;ESC&gt; -&gt; 大写I，插入&quot;--&quot;, 按ESC生效
+<h2>块操作</h2>
+<div class="highlight"><pre> &lt;ctrl-v&gt; 典型操作：
+
+ ^ -&gt; 移动到行头
+ &lt;ctrl-v&gt; -&gt; 选择块
+ hjkl选择区域
+ I-- &lt;ESC&gt; -&gt; 大写I，插入&quot;--&quot;, 按ESC生效
 </pre></div>
 
 
 <h1>拷贝粘帖</h1>
-<div class="highlight"><pre>* p/P -&gt; 粘帖。p表示在当前位置之后，P表示在当前位置之前
-* yy -&gt; 拷贝当前行
+<div class="highlight"><pre> p/P -&gt; 粘帖。p表示在当前位置之后，P表示在当前位置之前
+ yy -&gt; 拷贝当前行
 </pre></div>
 
 
 <h1>撤销</h1>
-<ul>
-<li>u -&gt; 撤销</li>
-<li>CTRL-r -&gt; redo</li>
-</ul>
-<h1>文件操作</h1>
-<ul>
-<li>:e <filename> -&gt; 打开文件</li>
-<li>:w  -&gt; 保存文件</li>
-<li>:saveas <filename> -&gt;另存为</li>
-<li>:q! -&gt; 退出不保存</li>
-<li>:bn -&gt; 可以同时打开多个文件，用此命令切换文件</li>
-</ul>
-<h1>重复</h1>
-<ul>
-<li>. -&gt; 重复上一次命令</li>
-<li>N<command> -&gt; 重复命令N次 </li>
-</ul>
-<h1>自动补全：<ctrl-n>  <ctrl-p></h1>
-<p>在插入模式下，输入一个词的开头，按<ctrl-p>或是<ctrl-n>自动补全（需是前面出现过的）</p>
-<h1>宏录制：qa操作序列，@a，@@</h1>
-<div class="highlight"><pre>* qa -&gt; 把操作记录在寄存器a上
-* @a -&gt; replay录制的宏
-* @@ -&gt; replay最新的宏
+<div class="highlight"><pre> u -&gt; 撤销
+ CTRL-r -&gt; redo
 </pre></div>
 
 
-<h1>可视化选择:v, V, <ctrl-v></h1>
+<h1>文件操作</h1>
+<div class="highlight"><pre> :e &lt;filename&gt; -&gt; 打开文件
+ :w  -&gt; 保存文件
+ :saveas &lt;filename&gt; -&gt;另存为
+ :q! -&gt; 退出不保存
+ :bn -&gt; 可以同时打开多个文件，用此命令切换文件
+</pre></div>
+
+
+<h1>重复</h1>
+<div class="highlight"><pre> . -&gt; 重复上一次命令
+ N&lt;command&gt; -&gt; 重复命令N次
+</pre></div>
+
+
+<h1>自动补全：&lt;ctrl-n>  &lt;ctrl-p></h1>
+<p>在插入模式下，输入一个词的开头，按&lt;ctrl-p>或是&lt;ctrl-n>自动补全（需是前面出现过的）</p>
+<h1>宏录制：qa操作序列，@a，@@</h1>
+<div class="highlight"><pre> qa -&gt; 把操作记录在寄存器a上
+ @a -&gt; replay录制的宏
+ @@ -&gt; replay最新的宏
+</pre></div>
+
+
+<h1>可视化选择:v, V, &lt;ctrl-v></h1>
 <p>一旦选择好后，可以做下面的事情：</p>
-<div class="highlight"><pre>* J -&gt; 把所有的行连接成一行
-* &lt;或&gt; -&gt; 左右缩进
-* = -&gt; 自动缩进
+<div class="highlight"><pre> J -&gt; 把所有的行连接成一行
+ &lt;或&gt; -&gt; 左右缩进
+ = -&gt; 自动缩进
 </pre></div>
 
 
 <h1>分屏：sp</h1>
-<div class="highlight"><pre>* :sp -&gt; 分屏
-* &lt;ctrl-w&gt;&lt;dir&gt; -&gt; &lt;dir&gt;是方向，用来切换分屏
-* &lt;ctrl-w&gt;_：最大化尺寸
-* &lt;ctrl-w&gt;+或&lt;ctrl-w&gt;-：增大（缩小）尺寸
+<div class="highlight"><pre> :sp -&gt; 分屏
+ &lt;ctrl-w&gt;&lt;dir&gt; -&gt; &lt;dir&gt;是方向，用来切换分屏
+ &lt;ctrl-w&gt;_：最大化尺寸
+ &lt;ctrl-w&gt;+或&lt;ctrl-w&gt;-：增大（缩小）尺寸
 </pre></div>
     </div>
   </div>
