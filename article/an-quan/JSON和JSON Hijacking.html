@@ -97,7 +97,7 @@
 <h1> 什么是JSONP </h1>
 
 <p>AJAX依靠JSON来交换数据，依靠JSONP来跨域。JSON和JSONP不是同一样东西，JSON是一种数据交换格式，而JSONP是一种非官方的跨域数据交互协议。一个是描述信息的方法，一个是传递信息的方法。</p>
-<p>众所周知，AJAX直接请求普通文件存在同源策略的限制（Access-Control-Allow-Origin除外），不管是什么页面只要是跨域请求都是不允许的。但是我们又发现凡是拥有"src"属性的标签都有跨域的能力（<code>&lt;script&gt;, &lt;iframe&gt;, &lt;img&gt;</code>）。为了便于客户端使用数据，逐渐形成了JSONP协议，该协议的一个要点就是允许用户传递一个callback参数给服务器，然后服务器返回数据时将这个callback参数作为函数名包裹住JSON数据，这样客户端就可以随意定制自己的函数来自动处理返回的数据了。</p>
+<p>众所周知，AJAX直接请求普通文件存在同源策略的限制（Access-Control-Allow-Origin除外），不管是什么页面只要是跨域请求都是不允许的。但是我们又发现凡是拥有"src"属性的标签都有跨域的能力（<code>&lt;script&gt;, &lt;iframe&gt;, &lt;img&gt;</code>）。为了便于客户端使用数据，逐渐形成了JSONP协议，该协议的一个要点就是允许用户传递一个callback参数给服务器，然后服务器返回数据时将这个callback参数作为函数名包裹住JSON数据，换言之将返回的JSON数据作为参数直接调用，这样客户端就可以随意定制自己的函数来自动处理返回的数据了。</p>
 <p>AJAX和JSONP看起来很像但是本质上两种不同的东西。AJAX的核心是通过XHR来获取内容，而JSONP则是动态添加<code>&lt;script&gt;</code>标签来调用服务器的脚本, callback只是一个参数名，可以换成别的。。。</p>
     </div>
   </div>

