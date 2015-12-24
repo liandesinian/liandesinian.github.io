@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/za-xiang/Sed & Awk.html" />
+
+    <title>  Avalon &mdash; Sed & Awk
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="Sed是一个流字符编辑器，可以对多个文件进行一系列编辑工作。awk是一种程序设计预言，非常适合结构化数据的处理和格式化报表的生成。 概述 Sed被认为是面向字符流的，输入流通过程序将结果直接输出到输出端。Sed提供的功能就像是交互式的编辑器的延伸，它提供的查找和替换功能可以被全局地运用在单个文件或一组文件中。使用Sed和编写Shell脚本类似，可以指定一系列的顺序执行的动作，其中大部分的动作都可以在vi中手工进行。然后sed通过文件的传递来执行它们，而不必进入每个文件进行修改。 总的来说，Sed可以： 在一个或多个文件上自动实现编辑操作。 简化对多个文件执行相同的编辑处理工作。 编写转换程序 Awk的典型示例是将数据转换成格式化的报表，这些数据拥有某种结构。awk可以对数据的列重新排序，甚至将行辩证列，将列变成行。和Sed脚本一样，awk脚本通常包含调用awk的命令行以及awk解释的脚本。 总之，awk可以： 将文本文件看作由记录和字段组成的文本数据库 使用变量操作数据库。 使用算术和字符串操作符 使用普通的程序设计结构 生成格式化报告 定义函数 从脚本中执行UNIX命令 处理UNIX命令的结果 更加巧妙地处理命令行的参数 更容易地处理多个输入流 基本操作 sed和awk都起源于ed。先了解一下ed。 当用ed打开文件时，它显示了文件中的字符数并定位在最后一行，没有提示符。如果输入了ed无法解释的命令就会打印一个问号，可以输入p来显示当前的行。默认情况下一个命令只影响当前的行。要进行编辑工作首先移动到某一行然后输入对应的命令，要移到某一行，可以输入输入地址 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/za-xiang/Sed & Awk.html" title="Sed & Awk">Sed & Awk</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-12-04T00:00:00+08:00">2015年12月04日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/za-xiang.html">杂项</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>Sed是一个流字符编辑器，可以对多个文件进行一系列编辑工作。awk是一种程序设计预言，非常适合结构化数据的处理和格式化报表的生成。</p>
+<h1> 概述 </h1>
+
+<p>Sed被认为是面向字符流的，输入流通过程序将结果直接输出到输出端。Sed提供的功能就像是交互式的编辑器的延伸，它提供的查找和替换功能可以被全局地运用在单个文件或一组文件中。使用Sed和编写Shell脚本类似，可以指定一系列的顺序执行的动作，其中大部分的动作都可以在vi中手工进行。然后sed通过文件的传递来执行它们，而不必进入每个文件进行修改。</p>
+<p>总的来说，Sed可以：</p>
+<ol>
+<li>在一个或多个文件上自动实现编辑操作。</li>
+<li>简化对多个文件执行相同的编辑处理工作。</li>
+<li>编写转换程序</li>
+</ol>
+<p>Awk的典型示例是将数据转换成格式化的报表，这些数据拥有某种结构。awk可以对数据的列重新排序，甚至将行辩证列，将列变成行。和Sed脚本一样，awk脚本通常包含调用awk的命令行以及awk解释的脚本。</p>
+<p>总之，awk可以：</p>
+<ol>
+<li>将文本文件看作由记录和字段组成的文本数据库</li>
+<li>使用变量操作数据库。</li>
+<li>使用算术和字符串操作符</li>
+<li>使用普通的程序设计结构</li>
+<li>生成格式化报告</li>
+<li>定义函数</li>
+<li>从脚本中执行UNIX命令</li>
+<li>处理UNIX命令的结果</li>
+<li>更加巧妙地处理命令行的参数</li>
+<li>更容易地处理多个输入流</li>
+</ol>
+<h1> 基本操作 </h1>
+
+<p>sed和awk都起源于ed。先了解一下ed。</p>
+<p>当用ed打开文件时，它显示了文件中的字符数并定位在最后一行，没有提示符。如果输入了ed无法解释的命令就会打印一个问号，可以输入p来显示当前的行。默认情况下一个命令只影响当前的行。要进行编辑工作首先移动到某一行然后输入对应的命令，要移到某一行，可以输入输入地址，地址可以用行号，指示文件中特定的位置的符号或是正则表达式来表示，然后输入对应的命令，比如删除"d"。可以直接将表示行的地址放在命令之前，入"1d"表示删除第一行。如果用正则表达式表示，如<code>/regular/d</code>表示删除包含"regular"的第一行的那一行。如果要删除包含"regular"的所有行，可以在前面加<code>g</code>，如<code>g/regular/d</code>，表示该命令是一个全局命令。</p>
+<p>ed中的替换命令是：</p>
+<div class="highlight"><pre>[address]s/pattern/replace/flag
+</pre></div>
+
+
+<p>pattern是正则表达式，replace是替代的字符串，若未指定地址，则只影响当前行上的第一次出现，若当前行没有匹配regular的字符串则出错，可以在flag处使用<code>g</code>来匹配当前行上所有匹配的字符串。address可以用正则表达式来表示，比如上面所说的<code>g/regular/</code>。eg：</p>
+<div class="highlight"><pre>g/regular expression/s/regular/complex/g
+</pre></div>
+
+
+<p>表示在包含"regular expression"的任意行上将"regular"替换成"complex"。如果address和pattern模式相同，则pattern可以省略。</p>
+<p>ed可以将编辑命令放在独立的文件中并将它们作为行编辑器的输入。</p>
+<p>Sed与ed的不同在与Sed是交互式的，它面向的是字符流。默认情况下对sed的所有输入都会经过相应的处理，并转为标准输出，输入文件本身不发生改变。sed遍历文件，每次一行，这样每一行就都成为当前行，sed就无需地址，sed是隐式的全局命令，eg：</p>
+<div class="highlight"><pre>sed：s/regular/complex   ==  ed：g/regular/s//complex
+</pre></div>
+
+
+<p>ed中的寻址扩大受命令影响的行数，sed中的寻址限制受命令影响的行数。</p>
+<p>awk也是面向字符流的，与sed不同的是它废弃了行编辑器的命令，同时仿效C语言，用大括号包围应用于同一地址的一个或多个语句。awk可以分析或拆分每个输入行。</p>
+<p>可以用大致相同的语法调用sed和awk，命令如下：</p>
+<div class="highlight"><pre>command [options] script filename
+</pre></div>
+
+
+<p>options选项，script指定了要执行的指令，filename是输入。每个程序每次从输入文件中读取一个输入行，生成该输入行的备份，并且对该备份执行脚本中指定的指令。因此对输入行的修改不会影响源文件。</p>
+<p>在sed和awk中，每个指令都包含两个部分：模式和过程。模式是由斜杠分隔的正则表达式，过程指定一个或多个将被执行的动作。当读取输入中的每一行时，读取所有的指令，如果不匹配则继续下一条指令，如果匹配则执行相应的过程。在读取了所有的指令后sed输出该行（不论是否有匹配的指令执行过）并循环处理每个输入行。而awk不自动输出行，脚本中的指令控制awk的行为。因此在sed中大部分的指令都类似于行编辑器中的编辑命令，都是单个字母。而awk则由程序设计语言和函数组成，用大括号包括。</p>
+<h2> sed使用 </h2>
+
+<p>指令部分最好加上单引号，以防被shell解析。如果在命令行上输入多个命令，可以用分号进行分隔，或者用-e选项指定每一条指令。</p>
+<p>阻止自动输出可以使用-n，而对于要输出的行可以在指令的最后加上p，如<code>sed -n 's/a/b/p'</code>。</p>
+<p>如果将指令保存成文件，可以用-f选项调用指令文件。</p>
+<h2> awk使用 </h2>
+
+<p>通常情况下，awk将每一行输入解释为一条记录而将一行上的单词（由空格和制表符分隔）解释为一个字段。一个或多个连续的空格或制表符看成分隔符（可更改）。awk允许在模式或过程中引用这些字段，$0代表整个记录即整个输入行。</p>
+<p>-f：同sed</p>
+<p>-F：后接分隔符，用于改变分隔符。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

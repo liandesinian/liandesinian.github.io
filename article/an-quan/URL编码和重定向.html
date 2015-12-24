@@ -36,9 +36,9 @@
       <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
       <ul class="header-menu list-inline">
 		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
-		<li><a class="nodec" href="/category/miscellaneous.html">miscellaneous</a></li>
 		<li><a class="nodec" href="/category/python.html">Python</a></li>
 		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
 		
       </ul>
     </div>
@@ -81,12 +81,12 @@
 
 
 <p>encodeURI：</p>
-<div class="highlight"><pre>对于英文字母、数字、;/:@&amp;=+$,#不进行编码。对于其他的在编码后，它输出utf-8形式（即8bit字节码），并且在每个字节前加上%。对应的解码函数是decodeURI。它不对单引号编码。
+<div class="highlight"><pre>对于英文字母、数字、!、@、#、$、&amp;、*、()、&#39;、-、_、.、:、;、=、?、+、~不进行编码。对于其他的在编码后，它输出utf-8形式（即8bit字节码），并且在每个字节前加上%。对应的解码函数是decodeURI。它不对单引号编码。
 </pre></div>
 
 
 <p>encodeURIComponent：</p>
-<div class="highlight"><pre>它对与/; :@&amp;+=$, #这些在encodeURL中不进行编码的字符都进行编码，编码方法都一样。注：它同样不对单引号进行编码。
+<div class="highlight"><pre>不编码的字符有：!、*、()、&#39;、-、_、.、~、0~9、a-z、A-Z。编码方法都一样。注：它同样不对单引号进行编码。
 </pre></div>
 
 

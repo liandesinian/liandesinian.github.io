@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/i春秋笔记.html" />
+
+    <title>  Avalon &mdash; i春秋笔记
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="Web安全漏洞综述 ASP下安全技术 通过将小马上传到服务器目录下，然后通过小马上传大马，进而使用WebShell进行控制。第一节是通过ftp的方式上传，第二节是通过一句话木马客户端上传至服务端。第三节是因为服务端开启了IIS的WebDAV扩展服务，通过iiswrite将文件写到了服务端。 Note: iiswrite不能直接将后缀为asp和aspx的文件put到服务端，需先put成其他后缀，如txt，再move重命名。 PHP下安全技术 PHP的思路同ASP。第一节通过ftp上传小马或是大马。第二节介绍了文件包含漏洞，include的文件包含漏洞可以包含任何文本文件。include后也可以包含php://input，然后POST一段php代码，可以通过hackbar来进行。第三节Apache的解析漏洞指：Apache对名为"1.html.x1.x2.x3"的文件的解析方法是：从最后点开始识别，如果x3可识别就解析x3，如果x3不可识别就继续往前解析x2。如果都不可识别就按照文本文件解析，因此可以上传一个名为'1.php.xxx'的文件来绕过后缀验证，来验证是否存在解析漏洞。 网络安全之弱口令 弱口令爆破 适用各种需要输入用户名和密码的地方。漏洞：软件默认密码、常用弱口令、社工库类型密码。工具 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/i春秋笔记.html" title="i春秋笔记">i春秋笔记</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-12-07T00:00:00+08:00">2015年12月07日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <h1> Web安全漏洞综述 </h1>
+
+<h2> ASP下安全技术 </h2>
+
+<p>通过将小马上传到服务器目录下，然后通过小马上传大马，进而使用WebShell进行控制。第一节是通过ftp的方式上传，第二节是通过一句话木马客户端上传至服务端。第三节是因为服务端开启了IIS的WebDAV扩展服务，通过iiswrite将文件写到了服务端。</p>
+<p><strong>Note: </strong></p>
+<p>iiswrite不能直接将后缀为asp和aspx的文件put到服务端，需先put成其他后缀，如txt，再move重命名。</p>
+<h2> PHP下安全技术 </h2>
+
+<p>PHP的思路同ASP。第一节通过ftp上传小马或是大马。第二节介绍了文件包含漏洞，include的文件包含漏洞可以包含任何文本文件。include后也可以包含<code>php://input</code>，然后POST一段php代码，可以通过hackbar来进行。第三节Apache的解析漏洞指：Apache对名为"1.html.x1.x2.x3"的文件的解析方法是：从最后点开始识别，如果x3可识别就解析x3，如果x3不可识别就继续往前解析x2。如果都不可识别就按照文本文件解析，因此可以上传一个名为'1.php.xxx'的文件来绕过后缀验证，来验证是否存在解析漏洞。</p>
+<h1> 网络安全之弱口令 </h1>
+
+<h2> 弱口令爆破 </h2>
+
+<p>适用各种需要输入用户名和密码的地方。漏洞：软件默认密码、常用弱口令、社工库类型密码。工具：burpsuite、hydra</p>
+<h3> 默认型弱口令：</h3>
+
+<p>系统服务弱口令：</p>
+<ul>
+<li>远程登录</li>
+<li>ssh</li>
+<li>ftp</li>
+<li>telnet</li>
+</ul>
+<p>应用组件弱口令：</p>
+<ul>
+<li>Tomcat</li>
+<li>Weblogic</li>
+<li>redis</li>
+<li>mysql</li>
+<li>mongodb</li>
+<li>memcache</li>
+<li>rsync</li>
+</ul>
+<h1> 漏洞实例讲解 </h1>
+
+<p>漏洞本质</p>
+<p>程序的本质是变量和函数，漏洞也无法脱离这两个元素。</p>
+<p>漏洞形成的条件：</p>
+<ol>
+<li>可以控制的变量（一切输入都是有害的）</li>
+<li>变量到达有利用价值的函数[危险函数]（一切进入函数的变量都是有害的）</li>
+</ol>
+<p>$HTTP_RAW_POST_DATA:包含有原始POST数据。此变量仅在碰到未识别MIME类型的数据时产生，如果POST过来的数据不是php能够识别的可以用此变量接收。若enctype=multipart/data，不管用。PHP默认识别的数据类型是application/x-www.form-urlencode</p>
+<h1> 非法文件上传 </h1>
+
+<p>上传一句话木马，若提示后缀格式有误，即无法上传此类型文件：</p>
+<ol>
+<li>若反应很快，可以认为是本地验证，此时可以尝试适用firebug修改前端HTML，删除上传验证的函数。</li>
+<li>MIME类型检测，截获HTTP头，修改Content-Type</li>
+<li>修改后缀名，php语言除了可以解析php后缀的文件，还可以解析php2、php3、php4、php5为后缀的文件。</li>
+<li>上传图片，在图片后面加上一句话，同时修改文件类型为php。</li>
+<li>IIS6.0在解析*.asp/xxx.jpg时会被IIS当成asp文件进行解析并执行。请求时从头部查找<code>.</code>，获得.asp/xxx.jpg，若有<code>/</code>，视为截断，即当成asp文件进行解析。</li>
+<li>IIS6.0在解析*.php;xxx.jpg时会被IIS当成php文件进行解析并执行。理由同上，若有<code>;</code>，视为截断。</li>
+<li>Apache的解析漏洞主要特性是Apache是从后面开始检查后缀，按最后一个合法后缀（即在Apache中设置了解析）执行。将木马的后缀修改为允许上传的类型即可绕过验证。</li>
+<li>.htaccess文件允许上传，此文件是Apache的配置文件，可以增加<code>AddType application/x-httpd-php .jpg</code>使Apache将jpg文件用php进行解析。</li>
+</ol>
+<h1> 网络安全概述 </h1>
+
+<p>CIA三元组：机密型、完整性、可用性</p>
+<p>网络安全的挑战：</p>
+<ul>
+<li>复杂性：多种安全机制，部署方法，信任问题。考虑潜在攻击和多种威胁。攻防的较量关键在人</li>
+<li>成本</li>
+</ul>
+<h3> OSI安全体系结构 </h3>
+
+<p>安全模型的三个方面：</p>
+<ul>
+<li>安全攻击：任何破坏信息安全的行为</li>
+<li>安全机制：用来检测、阻止安全攻击或从攻击中恢复的机制</li>
+<li>安全服务：增强数据处理系统和信息传输的安全性服务，安全服务可以使用安全机制用来阻止安全攻击。</li>
+</ul>
+<p>两类安全模型：</p>
+<ul>
+<li>网络加密安全模型：参与者、信息通道、安全机制构成。</li>
+<li>网络访问安全模型：保护系统资源免受非授权的访问。攻击者、访问信道、安全机制和资源系统构成</li>
+</ul>
+<h2> 消息认证 </h2>
+
+<p>对收到的消息进行认证，证明确实是来自消息的发送方并且没有被修改过，若在消息中加入时间和顺序信息，就可以完成对消息的时效性认证</p>
+<p>消息认证的三种方式：</p>
+<ul>
+<li>消息加密，即用整个消息的密文作为认证标识</li>
+<li>MAC: 消息认证码，即用一个公开函数, 加上一个密钥产生一个固定长度的值作为认证标识</li>
+<li>HASH: 散列函数，即一个公开函数将任意长度的消息映射到一个固定长度的散列值</li>
+</ul>
+<h3> MAC </h3>
+
+<p>使用一个双方共享的秘密密钥生成一个固定的大小的数据块并加入到消息中，称MAC。MAC不等于数字签名，因为双方共享同一密钥，MAC有固定长度</p>
+<h3> HASH </h3>
+
+<p>接收的输入数据没有长度限制，快速性，单向性，抗碰撞性，雪崩性</p>
+<h2> PKI </h2>
+
+<p>公钥和身份如何联系：通过证书。确认公钥是某身份发出的。</p>
+<p>用公钥管理和技术实施和提供安全服务的安全基础设施。用户可利用PKI平台提供的服务进行安全的电子交易，通信和互联网上的各种活动。PKI是创建、颁发、管理、注销公钥证书所涉及到的所有软件、硬件的集合体。</p>
+<p>目标：安全、方便和高效获取证书。其核心元素是数字证书，核心执行机构是CA</p>
+<p>一个完整的PKI包括：</p>
+<ul>
+<li>CA（认证机构）：证书签发</li>
+<li>证书库：是证书的存储地，提供查询</li>
+<li>密钥备份和恢复系统：对用户的解密密钥进行备份，当丢失时进行恢复，签名密钥不能备份和恢复。</li>
+<li>证书作废处理系统：</li>
+<li>PKI应用接口系统</li>
+</ul>
+<p>PKI提供的基本服务：</p>
+<ul>
+<li>认证：采用数字签名技术</li>
+<li>完整性：两种方式：数字签名、MAC（消息认证码）</li>
+<li>保密性：用公钥分发随机密钥，用随机密钥进行加密</li>
+<li>不可否认</li>
+</ul>
+<h3> PKI中的证书 </h3>
+
+<p>证书中最重要的信息是个体名字、个体的公钥、机构的签名、算法和用途</p>
+<h2> Kerberos </h2>
+
+<p>对称密钥的安全取决于密钥的分发技术</p>
+<p>分发对称密钥的方法：</p>
+<ul>
+<li>物理方法传递</li>
+<li>用旧密钥加密新密钥</li>
+<li>基于第三方的加密链路（密钥分发中心）</li>
+</ul>
+<p>密钥分发中心（KDC)：</p>
+<ul>
+<li>会话密钥：用于一次性，用于一次逻辑链路的通信</li>
+<li>永久密钥：用于分发会话密钥</li>
+<li>实现：Kerberos</li>
+</ul>
+<h3> Kerberos </h3>
+
+<ul>
+<li>支持的密码算法：SHA-1、MD5、DES、3DES、AES</li>
+<li>广泛应用：开源工具、商业产品、单点登录</li>
+</ul>
+<p>特点：可伸缩性，适用于分布式网络；基于可信的第三方；基于口令的认证协议；利用对称密码技术建立起来的认证协议；适用于较小的应用环境</p>
+<p>安全主体（Principal）：被认证的主体。eg：</p>
+<ul>
+<li>用户主体名称：user@REALM</li>
+<li>服务主体名称：serviceclass/host_port/servicename</li>
+</ul>
+<p>KDC（密钥分发中心）：</p>
+<ul>
+<li>是一个网络服务，提供ticket和临时会话密钥。网络中所有主体都信任KDC，并使用KDC认证用户身份。</li>
+<li>逻辑组成：认证服务、票据授予服务</li>
+<li>还拥有一个密钥数据库，每个实体与KDC共享一个密钥。</li>
+</ul>
+<p>Ticket：一个记录，客户可以用它来向服务器验证身份，包括标识、时间戳、会话密钥及其他信息。</p>
+<p>Authenticator：一个记录</p>
+<h3> Kerberos域 </h3>
+
+<p>一个完整的Kerberos环境：一台Kerberos服务器、若干库互端、若干应用服务器</p>
+<p>要求：Kerberos服务器的数据库必须存有所有参与用户的ID和经过散列值函数处理过的口令。所有用户在Kerberos服务器上注册；Kerberos服务器必须与每个服务器共享一个秘密密钥。所有服务器都要在Kerberos上注册</p>
+<p>Kerberos信任模型：</p>
+<ul>
+<li>每个主体和KDC的通信是在利用仅双方可知的密钥构建的安全通道中进行。</li>
+<li>当主体之间需要通信时，再利用KDC生成会话密钥</li>
+</ul>
+<p>Kerberos是无状态的，因此KDC和票据授予服务并没有记录以前的交互信息</p>
+<p>Kerberos并不能解决密码猜测和拒绝服务攻击</p>
+<p>Kerberos要求参与通信的主机的时钟同步，因为ticket有一定有效期</p>
+<h2>  访问控制和授权 </h2>
+
+<p>自主访问控制：由客体的属主对自己的客体进行管理，由属主自己决定是否将自己客体的访问权或部分访问权授予其他客体。在自主访问控制下，一个用户可以自主选择哪些用户可以共享他的文件。</p>
+<p>强访问控制：通过限制主体的行为，使得主体只能访问那些它们具有相应权限空间的客体对象。(多级安全模型）</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>
