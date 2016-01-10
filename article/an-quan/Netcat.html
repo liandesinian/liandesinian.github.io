@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/Netcat.html" />
+
+    <title>  Avalon &mdash; Netcat
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="概述 Netcat是通过TCP和UDP对网络连接进行数据读写的工具，同时它也是一款网络诊断和探索工具。最简单的使用："nc host port"创建一个指定主机和端口的连接。标准输入会发送给主机，主机的响应会通过连接发送到标准输出。这个连接可以一直持续，直到连接的网络端关闭才会断开。这和其他类似的应用程序不一样。其他程序会在标准输入中接收到文件结束符就关闭。 Netcat也可以作为服务器，通过在任意的端口监听进入的连接进行同样的读写。Netcat并不关心自身运行的是客户端还是服务端，它只是传输数据。无论是客户端还是服务端，都可以通过配置网络的闲置时间来关闭连接。 为什么用Netcat而不用telnet进行连接呢？首先Telnet有"标准输入EOF"的问题，也就是之前说的会在标准输入中接收到EOF就关闭，因此一端必须在脚本中计算延迟来让输出结束之后再关闭。Telnet同时也并不能传输任意的二进制数据，因为有些特定的字符会被解释成telnet的选项而从传输数据中移除。而且Telent会发送一些它自身的诊断信息到标准输出中，而netcat则会将这类信息与传过来的输出隔开来，同时不会修改任何传输过来的数据，除非你真的想这么做。除此以外，telnet并不能充当服务端监听进来的连接，也不能使用UDP。 Netcat是明文连接，传输的都是明文。可以使用Cryptcat进行加密传输，用法和Netcat差不多。 Netcat的一些特色 可以使用TCP、UDP，任意端口，连出去或者连进来的连接 DNS查找和反向查找 使用任何的本地源端口的能力 使用任何本地配置过的网络源地址 内建端口扫描 内建松散源路由 可以从标准输入中读取命令行参数 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/Netcat.html" title="Netcat">Netcat</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2016-01-03T00:00:00+08:00">2016年01月03日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <h1> 概述 </h1>
+
+<p>Netcat是通过TCP和UDP对网络连接进行数据读写的工具，同时它也是一款网络诊断和探索工具。最简单的使用："nc host port"创建一个指定主机和端口的连接。标准输入会发送给主机，主机的响应会通过连接发送到标准输出。这个连接可以一直持续，直到连接的网络端关闭才会断开。这和其他类似的应用程序不一样。其他程序会在标准输入中接收到文件结束符就关闭。</p>
+<p>Netcat也可以作为服务器，通过在任意的端口监听进入的连接进行同样的读写。Netcat并不关心自身运行的是客户端还是服务端，它只是传输数据。无论是客户端还是服务端，都可以通过配置网络的闲置时间来关闭连接。</p>
+<p>为什么用Netcat而不用telnet进行连接呢？首先Telnet有"标准输入EOF"的问题，也就是之前说的会在标准输入中接收到EOF就关闭，因此一端必须在脚本中计算延迟来让输出结束之后再关闭。Telnet同时也并不能传输任意的二进制数据，因为有些特定的字符会被解释成telnet的选项而从传输数据中移除。而且Telent会发送一些它自身的诊断信息到标准输出中，而netcat则会将这类信息与传过来的输出隔开来，同时不会修改任何传输过来的数据，除非你真的想这么做。除此以外，telnet并不能充当服务端监听进来的连接，也不能使用UDP。</p>
+<p>Netcat是明文连接，传输的都是明文。可以使用Cryptcat进行加密传输，用法和Netcat差不多。</p>
+<h2> Netcat的一些特色 </h2>
+
+<ul>
+<li>可以使用TCP、UDP，任意端口，连出去或者连进来的连接</li>
+<li>DNS查找和反向查找</li>
+<li>使用任何的本地源端口的能力</li>
+<li>使用任何本地配置过的网络源地址</li>
+<li>内建端口扫描</li>
+<li>内建松散源路由</li>
+<li>可以从标准输入中读取命令行参数</li>
+<li>慢发送模式，每隔N秒发送一行数据</li>
+<li>发送和接收数据的十六进制输出</li>
+<li>让另外的程序服务建立连接的可选的能力</li>
+<li>可选的telnet选项回答</li>
+</ul>
+<h1> Exploration </h1>
+
+<p>如果没有加上任何参数，netcat会从标准输入上读取一行并将其拆分成参数。这很有用，可以避免参数显示在"ps"命令中。"host"参数可以是主机名也可以是IP地址。如果加上"-n"参数就只能是IP地址，因为这样不会进行DNS解析。如果没有加"-n"而加"-v"，就会进行完全的DNS查找和反向查找，这会浪费一些时间。"port"参数是用来连出去的，即可以是数字端口也可以是/etc/services中的名称。</p>
+<p>"-v"参数可以显示详情。"-w"用来设置连接建立的时间。"-w"同样也可以用来设置连接闲置的时间。当在闲置时间内没有任何数据到达时，Netcat会再读一次网络然后关闭并退出。现在有很多网络服务接收很少的输入而返回大量的输出，因此netcat专注于网络是否保持打开而不是标准输入。</p>
+<p>"-u"参数使用UDP连接，最好设置延迟。</p>
+<p>"-o logfile"用来获取十六进制数据并将其保存为文件。dump的数据以"&lt;"和"&gt;"开头表示"从网络上"和"到网络上"。捕捉十六进制数据会降低一点netcat的速度。</p>
+<p>Netcat可以绑定到任意的本地端口。也可以使用特定的本地网络源地址，只要这个地址在网络接口上配置了。"-p port"、"-s ip_addr"</p>
+<p>监听模式可以使netcat等待进入的连接。你可以使用"nc -l -p 1234 &lt; file"，如果有人连接到你的1234端口，则file文件内容会发送给他们，无论他们想不想要。接收端可以加上"&gt; filename"来接收文件内容并保存到文件。"-p"对于TCP连接来说是可选的，而对于UDP来说是必选的。如果打开-v可以看到连入的连接。也可以指定目标主机，那么只有指定的主机才能连入。</p>
+<p>"-e"参数可以在成功建立连接之后指定一个程序来执行。只能指定程序名而不能指定参数。</p>
+<p>端口扫描：Netcat首先接收选项参数，然后是主机参数，之后的都会被解释为端口，可以是端口号也可以是端口名，可以用M-N的形式来指定范围。如果指定了多个端口，netcat会连接所有指定的端口，发送同样的数据给所有连接成功的端口。eg："nc -v -w 2 -z target 20-30"会尝试连接目标的20-30号端口。"-z"选项零输入输出模式，加快扫描，可以用来查看有多少端口是打开的。通常情况下，netcat的端口扫描都是顺序扫描的，"-r"参数可以随机对范围内的端口进行扫描，如果要正序输出，可以通过管道符导出到"sort"。如果是连接一个端口，"-r"参数可以使本地连接端口随机化（8192以上），而不是使用系统分配的下一个可用端口号。
+"-g"参数可以使用松散路由。</p>
+<h1> Examples --the light side </h1>
+
+<p>Netcat可以作为web浏览器，通过"GET"获取网页信息。作为Telnet的替代。Netcat可以用来进行数据传输，它不关心哪一端是客户端，哪一端是服务端，只是把一边的数据传输到另一边。</p>
+<p>传输文件："&lt; file"：发送端；"&gt; file"：接收端。eg：</p>
+<div class="highlight"><pre>   发送端：nc host port &lt; xxxx
+   接收端：nc -l -p port &gt; xxxx
+
+   发送端：tar -cf - xxxx | nc -l -p 1234
+   接收端：nc host 1234 | tar -xf - 
+
+   发送端：cat xxxx | nc -l -p 1234
+   接收端：nc host 1234 &gt; xxxx
+</pre></div>
+
+
+<h1> Examples --the dark side </h1>
+
+<p>反弹连接：通常肉鸡都在防火墙后面，通过在攻击机上设置nc监听，让肉鸡主动连接攻击机。肉鸡在连接时通过"-e cmd.exe"选项绑定cmd命令行，攻击机即可执行cmd命令。权限和连接的权限相同。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

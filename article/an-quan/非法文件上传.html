@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/非法文件上传.html" />
+
+    <title>  Avalon &mdash; 非法文件上传
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="概述 文件上传漏洞是指用户上传了一个可执行的脚本文件，并通过此文件获得了执行服务器端命令的能力。"文件上传"本身没有问题，有问题的是文件上传后，服务器怎么处理、解释文件。如果服务器的处理逻辑做的不够安全，则会导致严重的后果。 文件上传后导致的常见安全问题有： 上传文件是Web脚本语言，如asp、php等，服务器的Web容器解释并执行了用户上传的文件导致代码执行。 上传文件是Flash的策略文件crossdomain.xml，黑客用以控制Flash在该域下的行为（其他通过类似方式控制策略文件的类似） 上传文件是病毒、木马，黑客用以诱骗用户、管理员下载执行 上传文件是钓鱼图片或为包含了脚本的图片，在某些版本的浏览器中会被作为脚本执行，被用于钓鱼和欺诈。 除此以外还有一些不常见的方法，比如将上传文件作为一个入口，溢出服务器的后台处理程序；或者上传一个合法的文本文件，其内容包含了PHP脚本，再通过本地文件包含漏洞执行此脚本等等。 在大多数情况下，文件上传漏洞一般都是指"上传Web脚本能够被服务器解析"的问题，也就是webshell问题。要完成需满足几个条件：首先，上传的文件能够被Web容器解释执行，因此文件上传的目录应是Web容器能够覆盖的路径。其次用户能够从Web访问这个文件。最后上传的文件若被安全检查、格式化、图片压缩等功能改变了内容也无法执行成功。 绕过文件上传检查漏洞 在某些时候，攻击者手动修改了上传过程中的POST包，在文件名后面添加一个%00字节 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/非法文件上传.html" title="非法文件上传">非法文件上传</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2016-01-01T00:00:00+08:00">2016年01月01日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <h1> 概述 </h1>
+
+<p>文件上传漏洞是指用户上传了一个可执行的脚本文件，并通过此文件获得了执行服务器端命令的能力。"文件上传"本身没有问题，有问题的是文件上传后，服务器怎么处理、解释文件。如果服务器的处理逻辑做的不够安全，则会导致严重的后果。</p>
+<p>文件上传后导致的常见安全问题有：</p>
+<ul>
+<li>上传文件是Web脚本语言，如asp、php等，服务器的Web容器解释并执行了用户上传的文件导致代码执行。</li>
+<li>上传文件是Flash的策略文件crossdomain.xml，黑客用以控制Flash在该域下的行为（其他通过类似方式控制策略文件的类似）</li>
+<li>上传文件是病毒、木马，黑客用以诱骗用户、管理员下载执行</li>
+<li>上传文件是钓鱼图片或为包含了脚本的图片，在某些版本的浏览器中会被作为脚本执行，被用于钓鱼和欺诈。</li>
+</ul>
+<p>除此以外还有一些不常见的方法，比如将上传文件作为一个入口，溢出服务器的后台处理程序；或者上传一个合法的文本文件，其内容包含了PHP脚本，再通过本地文件包含漏洞执行此脚本等等。</p>
+<p>在大多数情况下，文件上传漏洞一般都是指"上传Web脚本能够被服务器解析"的问题，也就是webshell问题。要完成需满足几个条件：首先，上传的文件能够被Web容器解释执行，因此文件上传的目录应是Web容器能够覆盖的路径。其次用户能够从Web访问这个文件。最后上传的文件若被安全检查、格式化、图片压缩等功能改变了内容也无法执行成功。</p>
+<h3> 绕过文件上传检查漏洞 </h3>
+
+<p>在某些时候，攻击者手动修改了上传过程中的POST包，在文件名后面添加一个%00字节，可以截断某些函数对文件名的判断。如原本只允许上传图片文件，可以构造文件名为xxx.php[\0].jpg。.jpg绕过了应用的上传文件类型判断；但对于服务器来说，此文件因为0x00字节截断的原因，最终变成了xxx.php。</p>
+<p>除了检查文件名后缀外，还会通过判断上传文件的文件头来验证文件的类型。浏览器的MIME Sniff功能实际上也是通过读取文件的头256个字节来判断文件的类型。因此可以通过构造合法的文件头，而在其后附上PHP代码来绕过文件类型检查。但是此时仍然需要通过PHP来解释此"图片文件"才可以执行PHP代码。若上传文件的后缀为.jpg，则Web服务器可能会将此文件当作静态文件来解释，而不会调用PHP解释其，无法攻击</p>
+<h2> Web Server本身特性 </h2>
+
+<h3> Apache文件解析问题 </h3>
+
+<p>Apache对文件的解析从后向前，直到遇到一个Apache认识的文件类型为止。如a.php.rar.rar。因为Apache不认识rar这个文件类型，所以会一致遍历到前面的.php，然后认为这是一个PHP文件。而Apache认识的文件类型定义在Apache的mime.types文件中。这样如果应用力rar是一个合法的上传文件，则可以构造xxx.php.rar来绕过。</p>
+<h3> IIS文件解析问题 </h3>
+
+<p>IIS 6在解析<em>.php; xxx.jpg时会将其当成php文件来解析，也就是截断文件名，从而导致脚本被执行。除此以外因为处理文件夹扩展名出错，导致将</em>.asp/目录下的所有文件都当作ASP文件进行解析。注意这两个漏洞是需要在服务器的本地确实存在这样的文件或者文件夹，若只是通过Web应用映射出来的URL则无法触发。</p>
+<p>除此以外，IIS中还因支持PUT导致的文件上传问题。PUT是WebDAV中定义的方法。如果IIS目录支持写权限，同时开启了WebDAV，则会支持PUT方法，再结合MOVE方法就能够将原本只允许上传文本文件改写成脚本，从而执行webshell。MOVE能否执行成功取决于IIS服务器是否勾选了"脚本资源访问"复选框。</p>
+<h3> PHP CGI路径解析问题 </h3>
+
+<p>这个问题的外在表现是当访问：http://www.xxx.com/path/xxx.jpg/bbb.php时会将xxx.jpg当作php进行解析。bbb.php是不存在的文件。</p>
+<h3> 利用上传文件钓鱼 </h3>
+
+<p>有些302跳转的钓鱼URL会在URL中暴露。有些则利用文件上传功能。钓鱼者先将包含了恶意代码的文件（比如一张图片）上传到目标网站，然后通过传播这个文件的URL进行钓鱼，则URL中不会出现钓鱼地址，更隐蔽。</p>
+<h2> 设计安全的文件上传功能 </h2>
+
+<ol>
+<li>文件上传的目录设置为不可执行</li>
+<li>判断文件类型：推荐白名单方式。对于图片的处理可以使用压缩函数或resize函数破坏图片中可能包含的代码</li>
+<li>使用随机数改写文件名和文件路径。</li>
+<li>单独设置文件服务器的域名</li>
+</ol>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

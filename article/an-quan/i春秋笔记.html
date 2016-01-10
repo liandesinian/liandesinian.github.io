@@ -225,6 +225,28 @@
 
 <p>自主访问控制：由客体的属主对自己的客体进行管理，由属主自己决定是否将自己客体的访问权或部分访问权授予其他客体。在自主访问控制下，一个用户可以自主选择哪些用户可以共享他的文件。</p>
 <p>强访问控制：通过限制主体的行为，使得主体只能访问那些它们具有相应权限空间的客体对象。(多级安全模型）</p>
+<h1> wifi的网络基础课程 </h1>
+
+<p>无线网卡运行的6个模式：master mode；monitor mode；Ad-hoc mode；Managed mode；Repeater mode；Mesh mode</p>
+<p>master mode（主模式）：接入点
+managed mode（托管模式）：连接接入点的设备
+Ad-hoc mode：点对点，无需基站和接入点。对一小组设备也适用，所有使用Ad-hoc模式的设备要使用相同的ESSIDMesh mode：可以看作一种有计划的点对点模式，由起到路由、网关、客户端作用的无线设备组成
+Repeater mode：可以配置连接到一个无线网络然后重复信号，起到放大的作用</p>
+<p>无线网络频率：频道1-13, 相邻频道之间相距5MHZ，因此会有重叠。频道1、6、11之间是无重叠的，不会发生无线频率干扰。</p>
+<h1>  Kali  </h1>
+
+<p>arp-scan：扫描arp。<code>arp-scan [options] [host]</code>. eg:</p>
+<div class="highlight"><pre>    arp-scan -I eth0 --localnet
+    arp-scan -I eth0 192.168.1.0/24
+</pre></div>
+
+
+<p>arpspoof：劫持局域网上的包裹。通过将自身的MAC地址通过arp发送给主机A进行覆盖，然后将原本A发送给主机B（或者网关）的数据包劫持到自身，然后再将其发送给主机B（或者网关）。也可以进行双向欺骗（-r选项）。eg：</p>
+<div class="highlight"><pre>    arpspoof -i eth0 -t 192.168.56.129 192.168.56.1
+</pre></div>
+
+
+<p>arping：发送arp或者ip给指定的主机。可以伪造MAC或者IP。-s设置MAC，-S设置IP，若是伪造MAC或IP，可能会收不到回应包，应当使用-p开启混杂模式。</p>
     </div>
   </div>
   <hr class="separator">
