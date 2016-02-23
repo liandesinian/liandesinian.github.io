@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/za-xiang/浅析Linux初始化init系统，第2部分：Upstart.html" />
+
+    <title>  Avalon &mdash; 浅析Linux初始化init系统，第2部分：Upstart
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="原文地址 Upstart 简介 假如您使用的Linux发行版是Ubuntu，很可能会发现在您的计算机上找不到/etc/inittab文件了，这是因为Ubuntu 使用了一种被称为Upstart的新型init系统。 开发 Upstart 的缘由 大约在2006年或者更早的时候，Ubuntu开发人员试图将Linux安装在笔记本电脑上。在这期间技术人员发现经典的 sysvinit存在一些问题：它不适合笔记本环境。这促使程序员Scott James Remnant着手开发 upstart。 当Linux内核进入2.6时代，内核功能有了很多新的更新。新特性使得Linux不仅是一款优秀的服务器操作系统，也可以被用于桌面系统，甚至嵌入式设备。桌面系统或便携式设备的一个特点是经常重启，而且要频繁地使用硬件热插拔技术。在现代计算机系统中，硬件繁多、接口有限，人们并非将所有设备都始终连接在计算机上，比如U盘平时并不连接电脑，使用时才插入USB插口。因此，当系统上电启动时，一些外设可能并没有连接。而是在启动后当需要的时候才连接这些设备。在2.6内核支持下，一旦新外设连接到系统，内核便可以自动实时地发现它们，并初始化这些设备，进而使用它们。这为便携式设备用户提供了很大的灵活性。 可是这些特性为sysvinit带来了一些挑战。当系统初始化时，需要被初始化的设备并没有连接到系统上:比如打印机 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/za-xiang/浅析Linux初始化init系统，第2部分：Upstart.html" title="浅析Linux初始化init系统，第2部分：Upstart">浅析Linux初始化init系统，第2部分：Upstart</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-03-17T00:00:00+08:00">2015年03月17日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/za-xiang.html">杂项</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p><a href="http://www.ibm.com/developerworks/cn/linux/1407_liuming_init2/index.html#ibm-pcon">原文地址</a></p>
+<h1> Upstart 简介 </h1>
+
+<p>假如您使用的Linux发行版是Ubuntu，很可能会发现在您的计算机上找不到/etc/inittab文件了，这是因为Ubuntu 使用了一种被称为Upstart的新型init系统。</p>
+<h2> 开发 Upstart 的缘由 </h2>
+
+<p>大约在2006年或者更早的时候，Ubuntu开发人员试图将Linux安装在笔记本电脑上。在这期间技术人员发现经典的 sysvinit存在一些问题：它不适合笔记本环境。这促使程序员Scott James Remnant着手开发 upstart。</p>
+<p>当Linux内核进入2.6时代，内核功能有了很多新的更新。新特性使得Linux不仅是一款优秀的服务器操作系统，也可以被用于桌面系统，甚至嵌入式设备。桌面系统或便携式设备的一个特点是经常重启，而且要频繁地使用硬件热插拔技术。在现代计算机系统中，硬件繁多、接口有限，人们并非将所有设备都始终连接在计算机上，比如U盘平时并不连接电脑，使用时才插入USB插口。因此，当系统上电启动时，一些外设可能并没有连接。而是在启动后当需要的时候才连接这些设备。在2.6内核支持下，一旦新外设连接到系统，内核便可以自动实时地发现它们，并初始化这些设备，进而使用它们。这为便携式设备用户提供了很大的灵活性。</p>
+<p>可是这些特性为sysvinit带来了一些挑战。当系统初始化时，需要被初始化的设备并没有连接到系统上:比如打印机。为了管理打印任务，系统需要启动CUPS等服务，而如果打印机没有接入系统的情况下，启动这些服务就是一种浪费。Sysvinit没有办法处理这类需求，它必须一次性把所有可能用到的服务都启动起来，即使打印机并没有连接到系统，CUPS服务也必须启动。</p>
+<p>还有网络共享盘的挂载问题。在/etc/fstab中，可以指定系统自动挂载一个网络盘，比如 NFS，或者iSCSI设备。在本文的第一部分sysvinit的简介中可以看到，sysvinit分析/etc/fstab挂载文件系统这个步骤是在网络启动之前。可是如果网络没有启动，NFS或者iSCSI都不可访问，当然也无法进行挂载操作。Sysvinit采用netdev的方式来解决这个问题，即/etc/fstab发现netdev属性挂载点的时候，不尝试挂载它，在网络初始化并使能之后，还有一个专门的netfs服务来挂载所有这些网络盘。这是一个不得已的补救方法，给管理员带来不便。部分新手管理员甚至从来也没有听说过netdev选项，因此经常成为系统管理的一个陷阱。</p>
+<p>针对以上种种情况，Ubuntu开发人员在评估了当时的几个可选init系统之后，决定重新设计和开发一个全新的init系统，即UpStart。UpStart基于事件机制，比如U盘插入USB接口后，udev得到内核通知，发现该设备，这就是一个新的事件。UpStart在感知到该事件之后触发相应的等待任务，比如处理/etc/fstab中存在的挂载点。采用这种事件驱动的模式，upstart完美地解决了即插即用设备带来的新问题。</p>
+<p>此外，采用事件驱动机制也带来了一些其它有益的变化，比如加快了系统启动时间。sysvinit运行时是同步阻塞的。一个脚本运行的时候，后续脚本必须等待。这意味着所有的初始化步骤都是串行执行的，而实际上很多服务彼此并不相关，完全可以并行启动，从而减小系统的启动时间。在Linux大量应用于服务器的时代，系统启动时间也许还不那么重要, 然而对于桌面系统和便携式设备，启动时间的长短对用户体验影响很大。此外云计算等新的Server端技术也往往需要单个设备可以更加快速地启动。</p>
+<p>UpStart满足了这些需求，目前不仅桌面系统Ubuntu采用了UpStart，甚至企业级服务器级的RHEL也默认采用UpStart来替换sysvinit作为init系统。</p>
+<h2> Upstart 的特点 </h2>
+
+<p>UpStart解决了之前提到的sysvinit的缺点。采用事件驱动模型，UpStart可以：</p>
+<ul>
+<li>更快地启动系统</li>
+<li>当新硬件被发现时动态启动服务</li>
+<li>硬件被拔除时动态停止服务</li>
+</ul>
+<p>这些特点使得UpStart可以很好地应用在桌面或者便携式系统中，处理这些系统中的动态硬件插拔特性。</p>
+<h2> Upstart概念和术语 </h2>
+
+<p>Upstart的基本概念和设计清晰明确。UpStart主要的概念是job和event。Job就是一个工作单元，用来完成一件工作，比如启动一个后台服务，或者运行一个配置命令。每个Job都等待一个或多个事件，一旦事件发生，upstart就触发该job完成相应的工作。</p>
+<h3> Job </h3>
+
+<p>Job就是一个工作的单元，一个任务或者一个服务。可以理解为sysvinit中的一个服务脚本。有三种类型的工作：</p>
+<ul>
+<li>task job</li>
+<li>service job</li>
+<li>abstract job</li>
+</ul>
+<p>task job:代表在一定时间内会执行完毕的任务，比如删除一个文件；</p>
+<p>service job:代表后台服务进程，比如apache, httpd。这里进程一般不会退出，一旦开始运行就成为一个后台精灵进程，由init进程管理，如果这类进程退出，由init进程重新启动，它们只能由init进程发送信号停止。它们的停止一般也是由于所依赖的停止事件而触发的，不过upstart也提供命令行工具，让管理人员手动停止某个服务；</p>
+<p>Abstract job:仅由upstart内部使用，仅对理解upstart内部机理有所帮助。我们不用关心它。</p>
+<p>除了以上的分类之外，还有另一种工作（Job）分类方法。Upstart不仅可以用来为整个系统的初始化服务，也可以为每个用户会话（session）的初始化服务。系统的初始化任务就叫做system job，比如挂载文件系统的任务就是一个system job；用户会话的初始化服务就叫做session job。</p>
+<h3> Job 生命周期 </h3>
+
+<p>Upstart为每个工作都维护一个生命周期。一般来说，工作有开始，运行和结束这几种状态。为了更精细地描述工作的变化，Upstart还引入了一些其它的状态。比如开始就有开始之前(pre-start)，即将开始(starting)和已经开始了(started)几种不同的状态，这样可以更加精确地描述工作的当前状态。</p>
+<p>工作从某种初始状态开始，逐渐变化，或许要经历其它几种不同的状态，最终进入另外一种状态，形成一个状态机。在这个过程中，当工作的状态即将发生变化的时候，init进程会发出相应的事件（event）。</p>
+<h5> 表 1.Upstart 中 Job 的可能状态 </h5>
+
+<table>
+<tr>
+<td>状态名</td>
+<td>含义</td>
+</tr>
+<tr><td>Waiting</td><td>初始状态</td></tr>
+<tr><td>Starting</td><td>Job 即将开始</td></tr>
+<tr><td>pre-start</td><td>执行pre-start段，即任务开始前应该完成的工作</td></tr>
+<tr><td>Spawned</td><td>准备执行script或者exec段</td></tr>
+<tr><td>post-start</td><td>执行post-start动作</td></tr>
+<tr><td>Running</td><td>interim state set after post-start section processed denoting job is running (But it may have no associated PID!)</td></tr>
+<tr><td>pre-stop</td><td>执行pre-stop段</td></tr>
+<tr><td>Stopping</td><td>interim state set after pre-stop section processed</td></tr>
+<tr><td>Killed</td><td>任务即将被停止</td></tr>
+<tr><td>post-stop</td><td>执行post-stop段</td></tr>
+</table>
+
+<h5> 图1展示了Job的状态机 </h5>
+
+<p><img alt="" src="http://7xn66o.com1.z0.glb.clouddn.com/init%2Fa.jpg" /></p>
+<p>其中有四个状态会引起init进程发送相应的事件，表明该工作的相应变化：</p>
+<ul>
+<li>Starting</li>
+<li>Started</li>
+<li>Stopping</li>
+<li>Stopped</li>
+</ul>
+<p>而其它的状态变化不会发出事件。那么我们接下来就来看看事件的详细含义吧。</p>
+<h3> 事件 </h3>
+
+<p>顾名思义，Event就是一个事件。事件在upstart中以通知消息的形式具体存在。一旦某个事件发生了，Upstart就向整个系统发送一个消息。没有任何手段阻止事件消息被upstart的其它部分知晓，也就是说，事件一旦发生，整个upstart系统中所有工作和其它的事件都会得到通知。</p>
+<p>Event可以分为三类: signal，methods 或者 hooks。</p>
+<ul>
+<li>Signals: Signal事件是非阻塞的，异步的。发送一个信号之后控制权立即返回。</li>
+<li>Methods: Methods事件是阻塞的，同步的。</li>
+<li>Hooks: Hooks事件是阻塞的，同步的。它介于Signals和Methods之间，调用发出Hooks事件的进程必须等待事件完成才可以得到控制权，但不检查事件是否成功。</li>
+</ul>
+<p>事件是个非常抽象的概念，下面我罗列出一些常见的事件，希望可以帮助您进一步了解事件的含义：</p>
+<ul>
+<li>系统上电启动, init进程会发送"start"事件</li>
+<li>根文件系统可写时，相应job会发送文件系统就绪的事件</li>
+<li>一个块设备被发现并初始化完成，发送相应的事件</li>
+<li>某个文件系统被挂载，发送相应的事件</li>
+<li>类似atd和cron，可以在某个时间点，或者周期的时间点发送事件</li>
+<li>另外一个job开始或结束时，发送相应的事件</li>
+<li>一个磁盘文件被修改时，可以发出相应的事件</li>
+<li>一个网络设备被发现时，可以发出相应的事件</li>
+<li>缺省路由被添加或删除时，可以发出相应的事件</li>
+</ul>
+<p>不同的Linux发行版对upstart有不同的定制和实现，实现和支持的事件也有所不同，可以用<code>man 7 upstart-events</code>来查看事件列表。</p>
+<h3> Job 和Event相互协作 </h3>
+
+<p>Upstart就是由事件触发工作运行的一个系统，每一个程序的运行都由其依赖的事件发生而触发的。</p>
+<p>系统初始化的过程是在工作和事件的相互协作下完成的，可以大致描述如下：系统初始化时，init进程开始运行，init进程自身会发出不同的事件，这些最初的事件会触发一些工作运行。每个工作运行过程中会释放不同的事件，这些事件又将触发新的工作运行。如此反复，直到整个系统正常运行起来。</p>
+<p>究竟哪些事件会触发某个工作的运行？这是由工作配置文件定义的。</p>
+<h3> 工作配置文件 </h3>
+
+<p>任何一个工作都是由一个工作配置文件（Job Configuration File）定义的。这个文件是一个文本文件，包含一个或者多个小节（stanza）。每个小节是一个完整的定义模块，定义了工作的一个方面，比如author小节定义了工作的作者。工作配置文件存放在/etc/init下面，是以.conf作为文件后缀的文件。</p>
+<h5> 清单 1. 一个最简单的工作配置文件 </h5>
+
+<div class="highlight"><pre>#This is a simple demo of Job Configure file
+#This line is comment,  start with #
+
+#Stanza 1,  The author
+author &quot;Liu Ming&quot;
+
+#Stanza 2,  Description
+description &quot;This job only has author and description,  so no use,  just a demo&quot;
+</pre></div>
+
+
+<p>上面的例子不会产生任何作用，一个真正的工作配置文件会包含很多小节，其中比较重要的小节有以下几个：</p>
+<h4> "expect" Stanza </h4>
+
+<p>Upstart除了负责系统的启动过程之外，和SysVinit一样，Upstart还提供一系列的管理工具。当系统启动之后，管理员可能还需要进行维护和调整，比如启动或者停止某项系统服务。或者将系统切换到其它的工作状态，比如改变运行级别。本文后续将详细介绍Upstart的管理工具的使用。</p>
+<p>为了启动、停止、重启和查询某个系统服务。Upstart需要跟踪该服务所对应的进程。比如httpd服务的进程PID为1000。当用户需要查询httpd服务是否正常运行时，Upstart就可以利用ps命令查询进程1000，假如它还在正常运行，则表明服务正常。当用户需要停止httpd服务时，Upstart就使用kill命令终止该进程。为此，Upstart必须跟踪服务进程的进程号。</p>
+<p>部分服务进程为了将自己变成后台精灵进程(daemon)，会采用两次派生(fork)的技术，另外一些服务则不会这样做。假如一个服务派生了两次，那么UpStart必须采用第二个派生出来的进程号作为服务的PID。但是，UpStart本身无法判断服务进程是否会派生两次，为此在定义该服务的工作配置文件中必须写明expect小节，告诉UpStart进程是否会派生两次。</p>
+<p>Expect有两种，"expect fork"表示进程只会fork一次；"expect daemonize"表示进程会fork两次。</p>
+<h4> "exec" Stanza 和"script" Stanza </h4>
+
+<p>一个UpStart工作一定需要做些什么，可能是运行一条shell命令，或者运行一段脚本。用"exec"关键字配置工作需要运行的命令；用"script"关键字定义需要运行的脚本。</p>
+<h5> 清单 2.script 例子 </h5>
+
+<div class="highlight"><pre><span class="err">#</span><span class="x"> mountall.conf</span>
+<span class="x">description “Mount filesystems on boot”</span>
+<span class="x">start on startup</span>
+<span class="x">stop on starting rcS</span>
+<span class="x">...</span>
+<span class="x">script</span>
+<span class="x">  . /etc/default/rcS</span>
+<span class="x">  [ -f /forcefsck ] &amp;&amp; force_fsck=”--force-fsck”</span>
+<span class="x">  [ “</span><span class="p">$</span><span class="nv">FSCKFIX</span><span class="x">”=”yes” ] &amp;&amp; fsck_fix=”--fsck-fix”</span>
+
+<span class="x">  ...</span>
+
+<span class="x">  exec mountall –daemon </span><span class="p">$</span><span class="nv">force_fsck</span><span class="x"> </span><span class="p">$</span><span class="nv">fsck_fix</span><span class="x"></span>
+<span class="x">end script</span>
+<span class="x">...</span>
+</pre></div>
+
+
+<p>这是mountall的例子，该工作在系统启动时运行，负责挂载所有的文件系统。该工作需要执行复杂的脚本，由"script"关键字定义；在脚本中，使用了exec来执行mountall命令。</p>
+<h4> "start on" Stanza 和"stop on" Stanza </h4>
+
+<p>"start on"定义了触发工作的所有事件。"start on"的语法很简单，如下所示：</p>
+<p><code>start on EVENT [[KEY=]VALUE]... [and|or...]</code></p>
+<p>EVENT表示事件的名字，可以在start on中指定多个事件，表示该工作的开始需要依赖多个事件发生。多个事件之间可以用and或者or组合，"表示全部都必须发生"或者"其中之一发生即可"等不同的依赖条件。除了事件发生之外，工作的启动还可以依赖特定的条件，因此在start on的EVENT之后，可以用<code>KEY=VALUE</code>来表示额外的条件，一般是某个环境变量(KEY)和特定值(VALUE)进行比较。如果只有一个变量，或者变量的顺序已知，则KEY可以省略。</p>
+<p>"stop on"和"start on"非常类似，只不过是定义工作在什么情况下需要停止。</p>
+<h5> 清单 3. start on/ stop on 例子 </h5>
+
+<div class="highlight"><pre>#dbus.conf
+description     “D-Bus system message bus”
+
+start on local-filesystems
+stop on deconfiguring-networking
+…
+</pre></div>
+
+
+<p>D-Bus是一个系统消息服务，上面的配置文件表明当系统发出local-filesystems事件时启动D-Bus；当系统发出deconfiguring-networking事件时，停止D-Bus服务。</p>
+<h3> Session Init </h3>
+
+<p>UpStart还可以用于管理用户会话的初始化。在我写这篇文章的今天，多数Linux发行版还没有使用UpStart管理会话。只有在Ubuntu Raring版本中，使用UpStart管理用户会话的初始化过程。</p>
+<p>首先让我们了解一下Session的概念。Session 就是一个用户会话，即用户从远程或者本地登入系统开始工作，直到用户退出。这整个过程就构成一个会话。</p>
+<p>每个用户的使用习惯和使用方法都不相同，因此用户往往需要为自己的会话做一个定制，比如添加特定的命令别名，启动特殊的应用程序或者服务，等等。这些工作都属于对特定会话的初始化操作，因此可以被称为Session Init。</p>
+<p>用户使用Linux可以有两种模式：字符模式和图形界面。在字符模式下，会话初始化相对简单。用户登录后只能启动一个Shell，通过shell命令使用系统。各种shell程序都支持一个自动运行的启动脚本，比如~/.bashrc。用户在这些脚本中加入需要运行的定制化命令。字符会话需求简单，因此这种现有的机制工作的很好。</p>
+<p>在图形界面下，事情就变得复杂一些。用户登录后看到的并不是一个shell提示符，而是一个桌面。一个完整的桌面环境由很多组件组成。</p>
+<p>一个桌面环境包括window manager，panel以及其它一些定义在/usr/share/gnome-session/sessions/下面的基本组件；此外还有一些辅助的应用程序，共同帮助构成一个完整的方便的桌面，比如system monitors，panel applets，NetworkManager，Bluetooth，printers等。当用户登录之后，这些组件都需要被初始化，这个过程比字符界面要复杂的多。目前启动各种图形组件和应用的工作由gnome-session完成。过程如下：</p>
+<p>以Ubuntu为例，当用户登录Ubuntu图形界面后，显示管理器(Display Manager)lightDM启动Xsession。Xsession 接着启动gnome-session，gnome-session负责其它的初始化工作，然后就开始了一个desktop session。</p>
+<h5> 图 2.传统 desktop session 启动过程 </h5>
+
+<div class="highlight"><pre>init
+ |- lightdm
+ |   |- Xorg
+ |   |- lightdm ---session-child
+ |        |- gnome-session --session=ubuntu
+ |             |- compiz
+ |             |- gwibber
+ |             |- nautilus
+ |             |- nm-applet
+ |             :
+ |             :
+ |
+ |- dbus-daemon --session
+ |
+ :
+ :
+</pre></div>
+
+
+<p>这个过程有一些缺点（和sysVInit类似）。一些应用和组件其实并不需要在会话初始化过程中启动，更好的选择是在需要它们的时候才启动。比如update-notifier服务，该服务不停地监测几个文件系统路径，一旦这些路径上发现可以更新的软件包，就提醒用户。这些文件系统路径包括新插入的DVD盘等。Update-notifier由gnome-session 启动并一直运行着，在多数情况下，用户并不会插入新的DVD，此时update-notifier服务一直在后台运行并消耗系统资源。更好的模式是当用户插入DVD的时候再运行update-notifier。这样可以加快启动时间，减小系统运行过程中的内存等系统资源的开销。对于移动，嵌入式等设备等这还意味着省电。除了Update-notifier服务之外，还有其它一些类似的服务。比如Network Manager，一天之内用户很少切换网络设备，所以大部分时间Network Manager 服务仅仅是在浪费系统资源；再比如backup manager等其它常驻内存，后台不间断运行却很少真正被使用的服务。</p>
+<p>用UpStart的基于事件的按需启动的模式就可以很好地解决这些问题，比如用户插入网线的时候才启动Network Manager，因为用户插入网线表明需要使用网络，这可以被称为按需启动。</p>
+<p>下图描述了采用UpStart之后的会话初始化过程。</p>
+<h5> 图 3.采用 Upstart 的 Desktop session init 过程 </h5>
+
+<div class="highlight"><pre>init
+ |- lightdm
+ |   |- Xorg
+ |   |- lightdm ---session-child
+ |        |- session-init # &lt;-- upstart running as normal user
+ |             |- dbus-daemon --session
+ |             |- gnome-session --session=ubuntu
+ |             |- compiz
+ |             |- gwibber
+ |             |- nautilus
+ |             |- nm-applet
+ |             :
+ |             :
+ :
+ :
+</pre></div>
+
+
+<h2> 系统管理员需要了解的Upstart命令 </h2>
+
+<p>作为系统管理员，一个重要的职责就是管理系统服务。比如系统服务的监控、启动、停止和配置。UpStart提供了一系列的命令来完成这些工作。其中的核心是initctl，这是一个带子命令风格的命令行工具。</p>
+<p>比如可以用<code>initctl list</code>来查看所有工作的概况：</p>
+<div class="highlight"><pre><span class="p">$</span><span class="nv">initctl</span><span class="x"> list</span>
+<span class="x">alsa-mixer-save stop/waiting</span>
+<span class="x">avahi-daemon start/running,  process 690</span>
+<span class="x">mountall-net stop/waiting</span>
+<span class="x">rc stop/waiting</span>
+<span class="x">rsyslog start/running,  process 482</span>
+<span class="x">screen-cleanup stop/waiting</span>
+<span class="x">tty4 start/running,  process 859</span>
+<span class="x">udev start/running,  process 334</span>
+<span class="x">upstart-udev-bridge start/running,  process 304</span>
+<span class="x">ureadahead-other stop/waiting</span>
+</pre></div>
+
+
+<p>这是在Ubuntu10.10系统上的输出，其它的Linux发行版上的输出会有所不同。第一列是工作名，比如rsyslog。第二列是工作的目标；第三列是工作的状态。</p>
+<p>此外还可以用initctl stop停止一个正在运行的工作；用initctl start开始一个工作；还可以用initctl status来查看一个工作的状态；initctl restart重启一个工作；initctl reload可以让一个正在运行的服务重新载入配置文件。这些命令和传统的service命令十分相似。</p>
+<h5> 表 2.service 命令和 initctl 命令对照表 </h5>
+
+<table>
+<tr><td>Service 命令</td><td>UpStart initctl 命令</td></tr>
+<tr><td>service start</td><td>initctl start</td></tr>
+<tr><td>service stop</td><td>initctl stop</td></tr>
+<tr><td>service restart</td><td>initctl restart</td></tr>
+<tr><td>service reload</td><td>initctl reload</td></tr>
+</table>
+
+<p>很多情况下管理员并不喜欢子命令风格，因为需要手动键入的字符太多。UpStart还提供了一些快捷命令来简化initctl，实际上这些命令只是在内部调用相应的initctl命令。比如reload，restart，start，stop等等。启动一个服务可以简单地调用<code>start &lt;job&gt;</code>。这和执行<code>initctl start &lt;job&gt;</code>是一样的效果。</p>
+<p>一些命令是为了兼容其它系统(主要是 sysvinit)，比如显示runlevel用/sbin/runlevel 命令：</p>
+<div class="highlight"><pre><span class="p">$</span><span class="nv">runlevel</span><span class="x"></span>
+<span class="x">N 2</span>
+</pre></div>
+
+
+<p>这个输出说明当前系统的运行级别为2。而且系统没有之前的运行级别，也就是说在系统上电启动进入预定运行级别之后没有再修改过运行级别。</p>
+<p>那么如何修改系统上电之后的默认运行级别呢？</p>
+<p>在Upstart系统中，需要修改/etc/init/rc-sysinti.conf中的DEFAULT_RUNLEVEL这个参数，以便修改默认启动运行级别。这一点和sysvinit的习惯有所不同，大家需要格外留意。</p>
+<p>还有一些随UpStart发布的小工具，用来帮助开发UpStart或者诊断UpStart的问题。比如init-checkconf和upstart-monitor</p>
+<p>还可以使用initctl的emit命令从命令行发送一个事件。<code>#initctl emit &lt;event&gt;</code>。这一般是用于 UpStart 本身的排错。</p>
+<h3> Upstart 小结 </h3>
+
+<p>可以看到，UpStart的设计比SysVInit更加先进。多数Linux发行版上已经不再使用SysVInit，一部分发行版采用了UpStart，比如Ubuntu；而另外一些比如Fedora，采用了一种被称为systemd的init系统。Systemd出现的比UpStart更晚，但发展迅速，虽然UpStart也还在积极开发并被越来越多地应用，但systemd似乎发展更快。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

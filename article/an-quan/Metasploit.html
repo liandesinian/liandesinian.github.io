@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/an-quan/Metasploit.html" />
+
+    <title>  Avalon &mdash; Metasploit
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="一款优秀的渗透测试框架。 一些专业术语 渗透测试(exploit) 指由攻击者或渗透测试师利用系统、应用或服务中的安全漏洞进行的攻击行为。 攻击载荷(payload) 期望目标系统在被渗透之后去执行的代码。比如反弹式shell、bind shell等 shellcode 在渗透攻击时作为攻击载荷的一组机器指令。通常用汇编语言编写。大多数情况下，目标系统执行了Shellcode这一组指令后，才会提供一个命令行shell或meterpreter shell。 监听器 是Metasploit中用来等待连入网络连接的组件，比如攻击主机等待被渗透的目标系统来连接，并负责处理这些连接。 Metasploit用户接口 MSF终端 交互式，msfconsole MSF命令行 msfcli，脚本的处理与其他命令行工具的输入输出操作。 Armitage 图形化工具 Metasploit功能程序 对Metasploit中的一些特殊功能直接进行访问的接口。 MSF攻击载荷生成器 能够生成shellcode、可执行代码等，可以让它们在框架软件以外的渗透代码中使用。Shellcode可以生成包括C、JavaScript等格式。命令为msfpayload。（在新版MSF中将msfpayload和msfencode合并成了msfvenom。 MSF编码器 msfpayload生成的shellcode中可能包含了一些null字符，这些字符会被认为是字符串的结束，从而导致代码被截断。另外为了免杀，所以需要使用到MSF编码器来逃避检测以及避免坏字符 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/an-quan/Metasploit.html" title="Metasploit">Metasploit</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2016-01-21T00:00:00+08:00">2016年01月21日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/an-quan.html">安全</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>一款优秀的渗透测试框架。</p>
+<h1> 一些专业术语 </h1>
+
+<h4> 渗透测试(exploit) </h4>
+
+<p>指由攻击者或渗透测试师利用系统、应用或服务中的安全漏洞进行的攻击行为。</p>
+<h4> 攻击载荷(payload) </h4>
+
+<p>期望目标系统在被渗透之后去执行的代码。比如反弹式shell、bind shell等</p>
+<h4> shellcode </h4>
+
+<p>在渗透攻击时作为攻击载荷的一组机器指令。通常用汇编语言编写。大多数情况下，目标系统执行了Shellcode这一组指令后，才会提供一个命令行shell或meterpreter shell。</p>
+<h4> 监听器 </h4>
+
+<p>是Metasploit中用来等待连入网络连接的组件，比如攻击主机等待被渗透的目标系统来连接，并负责处理这些连接。</p>
+<h1> Metasploit用户接口 </h1>
+
+<h3> MSF终端 </h3>
+
+<p>交互式，msfconsole</p>
+<h3> MSF命令行 </h3>
+
+<p>msfcli，脚本的处理与其他命令行工具的输入输出操作。</p>
+<h3> Armitage </h3>
+
+<p>图形化工具</p>
+<h1> Metasploit功能程序 </h1>
+
+<p>对Metasploit中的一些特殊功能直接进行访问的接口。</p>
+<h3> MSF攻击载荷生成器 </h3>
+
+<p>能够生成shellcode、可执行代码等，可以让它们在框架软件以外的渗透代码中使用。Shellcode可以生成包括C、JavaScript等格式。命令为<code>msfpayload</code>。（在新版MSF中将msfpayload和msfencode合并成了<code>msfvenom</code>。</p>
+<h3> MSF编码器 </h3>
+
+<p>msfpayload生成的shellcode中可能包含了一些null字符，这些字符会被认为是字符串的结束，从而导致代码被截断。另外为了免杀，所以需要使用到MSF编码器来逃避检测以及避免坏字符。</p>
+<h3> Nasm Shell </h3>
+
+<p>在尝试了解汇编代码含义时是非常有用的工具，特别是在进行渗透代码开发时，需要对给定的汇编命令找出其opcode操作码时，就可以使用这个程序来帮助。</p>
+<h1> 情报搜集 </h1>
+
+<h3> 被动情报搜集 </h3>
+
+<ul>
+<li>whois查询：后面可以使用域名或IP作为参数</li>
+<li>Netcraft：网页页面工具。http://searchdns.netcraft.com</li>
+<li>nslookup：根据type可以搜索其邮箱服务器</li>
+</ul>
+<h3> 主动情报搜集 </h3>
+
+<h4> Nmap </h4>
+
+<h4> 在MSF中使用数据库 </h4>
+
+<p>MSF现在默认数据库为PostgreSQL，也只支持这个数据库。首先启动PostgreSQL服务。然后在msf控制台下输入<code>db_status</code>查看是否连接数据库。若无连接，则输入<code>db_connect 用户名:密码@localhost/数据库名</code>。其中的内容在<code>/opt/metasploit/apps/pro/ui/config/database.yml</code>中。若没有则从头创建：</p>
+<div class="highlight"><pre>su - postgres
+createuser msf -P
+createdb --owner=msf msf
+</pre></div>
+
+
+<p>之后再在msf控制台中进行db_connect。</p>
+<p>将Nmap输出的导入其中：</p>
+<div class="highlight"><pre><span class="n">msf</span><span class="o">&gt;</span> <span class="n">nmap</span> <span class="o">-</span><span class="n">A</span> <span class="o">-</span><span class="n">oX</span> <span class="n">test</span> <span class="mf">10.10</span><span class="o">.</span><span class="mf">10.129</span>   <span class="c">#将10.10.10.129扫描后的结果保存为xml格式的文件test</span>
+<span class="n">msf</span><span class="o">&gt;</span> <span class="n">db_import</span> <span class="n">test</span>                  <span class="c">#导入test文件</span>
+<span class="n">msf</span><span class="o">&gt;</span> <span class="n">hosts</span>                           <span class="c">#显示主机信息</span>
+<span class="n">msf</span><span class="o">&gt;</span> <span class="n">services</span>                        <span class="c">#显示服务信息</span>
+
+<span class="o">======================================================</span>
+<span class="n">msf</span><span class="o">&gt;</span> <span class="n">db_nmap</span> <span class="o">-</span><span class="n">A</span> <span class="mf">10.10</span><span class="o">.</span><span class="mf">10.129</span>         <span class="c">#可以直接使用db_nmap将结果保存到数据库中</span>
+</pre></div>
+
+
+<p>Nmap的TCP空闲扫描：能冒充网络上的另一台主机的IP地址，对目标进行更为隐蔽的扫描。在进行这种扫描之前，需要在网络上定位一台使用递增IP帧标识(IP ID)机制的空闲主机（空闲指该主机在一段时间内不会向网络发送数据包），将其作为僵尸主机。当发现这样一台主机时，其IP帧标识是可以被预测的，利用这一特性可以计算出它下一个IP帧的标识。当冒充这台空闲主机的IP地址对目标主机的某个端口进行探测后，如果该空闲主机实际的IP帧标识与预测得出的IP帧标识发生相差为2，则意味着该端口可能是开放的, 如果相差为1, 则意味着端口是关闭的或者是被过滤的。具体原理可见<a href="https://nmap.org/book/idlescan.html">nmap官方</a>。可以使用nmap的ipidseq.nse脚本来扫描，也可以使用msf的ipidseq模块：</p>
+<div class="highlight"><pre>msf&gt; use auxiliary/scanner/ipidseq
+msf auxiliary(ipidseq)&gt; set RHOSTS 192.168.1.0/24
+msf auxiliary(ipidseq)&gt; set THREADS 50
+msf auxiliary(ipidseq)&gt; run
+#扫描出来的结果中若有某IP的IPID为Incremental，则可以作为冒充的地址。（假设为192.168.1.109）：
+msf auxliary(ipidseq)&gt; nmap -sI 192.168.1.109 10.10.10.129
+</pre></div>
+
+
+<h3> 针对性扫描 </h3>
+
+<p>像是扫描smb(use scanner/smb/smb_version)，mssql(use scanner/mssql/mssql_ping)，ssh(use scanner/ssh/ssh_version)，ftp(use scanner/ftp/ftp_version、use auxiliary/scanner/ftp/anonymous) </p>
+<h3> 编写自己的扫描器 </h3>
+
+<p>Metasploit内建很多自定义的功能（混合类）。</p>
+<h1> 漏洞扫描 </h1>
+
+<p>漏洞扫描器是一种能够自动在计算机、信息系统、网络以及应用软件中寻找和发现安全弱点的程序。它通过网络对目标系统发送数据，并将反馈数据与自带的漏洞特征库进行匹配，进而列举除目标系统上存在的安全漏洞。各种操作系统网络模块的实现原理不同，因此它们对于接收到的探测数据往往有不同的反应。漏洞扫描器将这些反应看成是目标系统的"指纹"，用以确定操作系统版本，甚至确定出补丁安装等级。漏洞扫描器也可以使用一个预先设定的登录凭据登录到远程系统上，列举出远程系统上安装的软件和运行的服务，并判定它们是否安装了补丁程序。</p>
+<p>使用漏洞扫描器会产生大量流量，因此若是不希望被别人发现渗透工作踪迹，建议不要使用漏洞扫描器。</p>
+<h2> 使用OpenVAS进行扫描 </h2>
+
+<p>OpenVAS能够基于C/S和B/S架构进行工作。一套完整的openVAS系统包裹服务器端、客户端的多个组件：</p>
+<h5> 服务器组件 </h5>
+
+<ol>
+<li>openvas-scanner：负责调用各种漏洞检测插件，完成实际的扫描任务</li>
+<li>openvas-manager：负责分配扫描任务，并根据扫描结果生成报告。同时也包括用户方面的授权等</li>
+</ol>
+<h5> 客户端组件 </h5>
+
+<ol>
+<li>openvas-cli：负责提供从命令行访问openVAS服务层程序。包括openvasmd、openvassd等。</li>
+<li>greenbone-security-assistant：负责提供访问openVAS的web接口，通过浏览器来执行扫描任务。</li>
+<li>greenbone-desktop-suite：负责提供哦功能访问openVAS服务层的图形程序界面。主要是Windows方面的。</li>
+</ol>
+<p>除了上述组件外还有一个漏洞测试插件更新。OpenVAS系统的插件来源主要有两个途径：一是官方提供的NVT免费插件，二是Greenbone公司提供的商业插件。</p>
+<p>初始安装：菜单中的openVAS-&gt;openVAS initial setup。之后会下载NVT资源。若安装过程中出现错误：openvas-check-setup，然后根据提示进行修复。通过使用<code>openvasmd --user=admin --new-password=&lt;password&gt;</code>来修改安装时设置的管理员随机密码。通常openVAS服务使用的默认端口是9392。从gsd(web端)进入需要使用https协议。</p>
+<h2> 专用漏洞扫描器 </h2>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

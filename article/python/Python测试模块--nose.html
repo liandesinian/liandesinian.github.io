@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/python/Python测试模块--nose.html" />
+
+    <title>  Avalon &mdash; Python测试模块--nose
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="以下内容翻译自nose官方文档，水平有限难免会有错误。。。。 Nose是Python平台的一个测试工具，相信用Python开发过的人都知道unittest，nose比unittest更加强大，也更加好用。Nose使用的tests是unittest.TestCase的子类，当然你也可以自己写一些简单的测试函数以及测试类，而不一定要是unittest.TestCase的子类。 使用nose运行测试是很简单的，只要遵循简单规则来组织你的库和代码；设置测试环境是简单的；nose有非常多内建的插件来帮助你捕捉输出，错误信息等，当然如果你不喜欢默认的这些收集方案也可以自己来写插件。 基本使用方法 nosetests [options] [(optional) test files or directories] 或是在家目录下写一个.noserc的配置文件（或是在项目目录下新建一个setup.cfg文件）： [nosetests] verbosity=3 with-doctest=1 如果想禁用配置文件，就设置一个环境变量参数：NOSE_IGNORE_CONFIG_FILES。 Nose自动从Python源文件，目录和包中收集测试，任何匹配正则表达式（默认为：(?:^|[b_.-])[Tt]est）的源文件，目录和包都会被搜集用作测试。包的话会沿着"树"向下进行寻找满足条件的用作测试。在一个测试目录或包中 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/python/Python测试模块--nose.html" title="Python测试模块--nose">Python测试模块--nose</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-04-30T00:00:00+08:00">2015年04月30日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/python.html">Python</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>以下内容翻译自nose官方文档，水平有限难免会有错误。。。。</p>
+<p>Nose是Python平台的一个测试工具，相信用Python开发过的人都知道unittest，nose比unittest更加强大，也更加好用。Nose使用的tests是unittest.TestCase的子类，当然你也可以自己写一些简单的测试函数以及测试类，而不一定要是unittest.TestCase的子类。</p>
+<p>使用nose运行测试是很简单的，只要遵循简单规则来组织你的库和代码；设置测试环境是简单的；nose有非常多内建的插件来帮助你捕捉输出，错误信息等，当然如果你不喜欢默认的这些收集方案也可以自己来写插件。</p>
+<h2> 基本使用方法 </h2>
+
+<div class="highlight"><pre>nosetests [options] [(optional) test files or directories]
+</pre></div>
+
+
+<p>或是在家目录下写一个.noserc的配置文件（或是在项目目录下新建一个setup.cfg文件）：</p>
+<div class="highlight"><pre><span class="k">[nosetests]</span>
+<span class="na">verbosity</span><span class="o">=</span><span class="s">3</span>
+<span class="na">with-doctest</span><span class="o">=</span><span class="s">1</span>
+</pre></div>
+
+
+<p>如果想禁用配置文件，就设置一个环境变量参数：NOSE_IGNORE_CONFIG_FILES。</p>
+<p>Nose自动从Python源文件，目录和包中收集测试，任何匹配正则表达式（默认为：(?:^|[b_.-])[Tt]est）的源文件，目录和包都会被搜集用作测试。包的话会沿着"树"向下进行寻找满足条件的用作测试。在一个测试目录或包中，任何匹配testMatch的Python源文件都会被检查用作测试例子。在一个模块中，名字匹配testMatch的函数和类和TestCase的子类都会被用作测试。Tests会产生一个AssertError来显示错误。这里有一个需要注意的地方：nose默认情况下并不测试那些拥有可执行权限的文件。要测试这样的文件要么去掉"x"位，要么使用-exec选项。</p>
+<p><code>nosetests filename or module</code></p>
+<p>nosetests后可以直接跟目录表示nosetests的工作目录。</p>
+<p>使用插件：<code>nosetests --plugins</code>：显示已安装的插件，-v，-vv显示插件的详细信息。</p>
+<p>更多关于nosetests的选项内容请查看官网。。。</p>
+<h4> test package </h4>
+
+<p>nose允许把tests都放进一个测试包中，这样就是以包为单位进行测试。每一次测试运行都可以在包中创建或是从包中移除tests，而不需要对test模块或test例子进行单独的测试运行。为了实现这个"包层次"的测试方法，将setup和teardown函数（简单的来说就是前者是在测试前运行的，后者是在测试后运行的）放进__init__.py文件中。setup方法可以命名为setup,  setup_package,  setUp,  or setUpPackage；teardown方法可以命名为teardown,  teardown_package,  tearDown or tearDownPackage。只要第一个test module载入到test package中就开始测试。</p>
+<h4> test module </h4>
+
+<p>test module是一个匹配testMatch正则表达式的模块，可以命名为setup,  setup_module,  setUp or setUpModule for setup,  teardown,  teardown_module, or tearDownModule for teardown。在一个test module中搜索tests都收集完后再执行测试。</p>
+<h4> test class </h4>
+
+<p>test class是一个在test module中匹配testMatch正则表达式的类或是unittest.TestCase的子类。所有测试类都以同样的方法运行：匹配testMatch正则表达式的方法被找到后，通过创建test class的一个新的实例来测试每一个方法。类层次的装饰器可以命名为setup_class,  setupClass,  setUpClass,  setupAll or setUpAll;  teardown fixtures may be named teardown_class,  teardownClass,  tearDownClass,  teardownAll or tearDownAll.</p>
+<h4> test function </h4>
+
+<p>任何在一个test module中的函数都会被包装成一个FunctionTestCase，然后运行测试。test function可以定义setup/teardown属性。如果在同一个test module中有多个需要进行同一setup/teardown的函数，可以使用with_setup装饰器。</p>
+<div class="highlight"><pre>def setup_func():
+    ....
+
+def teardown_func():
+    .....
+
+@with_setup(setup_func, teardown_func)
+def test():
+    &quot;test...&quot;
+</pre></div>
+
+
+<p>注：with_setup只可以用于函数，不能用于test class中的test method。在那些情况下，请定义setup和teardown方法。</p>
+<h4> test generator </h4>
+
+<p>setup和teardown可以用于生成器函数，不过需要注意的是，如果setup和teardown是被附加到生成器函数的，那么它们就只会执行一次，也就是说以后在返回生成器继续的运行的时候不会执行它们，为了对每一次yield的值进行测试，可以将其附加到yield的函数上。</p>
+<p>更多关于nose的插件详情及源码请看官网文档。。。。</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

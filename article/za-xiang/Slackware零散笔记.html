@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="slackpkg ： slackpkg后面的对象可以是单独的软件名，也可以是slackware的集合。 install：安装系统上没有的软件。后面如果接的对象是集合，可以安装集合中系统上没有安装过的软件。 upgrade：更新系统上的某个软件到最新的版本。 reinstall：重新安装和系统上版本相同的软件。 remove：移除系统上相关的软件，可以是集合。 blacklist：后面的对象无法进行install、upgrade、remove。 upgrade-all：更新系统上安装的软件到最新的版本。 install-new：安装新增加到官方Slackware软件集中的软件 generate-template：生成系统上安装的软件的列表">
+    <meta name="description" content="slackpkg ： slackpkg后面的对象可以是单独的软件名，也可以是slackware的集合。 install：安装系统上没有的软件。后面如果接的对象是集合，可以安装集合中系统上没有安装过的软件。 upgrade：更新系统上的某个软件到最新的版本。 reinstall：重新安装和系统上版本相同的软件。 remove：移除系统上相关的软件，可以是集合。 blacklist：后面的对象无法进行install、upgrade、remove。 upgrade-all：更新系统上安装的软件到最新的版本。 install-new：安装新增加到官方Slackware软件集中的软件 generate-template：生成系统上安装的软件的列表 从U盘引导安装 用系统盘引导时，若grub出了问题，导致无法顺利引导，跳出"grub>"界面，可以进行如下操作： grub> set root=(hd0, msdos1) #设置根目录为U盘第一分区 grub> loopback loop /slackware-x86_64-dvd.iso #挂载镜像文件 grub> linux (loop)/kernels/huge.s ...">
   <meta name="tags" contents="">
 </head>
 
@@ -72,6 +72,102 @@
 <li>install-new：安装新增加到官方Slackware软件集中的软件</li>
 <li>generate-template：生成系统上安装的软件的列表</li>
 </ul>
+<h2> 从U盘引导安装 </h2>
+
+<p>用系统盘引导时，若grub出了问题，导致无法顺利引导，跳出"grub&gt;"界面，可以进行如下操作：</p>
+<div class="highlight"><pre>    grub&gt; set root=(hd0, msdos1)  #设置根目录为U盘第一分区
+    grub&gt; loopback loop /slackware-x86_64-dvd.iso #挂载镜像文件
+    grub&gt; linux (loop)/kernels/huge.s/bzImage  #引导内核，grub2可以用linux，grub可以用kernel
+    grub&gt; initrd (loop)/isolinux/initrd.gz
+    grub&gt; boot
+</pre></div>
+
+
+<p>进入安装界面后，分区，制作swap，setup，按照提示一步步进行。安装完后：</p>
+<div class="highlight"><pre>    chroot /mnt
+    grub-install /dev/sda1 #安装grub到引导分区
+    grub-mkconfig -o /boot/grub/grub.cfg  #一般把/boot设为引导分区
+
+    #重启后若出现kernel panic no syncing:vfs unable to mount root fs on...错误, 解决：
+    $(/usr/share/mkinitrd/mkinitrd-generator.sh -r)
+    #修改grub.cfg，内核改为generic，添加initrd /initrd.gz #此处根目录为/boot
+
+    #修改启动级别为4
+    vim /etc/inittab
+</pre></div>
+
+
+<p>然后便可重启。重启后可添加普通用户，然后通过visudo赋予sudo权限。设置中文环境：<code>/etc/profile.d/lang.sh</code></p>
+<p>一些注意事项：</p>
+<ol>
+<li>
+<p>关于字体大小的问题：在进行调节之前，先装一下驱动，尤其是源中预装的nouveau会使控制台的字体变小。N卡驱动在官网下载对应版本后，在init 3下安装，在此之前可能要先装libvdpau，同时禁用nouveau（可upgradepkg xf86-video-nouveau-blacklist.txz）</p>
+</li>
+<li>
+<p>关于fcitx无法正常工作的方法，可在.bashrc中加入：</p>
+</li>
+</ol>
+<div class="highlight"><pre>    #!/bin/sh
+
+    export XMODIFIERS=&quot;@im=fcitx&quot;
+    export XIM=fcitx
+    export XIM_PROGRAM=fcitx
+    export GTK_IM_MODULE=fcitx  #=xim
+    export QT_IM_MODULE=fcitx   #=xim
+</pre></div>
+
+
+<ol>
+<li>
+<p>声音参数保存：alsactl store</p>
+</li>
+<li>
+<p>合上盖子休眠：编辑/etc/acpi/acpi_handler.sh，添加lib) /usr/sbin/pm-suspend</p>
+</li>
+<li>
+<p>usb stick: </p>
+</li>
+</ol>
+<div class="highlight"><pre>   #下载usbboot.img
+   dd if=usbboot.img of=/dev/sdb bs=512  #使用后U盘无法继续进行存储
+
+   #U盘恢复
+   dd if=/dev/zero of=/dev/sdb bs=512 count=1
+   fdisk /dev/sdb  #进行分区，再mkfs.vfat格式化
+
+6. Slackware不支持PAM
+
+7. 网络配置：/etc/rc.d/rc.inet1
+
+8. /etc/rc.d/rc.modules：包含Linux内核模块的列表。现在Linux有一个允许内核载入自身模块的特色，叫做udev。udev会自动载入模块而无需编辑rc.modules文件，使用时会自动告诉其如何载入模块，而不是在启动的时候通过rc.modules载入它们。详情可看“man udev”。因此，如今可以不必编辑rc.modules文件，除非想使用的模块没有被udev自动载入。
+
+9. 增加用户时可以把用户加入：cdrom, audio, video, plugdev组中
+
+10. 安装一开始，swap分区的类型需要该成82，否则安装程序无法识别
+11. SELECT处选择tagpath。在一开始先用挂在U盘到/mnt，再cp -a /mnt/tagefile /tmp；umount /mnt。tagpath：/tmp/tagefile
+12. 安装完后安装grub：先chroot /mnt；grub-install --boot-directory=/boot /dev/sda；grub-mkconfig -o /boot/grub/grub.cfg
+
+13. slackware chroot from cd：
+</pre></div>
+
+
+<h1>先激活swap，后挂载各分区：</h1>
+<p>mount /dev/mapper/root /mnt
+mount /dev/mapper/root-home /mnt/root
+mount /dev/sda1 /mnt/boot
+mount /dev/var /mnt/var
+mount -o bind /proc /mnt/proc
+mount -o bind /sys /mnt/sys
+mount -o bind /dev /mnt/dev
+```</p>
+<ol>
+<li>/var/log/dmesg中信息由logger记录</li>
+<li>update-rc.d：用来自动升级System V类型初始化脚本，简单的讲就是哪些服务是想要系统在引导初始化的时候运行的，哪些是希望在关机和重启时停止的。设置指定启动顺序、指定运行级别的启动项：<code>update-rc.d &lt;service&gt; start &lt;order&gt; &lt;runlevels&gt;</code>；设置指定运行级中，按指定顺序停止：<code>update-rc.d &lt;service&gt; stop &lt;order&gt; &lt;runlevels&gt;</code>；从所有的运行级别中删除指定的启动项：<code>update-rc.d -f &lt;script-name&gt; remove</code></li>
+<li>可以通过xmodmap查看键位映射（mod1, mod2。。。）</li>
+<li>时间问题：硬件时间默认为UTC时间，即0时区的时间，系统时间为硬件时间+偏移的时区量。</li>
+<li>Xephyr :1 ：可在当前wm中内嵌一个display :1</li>
+<li>firefox中文：安装中文包，about:config-&gt;general.useragent.locale 改为zh-CN</li>
+</ol>
     </div>
   </div>
   <hr class="separator">

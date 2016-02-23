@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/python/Python学习手册——unicode和字节字符串.html" />
+
+    <title>  Avalon &mdash; Python学习手册——unicode和字节字符串
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="unicode文本：在国际化应用程序中使用的宽字符字符串 二进制数据：表示绝对的字节值的字符串。 Python 3.0为二进制数据提供了一种替代字符串类型，并且在其常规的字符串类型中支持Unicode文本（ASCII看作Unicode的一种简单类型） Python2.X为非ASCII Unicode文本提供一种替代字符串类型，并且在其常规的字符串类型中支持简单文本和二进制数据 字符编码方法 ASCII编码定义了0-127的字符代码，每个字符存储在一个8位的字节中。但有时每个字符用一个字节表示并不够。Latin-1使用8位来表示一个字符，并且把值128-255用来表示一些符号和重音。Unicode文本通常叫做"宽字符"字符串，每个字符可能表示为多个字节 要在内存中存储如此丰富的文本，就要确保字符与原始字节之间可以使用一种编码进行转换。编码是根据一个想要的编码名称，把一个字符串翻译为其原始字节的形式，解码是根据其编码名称，把一个原始字节翻译为字符串的形式。对于ASCII和latin-1来说，每一个字符映射为一个单个字节，因此不需要翻译工作。对于其他的编码格式，每个字符可能产生多个字节。 例如UTF-8编码，采用可变的字节数方案。0-127的字符转换为一个字节，128-2047之间的字符转换为两个字节，每个字节拥有一个128-255的值。2047以上的转换为3个或4个字节序列，序列中的每个字节的值在128-255之间。例如每一个中文字符，用utf-8进行编码后的字节码就用3个字节表示。 由于编码的字符转换把字符分配给同样的代码，因此ASCII是UTF-8的子集。也就是说，一个ASCII字符也是一个有效的UTF-8字符。当数据存储时也是如此，每一个ASCII文件也是有效的UTF-8文件，但反过来就不对了 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/python/Python学习手册——unicode和字节字符串.html" title="Python学习手册——unicode和字节字符串">Python学习手册——unicode和字节字符串</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2015-04-20T00:00:00+08:00">2015年04月20日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/python.html">Python</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <ul>
+<li>unicode文本：在国际化应用程序中使用的宽字符字符串</li>
+<li>二进制数据：表示绝对的字节值的字符串。</li>
+</ul>
+<p>Python 3.0为二进制数据提供了一种替代字符串类型，并且在其常规的字符串类型中支持Unicode文本（ASCII看作Unicode的一种简单类型）</p>
+<p>Python2.X为非ASCII Unicode文本提供一种替代字符串类型，并且在其常规的字符串类型中支持简单文本和二进制数据</p>
+<h2> 字符编码方法 </h2>
+
+<p>ASCII编码定义了0-127的字符代码，每个字符存储在一个8位的字节中。但有时每个字符用一个字节表示并不够。Latin-1使用8位来表示一个字符，并且把值128-255用来表示一些符号和重音。Unicode文本通常叫做"宽字符"字符串，每个字符可能表示为多个字节</p>
+<p>要在内存中存储如此丰富的文本，就要确保字符与原始字节之间可以使用一种编码进行转换。编码是根据一个想要的编码名称，把一个字符串翻译为其原始字节的形式，解码是根据其编码名称，把一个原始字节翻译为字符串的形式。对于ASCII和latin-1来说，每一个字符映射为一个单个字节，因此不需要翻译工作。对于其他的编码格式，每个字符可能产生多个字节。</p>
+<p>例如UTF-8编码，采用可变的字节数方案。0-127的字符转换为一个字节，128-2047之间的字符转换为两个字节，每个字节拥有一个128-255的值。2047以上的转换为3个或4个字节序列，序列中的每个字节的值在128-255之间。例如每一个中文字符，用utf-8进行编码后的字节码就用3个字节表示。</p>
+<p>由于编码的字符转换把字符分配给同样的代码，因此ASCII是UTF-8的子集。也就是说，一个ASCII字符也是一个有效的UTF-8字符。当数据存储时也是如此，每一个ASCII文件也是有效的UTF-8文件，但反过来就不对了。</p>
+<p>像ASCII，Latin-1，UTF-8以及其他的编码，都被认为是Unicode。</p>
+<p>encodings模块包含很多编码名称。Python带有大约100多种不同的编码，同样某一个编码也可能会有不同的名称。</p>
+<h2> Python的字符串类型 </h2>
+
+<p>Python提供了字符类型在脚本中表示字符。在脚本中所使用的字符串类型取决于所使用的Python版本。Python2.X中：str表示8位文本和二进制数据；unicode表示宽字符Unicode文本。Python2.X中两种字符串类型是不同的（unicode支持编码和解码）。Python2.X中的str字符串类型可以用于8位表示的文本以及用绝对字节值表示的二进制数据。</p>
+<p>而在Python 3中：str表示Unicode文本（8位和更宽的），bytes表示二进制数据。bytearray是一种可变的bytes类型（因为我用的是Python 2.7，所以在此不做过多介绍）</p>
+<h2> 编码Unicode字符串 </h2>
+
+<p>Python的字符串常量支持"\xNN"十六进制字节值转义以及"\uNNNN"、"\UNNNNNNNN"Unicode转义。在Unicode转义中，前者给出了4个十六进制值以编码一个2个字节字符码，后者给出8个十六进制值以编码一个4个字节字符码</p>
+<h2> 在Python2.X中编码Unicode字符串 </h2>
+
+<p>unicode在Python2.X中是可用的，但它与str是截然不同的类型，并且当常规字符串和Unicode字符串兼容的时候，它允许自由组合。</p>
+<p>为了存储任意的编码的Unicode文本，用u'xxx'常量形式创建一个unicode对象。一旦创建可以把Unicode文本转换为不同的原始字节编码。</p>
+<p>在Python2.X中，非ASCII字符可以用十六进制或Unicode转义来编写到字符串常量中。不过"\u..."和"\U..."转义只是识别为Unicode字符串，而不是8位str字符串。也就是说，"\u00C4"=="\xC4"，这些转义都只是识别其为Unicode字符串，相当于是用这种形式在表示这个字符，真正区分其是unicode类型还是str类型的关键在于引号前是否有'u'。</p>
+<p>只要str和unicode的编码兼容，unicode和非unicode的str对象可以在表达式中自由混合，Python会自动将其转换为unicode对象。如果要在两者之间进行显式的转换，用str()和unicode()函数。</p>
+<p>Python2.X的open调用只支持8位字节的文件，将其内容返回为str字符串。将其内容解释为文本，还是解释为二进制数并根据需要解码，这取决于你。要读取和编写Unicode文件并进行自动编码和解码，使用codecs.open调用，其使用unicode对象来表示文件内容，读取一个文件，把编码的字节翻译为解码的Unicode字符，并且在文件打开的时候把翻译字符串写入想要指定的编码。</p>
+<h2> 源文件字符集编码声明 </h2>
+
+<p>对于在脚本中编码的字符串，Python默认使用ASCII编码，但是它允许我们通过包含一个注释来指明想要的编码，从而将默认值修改为支持任意的字符集。格式：#-<em>-coding:utf-8-</em>-</p>
+<p>当出现这个格式时，Python将自然按照给定的编码来识别表示的字符串。</p>
+<p>Python 2.X中默认编码为ASCII（通过sys.getdefaultencoding查看）</p>
+<h2> 使用文本文件和二进制文件 </h2>
+
+<p>文本模式的文件执行通用的行末转换，默认地所有的行末形式映射为脚本中的一个'\n'字符，而不管在什么平台上运行。二进制模式文件不会返回原始的文件内容，而是作为字节值的整数的一个序列，没有编码和解码，也没有行末转换。</p>
+<p>在Python2.X中文本文件和二进制文件没有主要区别，唯一的区别在于在Windows下文本文件会自动把\n行末字符和\r\n相互映射，而二进制文件不这么做。</p>
+<p>关于从文件中读取和写入非ASCII字符的理解：在Python 2.X中，用open()调用时，默认是只支持字节的字符，也就是说从其中读取出来的非ASCII字符是原始字节符（诸如：\xee\x4e....）。同样写入的时候也只能写入str类型对象。用codecs.open()调用时，若未指定编码，则和open()调用一样，若指定编码，则以指定编码打开文件。换句话说，如果以utf-8编码打开文件，则读出的字符是utf-8编码格式（\u4ef0....），同样以unicode类型对象来写入。</p>
+<p>关于Python 2.X中的unicode和str类型：简单来说，str可以认为是上面提到的原始字节符，是诸如"\xe3\x45...."这样的，单单用引号括起来的字符串就是str类型。Unicode是以某种编码表示的字符，在字符串的引号前面加上的'u'表示这是Unicode对象。Unicode对象通过encode()调用转换为str类型。str类型通过decode()调用转换为Unicode。encode和decode调用中指定编码，若未指定则为系统默认分编码（ascii）</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>

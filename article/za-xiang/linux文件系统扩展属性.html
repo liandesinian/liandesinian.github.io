@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+      <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="canonical" href="/article/za-xiang/linux文件系统扩展属性.html" />
+
+    <title>  Avalon &mdash; linux文件系统扩展属性
+</title>
+
+
+
+
+    <link rel="stylesheet" href="/theme/css/style.css">
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+    <meta name="author" content="莲的思念">
+    <meta name="description" content="翻译自man手册，水平有限。。。 扩展属性是与文件和目录相关的(name, value)对，用来提供文件系统的一些附加功能，例如ACL。对文件或是目录拥有读权限的用户可以看到其扩展属性。扩展属性所需的空间被计算在文件属主的磁盘配额上。目前在Linux上支持扩展属性的文件系统有：ext2, ext3, ext4, XFS, JFS, reiserfs。 扩展属性名称空间 属性名称的格式是namespace.attribute。名称空间是用来定义不同的扩展属性的类。目前有security，system，trusted，user四种扩展属性类。 扩展的安全属性 安全属性名称空间被内核用于安全模块，例如SELinux。对安全属性的读和写权限依赖于策略的设定。这策略是由安全模块载入的。如果没有载入安全模块，所有的进程都对安全属性有读权限，写权限只有那些有CAP_SYS_ADMIN的进程才有。 扩展的系统属性 扩展的系统属性被内核用来存储系统对象，比如说ACL。对系统属性的读和写权限依赖于策略的设定。 受信任的扩展属性 受信任的扩展属性只对那些有CAP_SYS_ADMIN的进程可见和可获得。这个类中的属性被用来在用户空间中保存一些普通进程无法得到的信息。 扩展的用户属性 扩展的用户属性被分配给文件和目录用来存储任意的附加信息，比如mime_type，字符集或是文件的编码。用户属性的权限由文件权限位来定义。对于普通文件和目录，文件权限位定义文件内容的访问，对于设备文件来说，它们定义对设备的访问。扩展的用户属性只被用于普通的文件和目录 ...">
+  <meta name="tags" contents="">
+</head>
+
+<body>
+<header class="header">
+  <div class="container">
+    <div class="header-inner">
+      <h1 class="header-name">
+        <a class="nodec" href="/">Avalon</a>
+      </h1>
+      <h3 class="header-text">忆惜往日如作梦，月洒清辉映琉璃。</h3>
+      <ul class="header-menu list-inline">
+		<li><a class="nodec" href="/category/an-quan.html">安全</a></li>
+		<li><a class="nodec" href="/category/python.html">Python</a></li>
+		<li><a class="nodec" href="/category/wang-luo.html">网络</a></li>
+		<li><a class="nodec" href="/category/za-xiang.html">杂项</a></li>
+		
+      </ul>
+    </div>
+  </div>
+</header> <!-- /.header -->  <div class="container">
+  <div class="post full-post">
+    <h1 class="post-title">
+		<a href="/article/za-xiang/linux文件系统扩展属性.html" title="linux文件系统扩展属性">linux文件系统扩展属性</a>
+    </h1>
+    <ul class="list-inline">
+      <li class="post-date">
+        <a class="text-muted" title="2016-01-10T00:00:00+08:00">2016年01月10日</a>
+      </li>
+      <li class="muted">&middot;</li>
+      <li class="post-category">
+	  <a href="/category/za-xiang.html">杂项</a>
+      </li>
+    </ul>
+    <div class="post-content">
+      <p>翻译自man手册，水平有限。。。</p>
+<p>扩展属性是与文件和目录相关的(name, value)对，用来提供文件系统的一些附加功能，例如ACL。对文件或是目录拥有读权限的用户可以看到其扩展属性。扩展属性所需的空间被计算在文件属主的磁盘配额上。目前在Linux上支持扩展属性的文件系统有：ext2, ext3, ext4, XFS, JFS, reiserfs。</p>
+<h1> 扩展属性名称空间 </h1>
+
+<p>属性名称的格式是namespace.attribute。名称空间是用来定义不同的扩展属性的类。目前有security，system，trusted，user四种扩展属性类。</p>
+<h2> 扩展的安全属性 </h2>
+
+<p>安全属性名称空间被内核用于安全模块，例如SELinux。对安全属性的读和写权限依赖于策略的设定。这策略是由安全模块载入的。如果没有载入安全模块，所有的进程都对安全属性有读权限，写权限只有那些有CAP_SYS_ADMIN的进程才有。</p>
+<h2> 扩展的系统属性 </h2>
+
+<p>扩展的系统属性被内核用来存储系统对象，比如说ACL。对系统属性的读和写权限依赖于策略的设定。</p>
+<h2> 受信任的扩展属性 </h2>
+
+<p>受信任的扩展属性只对那些有CAP_SYS_ADMIN的进程可见和可获得。这个类中的属性被用来在用户空间中保存一些普通进程无法得到的信息。</p>
+<h2> 扩展的用户属性 </h2>
+
+<p>扩展的用户属性被分配给文件和目录用来存储任意的附加信息，比如mime_type，字符集或是文件的编码。用户属性的权限由文件权限位来定义。对于普通文件和目录，文件权限位定义文件内容的访问，对于设备文件来说，它们定义对设备的访问。扩展的用户属性只被用于普通的文件和目录，对用户属性的访问被限定于属主和那些对目录有sticky位设置的用户。</p>
+<h1> 文件系统的不同 </h1>
+
+<p>一些系统，比如ext，reiserfs，为了能使用扩展用户属性，要求文件系统挂载时有user_xattr选项。在ext文件系统中，每一个扩展属性必须占用一个单独的文件系统块，块大小取决于创建文件系统时的设置。在XFS和reiserfs文件系统中，没有这种限制，每个扩展属性所存储的大小是可变的。</p>
+<h1> 用户命令 </h1>
+
+<h3> attr </h3>
+
+<p>XFS文件系统对象上的扩展属性。用来存储文件的元信息。name最长256个字节，values最大64kb（values可为任意二进制数据）</p>
+<p>XFS针对每个对象设置了两个独立的属性名称空间，root和user。root空间只能root访问，其他用户看不到也不能修改。user空间与文件权限有关，所以文件的属主可以决定谁可以查看和修改属性。</p>
+<p>attr可以执行四种操作：</p>
+<ol>
+<li>GET：-g attrname搜索有某个属性的对象并打印。</li>
+<li>LIST：-l 列出对象的所有属性名称和空间大小</li>
+<li>REMOVE：-r attrname 从对象上删除某个属性。</li>
+<li>SET/CREATE：-s attrname 在对象上设置某个属性，属性值从stdin读入或-V attrvalue。</li>
+<li>-R：设在root空间中，而不是user空间中</li>
+</ol>
+<h3> setfattr </h3>
+
+<p>设置对象属性（无文件系统限制）</p>
+<ol>
+<li>-n name：指定属性名称</li>
+<li>-v value：设置属性值。如果value是双引号括起来的，则将其中的字串看做文本，其中的反斜线和双引号需转义。如果是0x或0X开头，则作为十六进制数。若是0s或0S开头，作为base64编码的</li>
+<li>-x name：删除属性</li>
+<li>-h：如果是符号链接文件，不要follow。</li>
+</ol>
+<h3> getfattr </h3>
+
+<p>获取对象属性（无文件系统限制）</p>
+<ol>
+<li>-n name：显示指定名称的属性</li>
+<li>-d：显示所有属性</li>
+<li>-e en：在提取属性之后进行编码，en的值为text，hex和base64</li>
+<li>-m pattern：正则表达式匹配的属性显示。默认匹配为'^user\.'，即匹配user名称空间的属性，可以指定为'-'匹配所有属性。</li>
+<li>-R：递归显示</li>
+</ol>
+<p>注：若setfattr显示“Operation is not support”，则setfattr的-n name需有namespace，例如：setfattr -n user.name</p>
+    </div>
+  </div>
+  <hr class="separator">
+  <div class="col-md-8 col-md-offset-2">
+  <div id="disqus_thread">
+    <script>
+      var disqus_shortname = 'liandesinian';
+      (function() {
+        var dsq = document.createElement('script');
+        dsq.type = 'text/javascript';
+        dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] ||
+         document.getElementsByTagName('body')[0]).appendChild(dsq);
+      })();
+    </script>
+    <noscript>
+      Please enable JavaScript to view the
+      <a href="https://disqus.com/?ref_noscript=liandesinian">
+        comments powered by Disqus.
+      </a>
+    </noscript>
+    <a href="https://disqus.com" class="dsq-brlink">
+      blog comments powered by <span class="logo-disqus">Disqus</span>
+    </a>
+  </div>
+  </div>
+  </div>
+<footer class="footer">
+  <div class="container">
+    <p class="text-center">
+      莲的思念, <a href="" target="_blank"></a> unless otherwise noted.
+    </p>
+    <div class="text-center">
+      Generated by <a href="http://getpelican.com" target="_blank">Pelican</a> with the <a href="http://github.com/nairobilug/pelican-alchemy">alchemy</a> theme.
+    </div>
+  </div>
+</footer> <!-- /.footer -->
+  <script src="/theme/js/jquery.min.js"></script>
+  <script src="/theme/js/bootstrap.min.js"></script>
+</body> <!-- 42 -->
+
+</html>
